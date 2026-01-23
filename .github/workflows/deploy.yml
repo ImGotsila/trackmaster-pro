@@ -27,7 +27,7 @@ jobs:
         run: npm run build
       
       - name: Install server dependencies
-        run: cd server && npm ci
+        run: cd server && npm install
       
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.13.15
