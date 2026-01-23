@@ -1,18 +1,57 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useData } from '../context/DataContext';
-import { TrendingUp, MapPin, Users, DollarSign, Package, Award } from 'lucide-react';
+import { TrendingUp, MapPin, Users, DollarSign, Package, Award, Calendar, Download, BarChart3, PieChart } from 'lucide-react';
+
+type TimeFilter = 'all' | 'today' | 'week' | 'month' | 'custom';
 
 const SummaryPage: React.FC = () => {
     const { shipments } = useData();
+    const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
+
+    const filteredShipments = useMemo(() => {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        switch (timeFilter) {
+            case 'today':
+                return shipments.filter(s => {
+                    const shipDate = new Date(s.importDate);
+                    return shipDate >= today;
+                });
+            case 'week':
+                const weekAgo = new Date(today);
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return shipments.filter(s => {
+                    const shipDate = new Date(s.importDate);
+                    return shipDate >= weekAgo;
+                });
+            case 'month':
+                const monthAgo = new Date(today);
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+                return shipments.filter(s => {
+                    const shipDate = new Date(s.importDate);
+                    return shipDate >= monthAgo;
+                });
+            default:
+                return shipments;
+        }
+    }, [shipments, timeFilter]);
 
     const stats = useMemo(() => {
         // 1. Total Shipping Cost & COD
-        const totalShippingCost = shipments.reduce((sum, s) => sum + (s.shippingCost || 0), 0);
-        const totalCOD = shipments.reduce((sum, s) => sum + (s.codAmount || 0), 0);
+        const totalShippingCost = filteredShipments.reduce((sum, s) => sum + (s.shippingCost || 0), 0);
+        const totalCOD = filteredShipments.reduce((sum, s) => sum + (s.codAmount || 0), 0);
+        const profit = totalCOD - totalShippingCost;
+        const costPercentage = totalCOD > 0 ? (totalShippingCost / totalCOD) * 100 : 0;
+        const roi = totalShippingCost > 0 ? ((profit / totalShippingCost) * 100) : 0;
 
-        // 2. Top Areas (Zip Code)
+        // 2. Average metrics
+        const avgShippingCost = filteredShipments.length > 0 ? totalShippingCost / filteredShipments.length : 0;
+        const avgCOD = filteredShipments.length > 0 ? totalCOD / filteredShipments.length : 0;
+
+        // 3. Top Areas (Zip Code)
         const zipMap = new Map<string, number>();
-        shipments.forEach(s => {
+        filteredShipments.forEach(s => {
             if (s.zipCode) {
                 zipMap.set(s.zipCode, (zipMap.get(s.zipCode) || 0) + 1);
             }
@@ -23,16 +62,20 @@ const SummaryPage: React.FC = () => {
             .slice(0, 10)
             .map(([zip, count]) => ({ zip, count }));
 
-        // 3. Top Repeat Customers (Phone Number)
-        // We group by phone, but keep name for display (take first name found)
-        const customerMap = new Map<string, { count: number; name: string }>();
-        shipments.forEach(s => {
+        // 4. Top Repeat Customers (Phone Number)
+        const customerMap = new Map<string, { count: number; name: string; totalCOD: number }>();
+        filteredShipments.forEach(s => {
             if (s.phoneNumber) {
                 const existing = customerMap.get(s.phoneNumber);
                 if (existing) {
                     existing.count++;
+                    existing.totalCOD += (s.codAmount || 0);
                 } else {
-                    customerMap.set(s.phoneNumber, { count: 1, name: s.customerName });
+                    customerMap.set(s.phoneNumber, {
+                        count: 1,
+                        name: s.customerName,
+                        totalCOD: s.codAmount || 0
+                    });
                 }
             }
         });
@@ -42,78 +85,229 @@ const SummaryPage: React.FC = () => {
             .slice(0, 10)
             .map(([phone, data]) => ({ phone, ...data }));
 
-        return { totalShippingCost, totalCOD, topAreas, topCustomers };
-    }, [shipments]);
+        // 5. Status breakdown
+        const statusMap = new Map<string, number>();
+        filteredShipments.forEach(s => {
+            statusMap.set(s.status, (statusMap.get(s.status) || 0) + 1);
+        });
+
+        // 6. Courier breakdown
+        const courierMap = new Map<string, { count: number; cost: number }>();
+        filteredShipments.forEach(s => {
+            const existing = courierMap.get(s.courier);
+            if (existing) {
+                existing.count++;
+                existing.cost += (s.shippingCost || 0);
+            } else {
+                courierMap.set(s.courier, { count: 1, cost: s.shippingCost || 0 });
+            }
+        });
+
+        const courierStats = Array.from(courierMap.entries())
+            .sort((a, b) => b[1].count - a[1].count)
+            .map(([courier, data]) => ({
+                courier,
+                count: data.count,
+                cost: data.cost,
+                avgCost: data.cost / data.count
+            }));
+
+        return {
+            totalShippingCost,
+            totalCOD,
+            profit,
+            costPercentage,
+            roi,
+            avgShippingCost,
+            avgCOD,
+            topAreas,
+            topCustomers,
+            statusMap,
+            courierStats,
+            totalOrders: filteredShipments.length
+        };
+    }, [filteredShipments]);
+
+    const exportToCSV = () => {
+        const headers = ['รหัสติดตาม', 'ชื่อลูกค้า', 'เบอร์โทร', 'COD', 'ค่าส่ง', 'รหัสไปรษณีย์', 'สถานะ', 'ขนส่ง', 'วันที่'];
+        const rows = filteredShipments.map(s => [
+            s.trackingNumber,
+            s.customerName,
+            s.phoneNumber,
+            s.codAmount,
+            s.shippingCost,
+            s.zipCode,
+            s.status,
+            s.courier,
+            s.importDate
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `summary-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    };
 
     return (
         <div className="space-y-6">
             {/* Page Header */}
-            <div className="flex items-center space-x-3 pb-2 border-b border-slate-200">
-                <TrendingUp className="w-8 h-8 text-indigo-600" />
-                <h1 className="text-2xl font-bold text-slate-800">สรุปข้อมูล (Summary)</h1>
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                <div className="flex items-center space-x-3">
+                    <TrendingUp className="w-8 h-8 text-indigo-600" />
+                    <h1 className="text-2xl font-bold text-slate-800">สรุปข้อมูล (Summary)</h1>
+                </div>
+                <button
+                    onClick={exportToCSV}
+                    className="btn-primary flex items-center gap-2"
+                >
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                </button>
             </div>
 
-            {/* Main Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Time Filter */}
+            <div className="glass p-4 rounded-xl">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <Calendar className="w-5 h-5 text-indigo-600" />
+                    <span className="font-semibold text-slate-700">ช่วงเวลา:</span>
+                    <div className="flex gap-2">
+                        {[
+                            { value: 'all', label: 'ทั้งหมด' },
+                            { value: 'today', label: 'วันนี้' },
+                            { value: 'week', label: '7 วันที่แล้ว' },
+                            { value: 'month', label: '30 วันที่แล้ว' }
+                        ].map(filter => (
+                            <button
+                                key={filter.value}
+                                onClick={() => setTimeFilter(filter.value as TimeFilter)}
+                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${timeFilter === filter.value
+                                        ? 'bg-indigo-600 text-white shadow-md'
+                                        : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                                    }`}
+                            >
+                                {filter.label}
+                            </button>
+                        ))}
+                    </div>
+                    <span className="text-sm text-slate-500 ml-auto">
+                        {stats.totalOrders.toLocaleString()} รายการ
+                    </span>
+                </div>
+            </div>
+
+            {/* Main Stats Cards - Row 1 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Total Cost Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between overflow-hidden relative group">
+                <div className="card p-6 relative group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <DollarSign className="w-24 h-24 text-rose-600" />
+                        <DollarSign className="w-16 h-16 text-rose-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">ยอดค่าส่งรวม (Cost)</p>
-                        <h3 className="text-3xl font-bold text-rose-600 tracking-tight">
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">ยอดค่าส่งรวม (Cost)</p>
+                        <h3 className="text-2xl font-bold text-rose-600 tracking-tight">
                             ฿{stats.totalShippingCost.toLocaleString()}
                         </h3>
+                        <p className="text-xs text-slate-400 mt-1">
+                            เฉลี่ย ฿{stats.avgShippingCost.toLocaleString(undefined, { maximumFractionDigits: 0 })} /ชิ้น
+                        </p>
                     </div>
                 </div>
 
                 {/* Total COD Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between overflow-hidden relative group">
+                <div className="card p-6 relative group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <DollarSign className="w-24 h-24 text-emerald-600" />
+                        <DollarSign className="w-16 h-16 text-emerald-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">ยอดเก็บเงินปลายทาง (COD)</p>
-                        <h3 className="text-3xl font-bold text-emerald-600 tracking-tight">
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">ยอดเก็บเงินปลายทาง (COD)</p>
+                        <h3 className="text-2xl font-bold text-emerald-600 tracking-tight">
                             ฿{stats.totalCOD.toLocaleString()}
                         </h3>
+                        <p className="text-xs text-slate-400 mt-1">
+                            เฉลี่ย ฿{stats.avgCOD.toLocaleString(undefined, { maximumFractionDigits: 0 })} /ชิ้น
+                        </p>
                     </div>
                 </div>
 
                 {/* Profit Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between overflow-hidden relative group">
+                <div className="card p-6 relative group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <TrendingUp className="w-24 h-24 text-indigo-600" />
+                        <TrendingUp className="w-16 h-16 text-indigo-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">กำไรโดยประมาณ (Profit)</p>
-                        <h3 className="text-3xl font-bold text-indigo-600 tracking-tight">
-                            ฿{(stats.totalCOD - stats.totalShippingCost).toLocaleString()}
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">กำไรโดยประมาณ (Profit)</p>
+                        <h3 className="text-2xl font-bold text-indigo-600 tracking-tight">
+                            ฿{stats.profit.toLocaleString()}
                         </h3>
+                        <p className="text-xs text-slate-400 mt-1">
+                            ROI: {stats.roi.toFixed(1)}%
+                        </p>
                     </div>
                 </div>
 
                 {/* Cost Percentage Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between overflow-hidden relative group">
+                <div className="card p-6 relative group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Award className="w-24 h-24 text-slate-400" />
+                        <PieChart className="w-16 h-16 text-slate-400" />
                     </div>
                     <div>
-                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">อัตราส่วนต้นทุน (%)</p>
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">อัตราส่วนต้นทุน (%)</p>
                         <div className="flex items-end gap-2">
-                            <h3 className={`text-3xl font-bold tracking-tight ${(stats.totalShippingCost / (stats.totalCOD || 1)) * 100 > 30 ? 'text-rose-500' : 'text-emerald-500'
+                            <h3 className={`text-2xl font-bold tracking-tight ${stats.costPercentage > 30 ? 'text-rose-500' :
+                                    stats.costPercentage > 20 ? 'text-amber-500' : 'text-emerald-500'
                                 }`}>
-                                {stats.totalCOD > 0 ? ((stats.totalShippingCost / stats.totalCOD) * 100).toFixed(1) : 0}%
+                                {stats.costPercentage.toFixed(1)}%
                             </h3>
                             <span className="text-xs font-medium text-slate-400 mb-1">ของยอดขาย</span>
                         </div>
+                        <div className="mt-3 w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div
+                                className={`h-full rounded-full ${stats.costPercentage > 30 ? 'bg-rose-500' :
+                                        stats.costPercentage > 20 ? 'bg-amber-500' : 'bg-emerald-500'
+                                    }`}
+                                style={{ width: `${Math.min(stats.costPercentage, 100)}%` }}
+                            ></div>
+                        </div>
                     </div>
-                    <div className="mt-4 w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div
-                            className={`h-full rounded-full ${(stats.totalShippingCost / (stats.totalCOD || 1)) * 100 > 30 ? 'bg-rose-500' : 'bg-emerald-500'}`}
-                            style={{ width: `${Math.min(((stats.totalShippingCost / (stats.totalCOD || 1)) * 100), 100)}%` }}
-                        ></div>
+                </div>
+            </div>
+
+            {/* Courier Statistics */}
+            <div className="card">
+                <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                    <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                        <Package className="w-5 h-5 text-indigo-500" />
+                        สถิติตามขนส่ง (Courier Stats)
+                    </h3>
+                </div>
+                <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {stats.courierStats.map((courier, idx) => (
+                            <div key={idx} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="font-bold text-slate-700 text-sm">{courier.courier}</span>
+                                    <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">
+                                        {courier.count} ชิ้น
+                                    </span>
+                                </div>
+                                <div className="space-y-1 text-xs text-slate-600">
+                                    <div className="flex justify-between">
+                                        <span>ต้นทุนรวม:</span>
+                                        <span className="font-semibold">฿{courier.cost.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>เฉลี่ย/ชิ้น:</span>
+                                        <span className="font-semibold">฿{courier.avgCost.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -122,14 +316,14 @@ const SummaryPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Top Areas */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div className="card">
                     <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                         <h3 className="font-bold text-slate-800 flex items-center gap-2">
                             <MapPin className="w-5 h-5 text-indigo-500" />
                             พื้นที่ส่งของสูงสุด (Top Areas)
                         </h3>
                     </div>
-                    <div className="p-0 overflow-x-auto">
+                    <div className="p-0 overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left">
                             <thead className="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                                 <tr>
@@ -150,7 +344,6 @@ const SummaryPage: React.FC = () => {
                                         <td className="px-5 py-3 text-right font-medium text-slate-600 relative">
                                             <div className="flex items-center justify-end gap-3">
                                                 <span>{area.count.toLocaleString()}</span>
-                                                {/* Simple bar visual */}
                                                 <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
                                                     <div
                                                         className="h-full bg-indigo-500 rounded-full"
@@ -172,20 +365,21 @@ const SummaryPage: React.FC = () => {
                 </div>
 
                 {/* Top Customers */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div className="card">
                     <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                         <h3 className="font-bold text-slate-800 flex items-center gap-2">
                             <Users className="w-5 h-5 text-indigo-500" />
                             ลูกค้าประจำ (Top Customers)
                         </h3>
                     </div>
-                    <div className="p-0 overflow-x-auto">
+                    <div className="p-0 overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left">
                             <thead className="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                                 <tr>
                                     <th className="px-5 py-3 font-semibold text-center w-16">#</th>
                                     <th className="px-5 py-3 font-semibold">ชื่อลูกค้า / เบอร์โทร</th>
-                                    <th className="px-5 py-3 font-semibold text-right">จำนวน (ครั้ง)</th>
+                                    <th className="px-5 py-3 font-semibold text-right">จำนวน</th>
+                                    <th className="px-5 py-3 font-semibold text-right">ยอด COD</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -206,14 +400,17 @@ const SummaryPage: React.FC = () => {
                                         </td>
                                         <td className="px-5 py-3 text-right font-medium text-slate-600">
                                             <span className="inline-block px-2 py-0.5 bg-slate-100 rounded-full text-xs font-bold text-slate-600">
-                                                {cust.count.toLocaleString()}
+                                                {cust.count} ครั้ง
                                             </span>
+                                        </td>
+                                        <td className="px-5 py-3 text-right font-semibold text-emerald-600 text-sm">
+                                            ฿{cust.totalCOD.toLocaleString()}
                                         </td>
                                     </tr>
                                 ))}
                                 {stats.topCustomers.length === 0 && (
                                     <tr>
-                                        <td colSpan={3} className="px-5 py-10 text-center text-slate-400">ไม่มีข้อมูล</td>
+                                        <td colSpan={4} className="px-5 py-10 text-center text-slate-400">ไม่มีข้อมูล</td>
                                     </tr>
                                 )}
                             </tbody>
