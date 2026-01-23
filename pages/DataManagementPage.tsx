@@ -113,7 +113,10 @@ const DataManagementPage: React.FC = () => {
 
                                     {isSyncing && (
                                         <div className="mt-4 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                            <div className="bg-indigo-600 h-full rounded-full animate-progress-indeterminate"></div>
+                                            <div
+                                                className="bg-indigo-600 h-full rounded-full transition-all duration-300 ease-out"
+                                                style={{ width: `${syncProgress[date] || 0}%` }}
+                                            ></div>
                                         </div>
                                     )}
                                 </div>

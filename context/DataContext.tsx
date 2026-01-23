@@ -222,9 +222,26 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, []);
 
-  const syncBatch = async (date: string) => {
+
+  // Queue state
+  const syncQueueRef = React.useRef<{ date: string; resolve: () => void; reject: (err: any) => void }[]>([]);
+  const isSyncingRef = React.useRef(false);
+
+  const processQueue = async () => {
+    if (isSyncingRef.current || syncQueueRef.current.length === 0) return;
+
+    isSyncingRef.current = true;
+    const { date, resolve, reject } = syncQueueRef.current.shift()!;
+
+    // Execute Sync Logic
     const batch = localBatches[date];
-    if (!batch || batch.length === 0) return;
+    if (!batch || batch.length === 0) {
+      // Should not happen if filtered correctly before, but safety check
+      isSyncingRef.current = false;
+      resolve();
+      processQueue();
+      return;
+    }
 
     setSyncingBatches(prev => [...prev, date]);
     setSyncProgress(prev => ({ ...prev, [date]: 0 }));
@@ -255,22 +272,40 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return next;
       });
 
-      // Refresh server data
-      await loadServerData();
       addLog('sync', `Synced local batch ${date} (${totalAdded} added, ${totalUpdated} updated)`, 'success');
+
+      // Refresh server data ONLY if this was the last item or we want intermediate updates
+      // Optimization: maybe only refresh at the end of queue? 
+      // For safety/consistency let's refresh every time for now, or maybe just once if we want speed.
+      // But user expects to see results.
+      await loadServerData();
+
+      resolve();
 
     } catch (err) {
       console.error(`Failed to sync batch ${date}`, err);
       addLog('sync', `Failed to sync batch ${date}`, 'error');
-      throw err;
+      reject(err);
     } finally {
+      // Cleanup UI state
       setSyncingBatches(prev => prev.filter(d => d !== date));
       setSyncProgress(prev => {
         const next = { ...prev };
         delete next[date];
         return next;
       });
+
+      // Continue Queue
+      isSyncingRef.current = false;
+      processQueue();
     }
+  };
+
+  const syncBatch = (date: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      syncQueueRef.current.push({ date, resolve, reject });
+      processQueue();
+    });
   };
 
   const deleteShipment = async (id: string) => {
