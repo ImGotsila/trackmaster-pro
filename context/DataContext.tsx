@@ -243,7 +243,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    setSyncingBatches(prev => [...prev, date]);
+    // setSyncingBatches(prev => [...prev, date]); // Handled in syncBatch
     setSyncProgress(prev => ({ ...prev, [date]: 0 }));
 
     try {
@@ -282,9 +282,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       resolve();
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Failed to sync batch ${date}`, err);
-      addLog('sync', `Failed to sync batch ${date}`, 'error');
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      addLog('sync', `Failed to sync batch ${date}: ${errorMessage}`, 'error');
       reject(err);
     } finally {
       // Cleanup UI state
@@ -302,6 +303,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const syncBatch = (date: string): Promise<void> => {
+    // 1. Mark as syncing immediately to disable UI
+    setSyncingBatches(prev => prev.includes(date) ? prev : [...prev, date]);
+
     return new Promise((resolve, reject) => {
       syncQueueRef.current.push({ date, resolve, reject });
       processQueue();
