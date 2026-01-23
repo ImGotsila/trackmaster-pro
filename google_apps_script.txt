@@ -1,0 +1,241 @@
+// --------------------------------------------------------------------------------------------------------------------
+// Google Apps Script for TrackMaster Pro (Fixed Compatibility Version + Delete Fix)
+// --------------------------------------------------------------------------------------------------------------------
+// INSTRUCTIONS:
+// 1. Open Google Sheet > Extensions > Apps Script.
+// 2. Delete ALL existing code.
+// 3. Paste this code completely.
+// 4. Click 'Deploy' > 'New deployment'.
+// 5. Select type: 'Web app', Execute as: 'Me', Who has access: 'Anyone'.
+// 6. Click 'Deploy'.
+// --------------------------------------------------------------------------------------------------------------------
+
+function doGet(e) {
+  // Standard API Handling
+  if (e && e.parameter && e.parameter.action) {
+    return handleRequest(e);
+  }
+  
+  // Return the HTML file (User requested gas_html to show)
+  try {
+    return HtmlService.createHtmlOutputFromFile('gas_html')
+        .setTitle('TrackMaster Pro Search')
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+        .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  } catch (e) {
+    // Fallback if gas_html doesn't exist
+    return ContentService.createTextOutput("TrackMaster API V2 Ready. (gas_html not found)");
+  }
+}
+
+function doPost(e) {
+  if (!e) return ContentService.createTextOutput("Error: No parameters");
+  return handleRequest(e);
+}
+
+function handleRequest(e) {
+  var lock = LockService.getScriptLock();
+  
+  // Wait up to 10 seconds
+  if (lock.tryLock(10000)) {
+    try {
+      var action = e.parameter.action;
+      
+      if (action === 'get') {
+        var data = getData();
+        return jsonResponse({ status: 'success', data: data });
+      } 
+      else if (action === 'save') {
+        var payload = JSON.parse(e.postData.contents);
+        return saveShipments(payload);
+      } 
+      else if (action === 'delete') {
+        var payload = JSON.parse(e.postData.contents);
+        // Expecting { trackingNumber: "..." }
+        return deleteShipment(payload.trackingNumber);
+      }
+      else {
+        return jsonResponse({ status: 'error', message: 'Invalid action' });
+      }
+    } catch (err) {
+      return jsonResponse({ status: 'error', message: err.toString() });
+    } finally {
+      lock.releaseLock();
+    }
+  } else {
+    return jsonResponse({ status: 'error', message: 'Server busy, please try again.' });
+  }
+}
+
+// --- CORE FUNCTIONS ---
+
+function getData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = getTargetSheet(ss);
+  
+  var data = sheet.getDataRange().getDisplayValues();
+  
+  // Remove Header Row if detected
+  if (data.length > 0) {
+    var firstRowCol1 = data[0][1] ? data[0][1].toString() : '';
+    if (!/^[A-Z0-9]{8,}$/i.test(firstRowCol1)) {
+      data.shift(); 
+    }
+  }
+
+  // Filter and Map Data
+  var result = [];
+  for (var i = 0; i < data.length; i++) {
+    var row = data[i];
+    if (row.length < 2) continue;
+
+    // 1. Clean Phone (Col 7 / H)
+    var phone = row[7] ? row[7].toString().replace(/[^0-9]/g, '') : '';
+    if (phone.length === 9) phone = '0' + phone;
+
+    // 2. Clean Name (Col 6 / G)
+    var rawName = row[6] || 'ไม่ระบุชื่อ';
+    var cleanName = rawName;
+    var seqMatch = rawName.match(/^\d+[\.\s]+(.*)/);
+    if (seqMatch) {
+        cleanName = seqMatch[1];
+    }
+    cleanName = cleanName.replace(/^(fb|f\.b\.|f\.b|facebook)[\.\s]*/i, '').trim();
+
+    // 3. Import Date (Col 11 / L) - Index 11
+    // Use GMT+7 for Thailand Time
+    var dateVal = row[11] || Utilities.formatDate(new Date(), "GMT+7", "yyyy-MM-dd");
+
+    // Tracking Check
+    var tracking = row[1] || '';
+    if (tracking.length > 5) {
+      result.push({
+        id: 'row-' + i,
+        sequenceNumber: row[0] || '', // Col A
+        trackingNumber: tracking,     // Col B
+        customerName: cleanName,
+        phoneNumber: phone,
+        codAmount: parseFloat(row[5] ? row[5].replace(/,/g, '') : 0) || 0, // Col F
+        shippingCost: parseFloat(row[9] ? row[9].replace(/,/g, '') : 0) || 0, // Col J
+        zipCode: row[8] || '', // Col I
+        status: row[10] || 'รับฝาก', // Col K
+        courier: 'Thailand Post',
+        importDate: dateVal, // Col L
+        timestamp: new Date().getTime() - i
+      });
+    }
+  }
+  return result;
+}
+
+function saveShipments(newShipments) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = getTargetSheet(ss);
+
+  var lastRow = sheet.getLastRow();
+  var trackingColumnValues = [];
+  
+  if (lastRow > 0) {
+    // Flatten 2D array to 1D
+    var rangeValues = sheet.getRange(1, 2, lastRow, 1).getValues();
+    for (var i = 0; i < rangeValues.length; i++) {
+      trackingColumnValues.push(String(rangeValues[i][0]));
+    }
+  }
+
+  var addedCount = 0;
+  var updatedCount = 0;
+  var todayDate = Utilities.formatDate(new Date(), "GMT+7", "yyyy-MM-dd");
+
+  for (var j = 0; j < newShipments.length; j++) {
+    var item = newShipments[j];
+    var rowIndex = trackingColumnValues.indexOf(item.trackingNumber.toString());
+    var rowNum = rowIndex + 1;
+
+    var track = item.trackingNumber;
+    var ref   = item.sequenceNumber || ''; 
+    var cod   = item.codAmount;
+    var name  = item.customerName;
+    var phone = item.phoneNumber;
+    var zip   = item.zipCode;
+    var cost  = item.shippingCost;
+    var status = item.status || 'รับฝาก';
+    var date  = item.importDate || todayDate;
+
+    if (rowIndex !== -1) {
+      // UPDATE
+      // F(6), G(7), H(8), I(9), J(10), K(11), L(12)
+      sheet.getRange(rowNum, 6, 1, 7).setValues([[cod, name, phone, zip, cost, status, date]]);
+      updatedCount++;
+    } else {
+      // APPEND
+      var rowData = [
+        ref,    // A
+        track,  // B
+        '',     // C
+        '',     // D
+        '',     // E
+        cod,    // F
+        name,   // G
+        phone,  // H
+        zip,    // I
+        cost,   // J
+        status, // K
+        date    // L
+      ];
+      sheet.appendRow(rowData);
+      addedCount++;
+    }
+  }
+
+  return jsonResponse({
+    status: 'success',
+    added: addedCount,
+    updated: updatedCount
+  });
+}
+
+function deleteShipment(trackingNumber) {
+    if (!trackingNumber) return jsonResponse({ status: 'error', message: 'No tracking number provided' });
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = getTargetSheet(ss);
+    
+    var lastRow = sheet.getLastRow();
+    if (lastRow === 0) return jsonResponse({ status: 'error', message: 'Sheet is empty' });
+
+    // Get all tracking numbers (Col B / Column 2)
+    var range = sheet.getRange(1, 2, lastRow, 1);
+    var values = range.getValues();
+    
+    var deletedCount = 0;
+    
+    // Iterate backwards to safely delete rows
+    for (var i = values.length - 1; i >= 0; i--) {
+        if (String(values[i][0]) === String(trackingNumber)) {
+            sheet.deleteRow(i + 1); // deleteRow takes 1-based index
+            deletedCount++;
+        }
+    }
+    
+    if (deletedCount > 0) {
+        return jsonResponse({ status: 'success', message: 'Deleted ' + deletedCount + ' rows' });
+    } else {
+        return jsonResponse({ status: 'error', message: 'Tracking number not found' });
+    }
+}
+
+function getTargetSheet(ss) {
+  var sheets = ss.getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].getSheetId() == 1615993804) {
+      return sheets[i];
+    }
+  }
+  return sheets[0];
+}
+
+function jsonResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}

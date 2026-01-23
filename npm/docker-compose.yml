@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      # Synology uses 80/443, so we map to 8080/4443 instead.
+      # You MUST forward Router Port 80 -> NAS Port 8080
+      # You MUST forward Router Port 443 -> NAS Port 4443
+      - '8080:80' # Public HTTP Port
+      - '4443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+    environment:
+      # You can change this TZ to your location, e.g. "Asia/Bangkok"
+      TZ: "Asia/Bangkok"
+      DISABLE_IPV6: 'true'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt

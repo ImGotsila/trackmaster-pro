@@ -1,0 +1,5 @@
+{
+  "name": "TrackMaster Pro",
+  "description": "A comprehensive parcel tracking and management dashboard allowing users to import shipment data, track statuses, and analyze delivery metrics with a clean, Thai-localized interface.",
+  "requestFramePermissions": []
+}
