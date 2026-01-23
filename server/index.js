@@ -42,15 +42,22 @@ app.post('/api/history', (req, res) => {
 const staticPath = path.join(__dirname, '../dist');
 app.use(express.static(staticPath));
 
-// Fallback for SPA routing
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', message: 'TrackMaster API is running' });
+});
+
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ error: 'API endpoint not found' });
+});
+
+// Fallback for SPA routing (if serving frontend locally)
 app.get('*', (req, res) => {
-    // Check if api request
-    if (req.path.startsWith('/api')) {
-        return res.status(404).json({ error: 'Not found' });
-    }
     res.sendFile(path.join(staticPath, 'index.html'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`API endpoints available at http://localhost:${PORT}/api`);
 });
