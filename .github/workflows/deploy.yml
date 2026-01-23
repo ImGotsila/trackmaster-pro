@@ -39,6 +39,8 @@ jobs:
         env:
           # Set the base path for GitHub Pages (repository name)
           VITE_BASE: /trackmaster-pro/
+          # Google Sheets Script URL
+          VITE_GOOGLE_SHEETS_SCRIPT_URL: https://script.google.com/macros/s/AKfycbyxxnxVyxClMw_TpJ3n720CjHXeBNiL2gWyW2hLkXSq15pY-uWztMnF7kyor4HxUOKN/exec
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
