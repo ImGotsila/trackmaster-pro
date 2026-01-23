@@ -3,24 +3,85 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-800 font-sans antialiased;
+    @apply bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 text-slate-800 antialiased;
+    font-weight: 500;
+  }
+
+  /* Enhanced heading weights for Thai */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+  }
+
+  /* Button and important text */
+  button,
+  .font-semibold {
+    font-weight: 600;
+  }
+
+  .font-bold {
+    font-weight: 700;
+  }
+}
+
+@layer components {
+
+  /* Enhanced card styling */
+  .card {
+    @apply bg-white/80 backdrop-blur-sm rounded-lg shadow-md hover:shadow-xl transition-all duration-300;
+  }
+
+  /* Better button styling */
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200;
   }
 }
 
 @layer utilities {
+
+  /* Custom scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
+
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    @apply bg-slate-100 rounded-full;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
+    @apply bg-gradient-to-b from-blue-400 to-blue-600 rounded-full;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    @apply from-blue-500 to-blue-700;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-lg;
+  }
+
+  /* Text shadow for better readability */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Smooth transitions */
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
