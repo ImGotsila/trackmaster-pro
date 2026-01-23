@@ -9,6 +9,7 @@ export interface Shipment {
   status: 'Pending' | 'Shipped' | 'Delivered' | 'Returned' | 'รับฝาก';
   courier: string;
   importDate: string; // ISO String YYYY-MM-DD
+  importTime?: string; // HH:mm format
   timestamp: number;
   sequenceNumber?: string; // For the "718." prefix
 }

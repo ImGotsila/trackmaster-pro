@@ -70,7 +70,7 @@ const ImportPage: React.FC = () => {
 
             // Extract Date from Filename
             // Pattern: DD-MM-YYYY (e.g. 18-01-2569)
-            const dateMatch = file.name.match(/(\d{2})[-/](\d{2})[-/](\d{4})/);
+            const dateMatch = file.name.match(/(\d{2})[-/.](\d{2})[-/.](\d{4})/);
             if (dateMatch) {
                 let day = parseInt(dateMatch[1]);
                 let month = parseInt(dateMatch[2]);
@@ -87,6 +87,19 @@ const ImportPage: React.FC = () => {
                 }
             }
 
+            // Extract Time from Filename
+            // Pattern: HH-mm, HH.mm, HHmm (looking for time-like patterns often after date or separate)
+            // We search for patterns like `_14-30` or ` 14.30` or `1430` (if length is 4 and plausible)
+            let fileTime = '00:00';
+            const timeMatch = file.name.match(/(?:_|\s)(\d{1,2})[-.:](\d{2})(?:_|\s|\.)/);
+            if (timeMatch) {
+                const h = parseInt(timeMatch[1]);
+                const m = parseInt(timeMatch[2]);
+                if (h >= 0 && h < 24 && m >= 0 && m < 60) {
+                    fileTime = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                }
+            }
+
             // Process File
             try {
                 let text = '';
@@ -100,7 +113,7 @@ const ImportPage: React.FC = () => {
                     text = await file.text();
                 }
 
-                const items = processRawText(text, fileDate, courier);
+                const items = processRawText(text, fileDate, courier, fileTime);
                 newFileShipments.push(...items);
                 processedCount++;
 
@@ -119,7 +132,7 @@ const ImportPage: React.FC = () => {
                 let allItems: Shipment[] = [];
 
                 if (inputText.trim()) {
-                    allItems.push(...processRawText(inputText, date, courier));
+                    allItems.push(...processRawText(inputText, date, courier, '00:00'));
                 }
 
                 allItems.push(...fileShipments); // Existing
@@ -267,7 +280,7 @@ const ImportPage: React.FC = () => {
         return shipment;
     };
 
-    const processRawText = (text: string, importDate: string, courierName: Courier): Shipment[] => {
+    const processRawText = (text: string, importDate: string, courierName: Courier, importTime: string = '00:00'): Shipment[] => {
         const lines = text.trim().split('\n');
         const results: Shipment[] = [];
         const baseId = Date.now();
@@ -288,6 +301,7 @@ const ImportPage: React.FC = () => {
                     id: `import-${baseId}-${randomOffset}-${index}`,
                     courier: courierName,
                     importDate: shipment.importDate || importDate,
+                    importTime: importTime,
                     timestamp: Date.now() - index,
                     codAmount: shipment.codAmount || 0,
                     shippingCost: shipment.shippingCost || 0,
@@ -312,7 +326,7 @@ const ImportPage: React.FC = () => {
                 let allNewItems: Shipment[] = [];
 
                 if (inputText.trim()) {
-                    const manualItems = processRawText(inputText, date, courier);
+                    const manualItems = processRawText(inputText, date, courier, '00:00');
                     allNewItems = [...allNewItems, ...manualItems];
                 }
 

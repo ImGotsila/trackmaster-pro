@@ -112,6 +112,32 @@ const SummaryPage: React.FC = () => {
                 avgCost: data.cost / data.count
             }));
 
+        // 7. Batch breakdown (Date + Time)
+        const batchMap = new Map<string, { count: number; cost: number; cod: number; date: string; time: string }>();
+        filteredShipments.forEach(s => {
+            const timeKey = `${s.importDate} ${s.importTime || '00:00'}`;
+            const existing = batchMap.get(timeKey);
+            if (existing) {
+                existing.count++;
+                existing.cost += (s.shippingCost || 0);
+                existing.cod += (s.codAmount || 0);
+            } else {
+                batchMap.set(timeKey, {
+                    count: 1,
+                    cost: s.shippingCost || 0,
+                    cod: s.codAmount || 0,
+                    date: s.importDate,
+                    time: s.importTime || '00:00'
+                });
+            }
+        });
+
+        const batchStats = Array.from(batchMap.values())
+            .sort((a, b) => {
+                if (a.date !== b.date) return b.date.localeCompare(a.date);
+                return b.time.localeCompare(a.time);
+            });
+
         return {
             totalShippingCost,
             totalCOD,
@@ -124,12 +150,13 @@ const SummaryPage: React.FC = () => {
             topCustomers,
             statusMap,
             courierStats,
+            batchStats,
             totalOrders: filteredShipments.length
         };
     }, [filteredShipments]);
 
     const exportToCSV = () => {
-        const headers = ['รหัสติดตาม', 'ชื่อลูกค้า', 'เบอร์โทร', 'COD', 'ค่าส่ง', 'รหัสไปรษณีย์', 'สถานะ', 'ขนส่ง', 'วันที่'];
+        const headers = ['รหัสติดตาม', 'ชื่อลูกค้า', 'เบอร์โทร', 'COD', 'ค่าส่ง', 'รหัสไปรษณีย์', 'สถานะ', 'ขนส่ง', 'วันที่', 'เวลา'];
         const rows = filteredShipments.map(s => [
             s.trackingNumber,
             s.customerName,
@@ -139,7 +166,8 @@ const SummaryPage: React.FC = () => {
             s.zipCode,
             s.status,
             s.courier,
-            s.importDate
+            s.importDate,
+            s.importTime || '00:00'
         ]);
 
         const csvContent = [
@@ -187,8 +215,8 @@ const SummaryPage: React.FC = () => {
                                 key={filter.value}
                                 onClick={() => setTimeFilter(filter.value as TimeFilter)}
                                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${timeFilter === filter.value
-                                        ? 'bg-indigo-600 text-white shadow-md'
-                                        : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                                    ? 'bg-indigo-600 text-white shadow-md'
+                                    : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
                                     }`}
                             >
                                 {filter.label}
@@ -260,7 +288,7 @@ const SummaryPage: React.FC = () => {
                         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">อัตราส่วนต้นทุน (%)</p>
                         <div className="flex items-end gap-2">
                             <h3 className={`text-2xl font-bold tracking-tight ${stats.costPercentage > 30 ? 'text-rose-500' :
-                                    stats.costPercentage > 20 ? 'text-amber-500' : 'text-emerald-500'
+                                stats.costPercentage > 20 ? 'text-amber-500' : 'text-emerald-500'
                                 }`}>
                                 {stats.costPercentage.toFixed(1)}%
                             </h3>
@@ -269,7 +297,7 @@ const SummaryPage: React.FC = () => {
                         <div className="mt-3 w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                             <div
                                 className={`h-full rounded-full ${stats.costPercentage > 30 ? 'bg-rose-500' :
-                                        stats.costPercentage > 20 ? 'bg-amber-500' : 'bg-emerald-500'
+                                    stats.costPercentage > 20 ? 'bg-amber-500' : 'bg-emerald-500'
                                     }`}
                                 style={{ width: `${Math.min(stats.costPercentage, 100)}%` }}
                             ></div>
@@ -309,6 +337,69 @@ const SummaryPage: React.FC = () => {
                             </div>
                         ))}
                     </div>
+                </div>
+            </div>
+
+            {/* Import Batches (Import Time) */}
+            <div className="card">
+                <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                    <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-indigo-500" />
+                        รอบการนำเข้า (Import Batches)
+                    </h3>
+                </div>
+                <div className="p-0 overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-left">
+                        <thead className="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                            <tr>
+                                <th className="px-5 py-3 font-semibold">วัน-เวลา</th>
+                                <th className="px-5 py-3 font-semibold text-right">จำนวน</th>
+                                <th className="px-5 py-3 font-semibold text-right">ต้นทุน (Cost)</th>
+                                <th className="px-5 py-3 font-semibold text-right">ยอดเก็บเงิน (COD)</th>
+                                <th className="px-5 py-3 font-semibold text-right">กำไร (Profit)</th>
+                                <th className="px-5 py-3 font-semibold text-right">ROI</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {stats.batchStats.map((batch, idx) => {
+                                const profit = batch.cod - batch.cost;
+                                const roi = batch.cost > 0 ? (profit / batch.cost) * 100 : 0;
+                                return (
+                                    <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                                        <td className="px-5 py-3">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-slate-700 text-sm">{batch.date}</span>
+                                                <span className="text-xs text-slate-500 font-mono">{batch.time}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-3 text-right font-medium text-slate-600">
+                                            {batch.count}
+                                        </td>
+                                        <td className="px-5 py-3 text-right font-medium text-rose-600">
+                                            ฿{batch.cost.toLocaleString()}
+                                        </td>
+                                        <td className="px-5 py-3 text-right font-medium text-emerald-600">
+                                            ฿{batch.cod.toLocaleString()}
+                                        </td>
+                                        <td className="px-5 py-3 text-right font-bold text-indigo-600">
+                                            ฿{profit.toLocaleString()}
+                                        </td>
+                                        <td className="px-5 py-3 text-right font-medium">
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${roi > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                                                }`}>
+                                                {roi.toFixed(1)}%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                            {stats.batchStats.length === 0 && (
+                                <tr>
+                                    <td colSpan={6} className="px-5 py-10 text-center text-slate-400">ไม่มีข้อมูล</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
