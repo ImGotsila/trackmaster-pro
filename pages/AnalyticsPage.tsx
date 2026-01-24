@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap } from 'r
 import 'leaflet/dist/leaflet.css';
 import { thaiProvinces } from '../data/thaiProvinces';
 import { getAddressByZipCode } from '../services/AddressService';
-import { Map as MapIcon, Info, TrendingUp, DollarSign, Search } from 'lucide-react';
+import { Map as MapIcon, Info, TrendingUp, DollarSign, Search, RefreshCw, MapPin } from 'lucide-react';
 
 // Helper component to control map zoom/pan
 const MapController: React.FC<{ selectedZip: string | null, data: any[] }> = ({ selectedZip, data }) => {
@@ -26,9 +26,13 @@ const AnalyticsPage: React.FC = () => {
     const { shipments } = useData();
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
     const [provinceData, setProvinceData] = useState<any[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
     const [progress, setProgress] = useState({ current: 0, total: 0, status: '' });
+
+    // Track chosen coordinate for auto-zoom
+    const [focusPoint, setFocusPoint] = useState<{ lat: number, lng: number } | null>(null);
 
     // Compute analytics client-side (ASYNC with chunks for better performance)
     const computeAnalytics = async () => {
@@ -103,10 +107,9 @@ const AnalyticsPage: React.FC = () => {
         // Use zipCode string to generate a deterministic "seed"
         const seed = zipCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-        // Spread radius: Drastically increased to ~80-120km (0.8 - 1.2 degrees)
+        // Drastic Spread: ~80-150km (0.8 - 1.5 degrees)
         const angle = (seed * 137.5) % 360;
-        // Minimum radius of 0.2 to clearly separate from center
-        const radius = 0.2 + ((seed * 47) % 100) / 100 * 0.8;
+        const radius = 0.25 + ((seed * 53) % 100) / 100 * 1.2;
 
         const offsetLat = Math.cos(angle * (Math.PI / 180)) * radius;
         const offsetLng = Math.sin(angle * (Math.PI / 180)) * radius;
@@ -270,26 +273,27 @@ const AnalyticsPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex gap-4 items-center">
-                    {provinceData.length === 0 ? (
-                        <button
-                            onClick={fetchAnalytics}
-                            disabled={isLoading}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isLoading ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 shadow-md hover:shadow-lg'
-                                }`}
-                        >
-                            <Info className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-                            {isLoading ? 'กำลังโหลด...' : 'โหลดข้อมูล'}
-                        </button>
-                    ) : (
-                        <button
-                            onClick={fetchAnalytics}
-                            disabled={isLoading}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all ${isLoading ? 'opacity-50 cursor-not-allowed' : 'shadow-sm'}`}
-                        >
-                            <TrendingUp className={`w-4 h-4 ${isLoading ? 'animate-spin text-indigo-500' : 'text-slate-400'}`} />
-                            {isLoading ? 'กำลังรีเฟรช...' : 'รีเฟรช'}
-                        </button>
-                    )}
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="ค้นหารหัส หรือ อำเภอ..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64 shadow-sm"
+                        />
+                    </div>
+                    <button
+                        onClick={fetchAnalytics}
+                        disabled={isLoading}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all border-2 ${isLoading
+                                ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+                                : 'bg-white border-emerald-500 text-emerald-600 hover:bg-emerald-50 shadow-sm'
+                            }`}
+                    >
+                        <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                        {isLoading ? 'กำลังรีเฟรช...' : 'รีเฟรช'}
+                    </button>
                     <button
                         onClick={handleSave}
                         disabled={isSyncing || shipments.length === 0}
@@ -297,7 +301,7 @@ const AnalyticsPage: React.FC = () => {
                             }`}
                     >
                         <TrendingUp className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                        {isSyncing ? 'กำลังประมวลผล...' : 'คำนวณ & บันทึก'}
+                        {isSyncing ? 'ประมวลผลใหม่...' : 'คำนวณ & บันทึก'}
                     </button>
                     <div className="flex gap-4 text-sm font-semibold text-slate-600 border-l pl-4 border-slate-300">
                         <div className="flex items-center gap-2">
@@ -365,31 +369,62 @@ const AnalyticsPage: React.FC = () => {
                             </div>
                         )}
 
-                        {provinceData.map((data, idx) => (
-                            <CircleMarker
-                                key={idx}
-                                center={[data.lat, data.lng]}
-                                pathOptions={{
-                                    color: '#4338ca', // indigo-700
-                                    fillColor: '#6366f1', // indigo-500
-                                    fillOpacity: 0.5,
-                                    weight: 2
-                                }}
-                                radius={4 + (data.count / maxCount) * 25} // Smaller markers to avoid overlap: 4px to 29px
-                                eventHandlers={{
-                                    click: () => setSelectedProvince(data.zipCode || data.province)
-                                }}
-                            >
-                                <Tooltip direction="top" offset={[0, -10]} opacity={1}>
-                                    <div className="text-center">
-                                        <b className="text-base text-indigo-700">{data.zipCode || data.province}</b><br />
-                                        <span className="text-xs font-semibold text-slate-700">อ.{data.district}</span><br />
-                                        <span className="text-xs text-slate-500">{data.province}</span><br />
-                                        <span className="text-slate-600 font-semibold">{data.count} Orders</span>
-                                    </div>
-                                </Tooltip>
-                            </CircleMarker>
-                        ))}
+                        {provinceData
+                            .filter(p => !searchTerm || p.zipCode.includes(searchTerm) || p.district.includes(searchTerm) || p.province.includes(searchTerm))
+                            .map((data, idx) => (
+                                <CircleMarker
+                                    key={idx}
+                                    center={[data.lat, data.lng]}
+                                    pathOptions={{
+                                        color: selectedProvince === data.zipCode ? '#ef4444' : '#4338ca',
+                                        fillColor: selectedProvince === data.zipCode ? '#f87171' : '#6366f1',
+                                        fillOpacity: 0.5,
+                                        weight: selectedProvince === data.zipCode ? 3 : 2
+                                    }}
+                                    radius={4 + (data.count / maxCount) * 20}
+                                    eventHandlers={{
+                                        click: () => {
+                                            setSelectedProvince(data.zipCode);
+                                            setFocusPoint({ lat: data.lat, lng: data.lng });
+                                        }
+                                    }}
+                                >
+                                    <Tooltip direction="top" offset={[0, -10]} opacity={1}>
+                                        <div className="text-center">
+                                            <b className="text-base text-indigo-700">{data.zipCode}</b><br />
+                                            <span className="text-xs font-bold text-slate-800">อ.{data.district}</span><br />
+                                            <span className="text-xs text-slate-500">{data.province}</span><br />
+                                            <span className="text-slate-600 font-semibold">{data.count} Orders</span>
+                                        </div>
+                                    </Tooltip>
+                                    <Popup>
+                                        <div className="p-2 min-w-[150px]">
+                                            <div className="flex items-center gap-2 mb-2 pb-2 border-b">
+                                                <MapPin className="w-4 h-4 text-indigo-500" />
+                                                <span className="font-bold text-slate-800">{data.zipCode}</span>
+                                            </div>
+                                            <div className="space-y-1 text-sm">
+                                                <p className="flex justify-between">
+                                                    <span className="text-slate-500">พื้นที่:</span>
+                                                    <span className="font-medium text-slate-700">อ.{data.district}</span>
+                                                </p>
+                                                <p className="flex justify-between">
+                                                    <span className="text-slate-500">จังหวัด:</span>
+                                                    <span className="font-medium text-slate-700">{data.province}</span>
+                                                </p>
+                                                <p className="flex justify-between pt-1 border-t mt-1">
+                                                    <span className="text-slate-500">จำนวน:</span>
+                                                    <span className="font-bold text-indigo-600">{data.count} รายการ</span>
+                                                </p>
+                                                <p className="flex justify-between">
+                                                    <span className="text-slate-500">ยอด COD:</span>
+                                                    <span className="font-bold text-emerald-600">฿{data.totalCOD.toLocaleString()}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </Popup>
+                                </CircleMarker>
+                            ))}
                     </MapContainer>
 
                     {/* Floating Summary Card */}
@@ -411,37 +446,42 @@ const AnalyticsPage: React.FC = () => {
                         อันดับรหัสไปรษณีย์ (Top Zip Codes)
                     </div>
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
-                        {provinceData.map((data, idx) => (
-                            <div
-                                key={idx}
-                                onClick={() => setSelectedProvince(data.zipCode || data.province)}
-                                className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${selectedProvince === (data.zipCode || data.province)
-                                    ? 'bg-indigo-50 border-indigo-200 shadow-sm'
-                                    : 'bg-white border-slate-100 hover:bg-slate-50'
-                                    }`}
-                            >
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${idx < 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'
-                                            }`}>
-                                            {idx + 1}
-                                        </span>
-                                        <div>
-                                            <span className="font-bold text-slate-700 text-sm block">{data.zipCode}</span>
-                                            <span className="text-xs text-indigo-600 font-medium">อ.{data.district}</span>
-                                            <span className="text-xs text-slate-400 ml-1">{data.province}</span>
+                        {provinceData
+                            .filter(p => !searchTerm || p.zipCode.includes(searchTerm) || p.district.includes(searchTerm))
+                            .map((data, idx) => (
+                                <div
+                                    key={idx}
+                                    onClick={() => {
+                                        setSelectedProvince(data.zipCode);
+                                        setFocusPoint({ lat: data.lat, lng: data.lng });
+                                    }}
+                                    className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${selectedProvince === data.zipCode
+                                        ? 'bg-indigo-50 border-indigo-200 shadow-sm ring-1 ring-indigo-200'
+                                        : 'bg-white border-slate-100 hover:bg-slate-50'
+                                        }`}
+                                >
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${idx < 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'
+                                                }`}>
+                                                {idx + 1}
+                                            </span>
+                                            <div>
+                                                <span className="font-bold text-slate-700 text-sm block">{data.zipCode}</span>
+                                                <span className="text-xs text-indigo-600 font-medium">อ.{data.district}</span>
+                                                <span className="text-xs text-slate-400 ml-1">{data.province}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-emerald-600 font-semibold mt-1 ml-7">
+                                            ฿{data.totalCOD.toLocaleString()}
                                         </div>
                                     </div>
-                                    <div className="text-xs text-emerald-600 font-semibold mt-1 ml-7">
-                                        ฿{data.totalCOD.toLocaleString()}
+                                    <div className="text-right">
+                                        <span className="text-lg font-bold text-indigo-600 block">{data.count}</span>
+                                        <span className="text-[10px] text-slate-400 uppercase font-bold">Orders</span>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <span className="text-lg font-bold text-indigo-600 block">{data.count}</span>
-                                    <span className="text-[10px] text-slate-400 uppercase font-bold">Orders</span>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
 
