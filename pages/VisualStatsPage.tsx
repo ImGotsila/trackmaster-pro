@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import * as React from 'react';
+import { useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { useSettings } from '../context/SettingsContext';
 import {
@@ -214,7 +215,7 @@ const VisualStatsPage: React.FC = () => {
                                     dataKey="value"
                                 >
                                     {courierData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={8} />
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
                                 <RechartsTooltip />
@@ -241,7 +242,7 @@ const VisualStatsPage: React.FC = () => {
                                 <YAxis dataKey="zip" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#475569' }} width={60} />
                                 <RechartsTooltip
                                     cursor={{ fill: '#f8fafc' }}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', shadow: 'lg' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                 />
                                 <Bar dataKey="count" name="จำนวนออร์เดอร์" fill="#6366f1" radius={[0, 4, 4, 0]} barSize={24} />
                             </BarChart>

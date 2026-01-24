@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
