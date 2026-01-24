@@ -416,7 +416,7 @@ const AnalyticsPage: React.FC = () => {
                         scrollWheelZoom={true}
                     >
                         {/* Auto-zoom helper component */}
-                        <MapController selectedZip={selectedProvince} data={provinceData} />
+                        <MapController selectedZip={selectedProvince} data={provinceData} onZoomChange={setCurrentZoom} />
 
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
