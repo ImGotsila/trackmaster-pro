@@ -9,10 +9,11 @@ Write-Host "NOTE: You will be asked for your SSH password multiple times."
 Write-Host ""
 
 # 1. Create Archive
-Write-Host "[1/4] Creating backup archive (project.tar.gz)..."
+Write-Host "[1/4] Creating backup archive (deploy_package.tar.gz)..."
 try {
-    tar --exclude node_modules --exclude .git --exclude dist --exclude project.tar.gz -czf project.tar.gz .
+    tar --exclude node_modules --exclude server/node_modules --exclude .git --exclude dist --exclude deploy_package.tar.gz --exclude project.tar.gz -czf deploy_package.tar.gz .
     if ($LASTEXITCODE -ne 0) { throw "Tar failed" }
+    Write-Host "Archive created successfully."
 }
 catch {
     Write-Error "Failed to create archive. Ensure 'tar' is installed."
@@ -24,7 +25,7 @@ Write-Host "[2/4] Ensuring remote directory exists..."
 Write-Host "input password for Step 2 (mkdir & chown):"
 # Using sudo to create directory and then chown it to the connecting user
 # We also create the 'data' subdirectory required by the docker-compose volume
-ssh ${User}@${HostIP} "echo '${SudoPass}' | sudo -S mkdir -p ${RemotePath}/data && echo '${SudoPass}' | sudo -S chown -R ${User}:users ${RemotePath}"
+ssh ${User}@${HostIP} "echo '${SudoPass}' | sudo -S mkdir -p ${RemotePath}/data && echo '${SudoPass}' | sudo -S rm -f ${RemotePath}/project.tar.gz && echo '${SudoPass}' | sudo -S chmod -R 777 ${RemotePath}"
 if ($LASTEXITCODE -ne 0) { 
     Write-Error "Failed to create directory or set permissions. Check password."
     exit 1 
@@ -38,8 +39,14 @@ Write-Host "input password for Step 3 (upload):"
 # Using cmd to handle the ENTIRE pipe ensures binary data isn't corrupted by PowerShell's string handling.
 # We construct the command string carefully to handle quotes.
 Write-Host "Running binary upload via CMD to bypass PowerShell encoding..."
-$UploadCmd = "type project.tar.gz | ssh ${User}@${HostIP} ""cat > ${RemotePath}/project.tar.gz"""
+$UploadCmd = "type deploy_package.tar.gz | ssh ${User}@${HostIP} ""cat > ${RemotePath}/project.tar.gz"""
+Write-Host "Running Pipe upload..."
 cmd /c $UploadCmd
+if ($LASTEXITCODE -ne 0) { 
+    Write-Error "Failed to upload file. Check password."
+    exit 1 
+}
+Write-Host "File uploaded successfully."
 if ($LASTEXITCODE -ne 0) { 
     Write-Error "Failed to upload file. Check password."
     exit 1 
@@ -59,7 +66,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Cleanup
-Remove-Item project.tar.gz -ErrorAction SilentlyContinue
+Remove-Item deploy_package.tar.gz -ErrorAction SilentlyContinue
 
 Write-Host ""
 Write-Host "Deployment script finished success!"

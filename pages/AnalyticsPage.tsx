@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -9,46 +9,60 @@ import { Map as MapIcon, Info, TrendingUp, DollarSign } from 'lucide-react';
 const AnalyticsPage: React.FC = () => {
     const { shipments } = useData();
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+    const [provinceData, setProvinceData] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
 
-    // Aggregate data by Province
-    const provinceData = useMemo(() => {
-        const stats = new Map<string, { count: number; totalCOD: number; shippingCost: number }>();
+    // Fetch Analytics from Server
+    const fetchAnalytics = async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/analytics/geo');
+            if (res.ok) {
+                const data = await res.json();
+                // Merge with coordinates
+                const merged = thaiProvinces.map(p => {
+                    const stat = data.find((d: any) => d.province === p.province) || { count: 0, totalCOD: 0, totalCost: 0 };
+                    return { ...p, ...stat };
+                }).filter(p => p.count > 0).sort((a, b) => b.count - a.count);
 
-        shipments.forEach(s => {
-            if (!s.zipCode) return;
-
-            // Resolve Province from ZipCode
-            const addresses = getAddressByZipCode(s.zipCode);
-            if (addresses.length === 0) return;
-
-            // Use the first resolved province (usually primary)
-            // Normalize vague names if necessary, but library usually consistent
-            const provinceName = addresses[0].province;
-
-            const existing = stats.get(provinceName);
-            if (existing) {
-                existing.count++;
-                existing.totalCOD += (s.codAmount || 0);
-                existing.shippingCost += (s.shippingCost || 0);
-            } else {
-                stats.set(provinceName, {
-                    count: 1,
-                    totalCOD: (s.codAmount || 0),
-                    shippingCost: (s.shippingCost || 0)
-                });
+                setProvinceData(merged);
             }
-        });
+        } catch (err) {
+            console.error("Failed to fetch analytics:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-        // Map stats to coordinates
-        return thaiProvinces.map(p => {
-            const stat = stats.get(p.province) || { count: 0, totalCOD: 0, shippingCost: 0 };
-            return {
-                ...p,
-                ...stat
-            };
-        }).filter(p => p.count > 0).sort((a, b) => b.count - a.count);
+    // Sync current frontend data to server
+    const handleSync = async () => {
+        if (shipments.length === 0) return;
+        setIsSyncing(true);
+        try {
+            const res = await fetch('/api/shipments/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(shipments)
+            });
+            if (res.ok) {
+                await fetchAnalytics(); // Refresh after sync
+                alert('Sync complete! Database updated.');
+            } else {
+                alert('Sync failed.');
+            }
+        } catch (err) {
+            console.error("Sync error:", err);
+            alert('Error connecting to server.');
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
-    }, [shipments]);
+    // Initial Load
+    useEffect(() => {
+        fetchAnalytics();
+    }, []);
 
     // Calculate max count for dynamic scaling
     const maxCount = Math.max(...provinceData.map(p => p.count), 1);
@@ -62,17 +76,30 @@ const AnalyticsPage: React.FC = () => {
                     <MapIcon className="w-8 h-8 text-indigo-600" />
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800">วิเคราะห์พื้นที่ (Geo Analytics)</h1>
-                        <p className="text-sm text-slate-500">แผนที่แสดงความหนาแน่นของการจัดส่งสินค้าทั่วประเทศไทย</p>
+                        <p className="text-sm text-slate-500">
+                            ข้อมูลจาก Server (อัพเดทเมื่อซิงค์)
+                        </p>
                     </div>
                 </div>
-                <div className="flex gap-4 text-sm font-semibold text-slate-600">
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-                        <span>Volume สูง</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-indigo-200"></div>
-                        <span>Volume ต่ำ</span>
+                <div className="flex gap-4 items-center">
+                    <button
+                        onClick={handleSync}
+                        disabled={isSyncing}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isSyncing ? 'bg-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
+                            }`}
+                    >
+                        <TrendingUp className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                        {isSyncing ? 'กำลังบันทึกข้อมูล...' : 'อัพเดทข้อมูลลง Server'}
+                    </button>
+                    <div className="flex gap-4 text-sm font-semibold text-slate-600 border-l pl-4 border-slate-300">
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+                            <span>Volume สูง</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-indigo-200"></div>
+                            <span>Volume ต่ำ</span>
+                        </div>
                     </div>
                 </div>
             </div>

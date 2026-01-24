@@ -22,6 +22,22 @@ db.serialize(() => {
         details TEXT,
         status TEXT
     )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS shipments (
+        id TEXT PRIMARY KEY,
+        trackingNumber TEXT,
+        courier TEXT,
+        status TEXT,
+        customerName TEXT,
+        phoneNumber TEXT,
+        zipCode TEXT,
+        codAmount REAL,
+        shippingCost REAL,
+        importDate TEXT,
+        importTime TEXT,
+        timestamp INTEGER,
+        raw_data TEXT
+    )`);
 });
 
 module.exports = db;

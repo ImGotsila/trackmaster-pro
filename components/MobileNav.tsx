@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Search, FileInput, Database, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, Search, FileInput, Database, TrendingUp, Map } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const MobileNav: React.FC = () => {
@@ -9,6 +9,7 @@ const MobileNav: React.FC = () => {
   const menuItems = [
     { path: '/', label: 'ภาพรวม', icon: LayoutDashboard },
     { path: '/summary', label: 'สรุป', icon: TrendingUp },
+    { path: '/analytics', label: 'แผนที่', icon: Map },
     { path: '/search', label: 'ค้นหา', icon: Search },
     { path: '/import', label: 'นำเข้า', icon: FileInput },
     { path: '/management', label: 'จัดการ', icon: Database },

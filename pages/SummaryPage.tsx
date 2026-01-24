@@ -1,12 +1,24 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../context/DataContext';
-import { TrendingUp, MapPin, Users, DollarSign, Package, Award, Calendar, Download, BarChart3, PieChart } from 'lucide-react';
+import { TrendingUp, MapPin, Users, DollarSign, Package, Award, Calendar, Download, BarChart3, PieChart, Search } from 'lucide-react';
+import AddressDetailModal from '../components/AddressDetailModal';
+import { getAddressByZipCode } from '../services/AddressService';
 
 type TimeFilter = 'all' | 'today' | 'week' | 'month' | 'custom';
 
 const SummaryPage: React.FC = () => {
     const { shipments } = useData();
     const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
+
+    // Address Lookup State
+    const [selectedZipCode, setSelectedZipCode] = useState<string>('');
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+
+    const handleZipClick = (zip: string) => {
+        if (!zip) return;
+        setSelectedZipCode(zip);
+        setIsAddressModalOpen(true);
+    };
 
     const filteredShipments = useMemo(() => {
         const now = new Date();
@@ -60,7 +72,14 @@ const SummaryPage: React.FC = () => {
         const topAreas = Array.from(zipMap.entries())
             .sort((a, b) => b[1] - a[1])
             .slice(0, 10)
-            .map(([zip, count]) => ({ zip, count }));
+            .map(([zip, count]) => {
+                const addresses = getAddressByZipCode(zip);
+                // Use the first result as representative, or handle multiple if needed
+                const location = addresses.length > 0
+                    ? `${addresses[0].amphoe}, ${addresses[0].province}`
+                    : '-';
+                return { zip, count, location };
+            });
 
         // 4. Top Repeat Customers (Phone Number)
         const customerMap = new Map<string, { count: number; name: string; totalCOD: number }>();
@@ -418,24 +437,33 @@ const SummaryPage: React.FC = () => {
                         <table className="w-full text-left">
                             <thead className="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                                 <tr>
-                                    <th className="px-5 py-3 font-semibold text-center w-16">#</th>
-                                    <th className="px-5 py-3 font-semibold">รหัสไปรษณีย์</th>
+                                    <th className="px-5 py-3 font-semibold text-center w-12">#</th>
+                                    <th className="px-5 py-3 font-semibold w-24">รหัสไปรษณีย์</th>
+                                    <th className="px-5 py-3 font-semibold">พื้นที่ (อำเภอ, จังหวัด)</th>
                                     <th className="px-5 py-3 font-semibold text-right">จำนวน (ชิ้น)</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {stats.topAreas.map((area, idx) => (
-                                    <tr key={area.zip} className="hover:bg-slate-50 transition-colors">
+                                    <tr key={area.zip} className="hover:bg-slate-50 transition-colors group">
                                         <td className="px-5 py-3 text-center text-slate-400 font-mono text-xs">{idx + 1}</td>
                                         <td className="px-5 py-3 font-bold text-slate-700 font-mono text-sm">
-                                            <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100">
+                                            <button
+                                                onClick={() => handleZipClick(area.zip)}
+                                                className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100 hover:bg-indigo-100 hover:scale-105 transition-all flex items-center gap-1"
+                                                title="ดูรายละเอียดพื้นที่"
+                                            >
                                                 {area.zip}
-                                            </span>
+                                                <Search className="w-3 h-3 opacity-50" />
+                                            </button>
+                                        </td>
+                                        <td className="px-5 py-3 text-sm text-slate-600 truncate max-w-[150px]" title={area.location}>
+                                            {area.location}
                                         </td>
                                         <td className="px-5 py-3 text-right font-medium text-slate-600 relative">
                                             <div className="flex items-center justify-end gap-3">
                                                 <span>{area.count.toLocaleString()}</span>
-                                                <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
+                                                <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
                                                     <div
                                                         className="h-full bg-indigo-500 rounded-full"
                                                         style={{ width: `${(area.count / stats.topAreas[0].count) * 100}%` }}
@@ -447,7 +475,7 @@ const SummaryPage: React.FC = () => {
                                 ))}
                                 {stats.topAreas.length === 0 && (
                                     <tr>
-                                        <td colSpan={3} className="px-5 py-10 text-center text-slate-400">ไม่มีข้อมูล</td>
+                                        <td colSpan={4} className="px-5 py-10 text-center text-slate-400">ไม่มีข้อมูล</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -510,6 +538,12 @@ const SummaryPage: React.FC = () => {
                 </div>
 
             </div>
+
+            <AddressDetailModal
+                isOpen={isAddressModalOpen}
+                onClose={() => setIsAddressModalOpen(false)}
+                zipCode={selectedZipCode}
+            />
         </div>
     );
 };

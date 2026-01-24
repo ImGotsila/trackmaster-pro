@@ -7,6 +7,7 @@ import ImportPage from './pages/ImportPage';
 import SearchPage from './pages/SearchPage';
 import SummaryPage from './pages/SummaryPage';
 import DataManagementPage from './pages/DataManagementPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 import { DataProvider } from './context/DataContext';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -42,6 +43,7 @@ const App: React.FC = () => {
             <Route path="/import" element={<ImportPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/summary" element={<SummaryPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/management" element={<DataManagementPage />} />
           </Routes>
         </Layout>
