@@ -222,14 +222,25 @@ const AnalyticsPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex gap-4 items-center">
+                    {provinceData.length === 0 && (
+                        <button
+                            onClick={fetchAnalytics}
+                            disabled={isLoading}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isLoading ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 shadow-md hover:shadow-lg'
+                                }`}
+                        >
+                            <Info className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                            {isLoading ? 'กำลังโหลด...' : 'โหลดข้อมูล'}
+                        </button>
+                    )}
                     <button
                         onClick={handleSave}
-                        disabled={isSyncing}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isSyncing ? 'bg-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
+                        disabled={isSyncing || shipments.length === 0}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isSyncing || shipments.length === 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
                             }`}
                     >
                         <TrendingUp className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                        {isSyncing ? 'กำลังบันทึก...' : 'บันทึกข้อมูล Analytics'}
+                        {isSyncing ? 'กำลังประมวลผล...' : 'คำนวณ & บันทึก'}
                     </button>
                     <div className="flex gap-4 text-sm font-semibold text-slate-600 border-l pl-4 border-slate-300">
                         <div className="flex items-center gap-2">
