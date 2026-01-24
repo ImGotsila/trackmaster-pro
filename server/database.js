@@ -65,17 +65,18 @@ db.serialize(() => {
         reportedBy TEXT
     )`, (err) => {
         if (!err) {
-            // Migration: Ensure newTrackingNumber column exists
-            try {
-                db.run("ALTER TABLE rts_reports ADD COLUMN newTrackingNumber TEXT", (alterErr) => {
-                    // Ignore duplicate column error usually
-                    if (alterErr && !alterErr.message.includes('duplicate column')) {
-                        console.error('Migration warning (non-fatal):', alterErr.message);
+            // Migration: Check if newTrackingNumber column exists safely
+            db.all("PRAGMA table_info(rts_reports)", (pragmaErr, columns) => {
+                if (!pragmaErr && columns) {
+                    const hasColumn = columns.some(col => col.name === 'newTrackingNumber');
+                    if (!hasColumn) {
+                        db.run("ALTER TABLE rts_reports ADD COLUMN newTrackingNumber TEXT", (alterErr) => {
+                            if (alterErr) console.error("Migration warning:", alterErr.message);
+                            else console.log("Migration: Added newTrackingNumber to rts_reports");
+                        });
                     }
-                });
-            } catch (e) {
-                console.error("Migration exception:", e);
-            }
+                }
+            });
         }
     });
 
