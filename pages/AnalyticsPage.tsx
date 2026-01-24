@@ -56,7 +56,7 @@ const AnalyticsPage: React.FC = () => {
                         zipCode: s.zipCode,
                         province: addressInfo.province,
                         district: addressInfo.amphoe || addressInfo.district || 'ไม่ระบุ',
-                        subdistrict: addressInfo.district || addressInfo.tambon || 'ไม่ระบุ',
+                        subdistrict: addressInfo.district || 'ไม่ระบุ',
                         count: 1,
                         totalCOD: (s.codAmount || 0),
                         totalCost: (s.shippingCost || 0)
@@ -78,6 +78,29 @@ const AnalyticsPage: React.FC = () => {
         return Array.from(stats.values()).sort((a, b) => b.count - a.count);
     };
 
+    // Generate unique coordinates for each zip code (Deterministic spread)
+    const getUniqueCoordinates = (zipCode: string, baseProvince: string) => {
+        const provinceInfo = thaiProvinces.find(p => p.province === baseProvince);
+        const baseLat = provinceInfo?.lat || 13.7563;
+        const baseLng = provinceInfo?.lng || 100.5018;
+
+        // Use zipCode string to generate a deterministic "seed"
+        const seed = zipCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+        // Spread radius: ~15-20km (0.15 degrees)
+        // Use golden angle or similar to avoid overlaps/patterns
+        const angle = (seed * 137.5) % 360;
+        const radius = ((seed * 31) % 100) / 100 * 0.2; // 0 to 0.2 degrees spread
+
+        const offsetLat = Math.cos(angle * (Math.PI / 180)) * radius;
+        const offsetLng = Math.sin(angle * (Math.PI / 180)) * radius;
+
+        return {
+            lat: baseLat + offsetLat,
+            lng: baseLng + offsetLng
+        };
+    };
+
     // Fetch Analytics from Server (JSON file) - SEQUENTIAL WORKFLOW
     const fetchAnalytics = async () => {
         setIsLoading(true);
@@ -92,15 +115,14 @@ const AnalyticsPage: React.FC = () => {
 
             const data = await res.json();
 
-            setProgress({ current: 50, total: 100, status: 'กำลังประมวลผลพิกัด...' });
+            setProgress({ current: 50, total: 100, status: 'กำลังจัดตำแหน่งพึงพิกัด...' });
 
-            // Map data to coordinates
+            // Map data to coordinates with UNIQUE distribution
             const mappedData = data.map((item: any) => {
-                const provinceInfo = thaiProvinces.find(p => p.province === item.province);
+                const coords = getUniqueCoordinates(item.zipCode, item.province);
                 return {
                     ...item,
-                    lat: provinceInfo?.lat || 13.7563,
-                    lng: provinceInfo?.lng || 100.5018
+                    ...coords
                 };
             });
 
@@ -121,11 +143,10 @@ const AnalyticsPage: React.FC = () => {
             try {
                 const computed = await computeAnalytics();
                 const mappedData = computed.map((item: any) => {
-                    const provinceInfo = thaiProvinces.find(p => p.province === item.province);
+                    const coords = getUniqueCoordinates(item.zipCode, item.province);
                     return {
                         ...item,
-                        lat: provinceInfo?.lat || 13.7563,
-                        lng: provinceInfo?.lng || 100.5018
+                        ...coords
                     };
                 });
                 setProvinceData(mappedData.filter((p: any) => p.count > 0));
@@ -232,7 +253,7 @@ const AnalyticsPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex gap-4 items-center">
-                    {provinceData.length === 0 && (
+                    {provinceData.length === 0 ? (
                         <button
                             onClick={fetchAnalytics}
                             disabled={isLoading}
@@ -241,6 +262,15 @@ const AnalyticsPage: React.FC = () => {
                         >
                             <Info className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
                             {isLoading ? 'กำลังโหลด...' : 'โหลดข้อมูล'}
+                        </button>
+                    ) : (
+                        <button
+                            onClick={fetchAnalytics}
+                            disabled={isLoading}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all ${isLoading ? 'opacity-50 cursor-not-allowed' : 'shadow-sm'}`}
+                        >
+                            <TrendingUp className={`w-4 h-4 ${isLoading ? 'animate-spin text-indigo-500' : 'text-slate-400'}`} />
+                            {isLoading ? 'กำลังรีเฟรช...' : 'รีเฟรช'}
                         </button>
                     )}
                     <button
