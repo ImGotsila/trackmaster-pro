@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Search, FileInput, Package, Database, TrendingUp, Map } from 'lucide-react';
+import { LayoutDashboard, Search, FileInput, Package, Database, TrendingUp, Map, DollarSign } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Sidebar: React.FC = () => {
@@ -10,6 +10,7 @@ const Sidebar: React.FC = () => {
     { path: '/', label: 'ภาพรวม (Dashboard)', icon: LayoutDashboard },
     { path: '/summary', label: 'สรุปข้อมูล (Summary)', icon: TrendingUp },
     { path: '/analytics', label: 'วิเคราะห์พื้นที่ (Map)', icon: Map },
+    { path: '/cost-analytics', label: 'วิเคราะห์ค่าส่ง (Cost)', icon: DollarSign },
     { path: '/search', label: 'ค้นหาพัสดุ (Search)', icon: Search },
     { path: '/import', label: 'นำเข้าข้อมูล (Import)', icon: FileInput },
     { path: '/management', label: 'จัดการข้อมูล (Data)', icon: Database },

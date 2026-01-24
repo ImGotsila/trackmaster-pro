@@ -8,6 +8,7 @@ import SearchPage from './pages/SearchPage';
 import SummaryPage from './pages/SummaryPage';
 import DataManagementPage from './pages/DataManagementPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import CostAnalyticsPage from './pages/CostAnalyticsPage';
 import { DataProvider } from './context/DataContext';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -44,6 +45,7 @@ const App: React.FC = () => {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/summary" element={<SummaryPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/cost-analytics" element={<CostAnalyticsPage />} />
             <Route path="/management" element={<DataManagementPage />} />
           </Routes>
         </Layout>

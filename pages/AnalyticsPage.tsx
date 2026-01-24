@@ -1,14 +1,22 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
-import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { thaiProvinces } from '../data/thaiProvinces';
 import { getAddressByZipCode } from '../services/AddressService';
-import { Map as MapIcon, Info, TrendingUp, DollarSign, Search, RefreshCw, MapPin } from 'lucide-react';
+import { Map as MapIcon, Info, TrendingUp, DollarSign, Search, RefreshCw, MapPin, Filter, ArrowUpRight, Target } from 'lucide-react';
 
-// Helper component to control map zoom/pan
-const MapController: React.FC<{ selectedZip: string | null, data: any[] }> = ({ selectedZip, data }) => {
+// Helper component to control map zoom/pan AND track zoom level
+const MapController: React.FC<{
+    selectedZip: string | null,
+    data: any[],
+    onZoomChange: (zoom: number) => void
+}> = ({ selectedZip, data, onZoomChange }) => {
     const map = useMap();
+
+    useMapEvents({
+        zoomend: () => onZoomChange(map.getZoom())
+    });
 
     useEffect(() => {
         if (selectedZip && data.length > 0) {
@@ -30,6 +38,8 @@ const AnalyticsPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
     const [progress, setProgress] = useState({ current: 0, total: 0, status: '' });
+    const [currentZoom, setCurrentZoom] = useState(6);
+    const [minOrders, setMinOrders] = useState(0);
 
     // Track chosen coordinate for auto-zoom
     const [focusPoint, setFocusPoint] = useState<{ lat: number, lng: number } | null>(null);
@@ -126,6 +136,34 @@ const AnalyticsPage: React.FC = () => {
             lng: baseLng + offsetLng,
             isMatched: !!provinceInfo
         };
+    };
+
+    // New Color Scaling Logic based on Volume (v4.0)
+    const getHeatColor = (count: number, max: number) => {
+        const ratio = count / max;
+        if (ratio > 0.8) return '#ef4444'; // Red (Critical)
+        if (ratio > 0.5) return '#f97316'; // Orange (High)
+        if (ratio > 0.2) return '#6366f1'; // Indigo (Medium)
+        if (ratio > 0.05) return '#818cf8'; // Light Indigo (Low)
+        return '#cbd5e1'; // Gray (Minimal)
+    };
+
+    const getHeatFillColor = (count: number, max: number) => {
+        const ratio = count / max;
+        if (ratio > 0.8) return '#f87171';
+        if (ratio > 0.5) return '#fb923c';
+        if (ratio > 0.2) return '#818cf8';
+        if (ratio > 0.05) return '#a5b4fc';
+        return '#f1f5f9';
+    };
+
+    // Calculate dynamic radius based on zoom and volume
+    const getDynamicRadius = (count: number) => {
+        // Base size from math
+        const baseSize = 3 + Math.sqrt(count) * 2;
+        // Zoom multiplier: bigger when zoomed in, smaller when out
+        const zoomFactor = Math.pow(currentZoom / 6, 1.5);
+        return Math.max(2, baseSize * zoomFactor);
     };
 
     // Fetch Analytics from Server (JSON file) - SEQUENTIAL WORKFLOW
@@ -283,6 +321,20 @@ const AnalyticsPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex gap-4 items-center">
+                    <div className="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-lg border border-slate-200">
+                        <Filter className="w-4 h-4 text-slate-500" />
+                        <span className="text-xs font-bold text-slate-600">Volume {'>'}</span>
+                        <select
+                            value={minOrders}
+                            onChange={(e) => setMinOrders(Number(e.target.value))}
+                            className="bg-transparent text-sm font-bold text-indigo-600 focus:outline-none"
+                        >
+                            <option value={0}>ทั้งหมด</option>
+                            <option value={10}>10+</option>
+                            <option value={50}>50+</option>
+                            <option value={100}>100+</option>
+                        </select>
+                    </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <input
@@ -290,7 +342,7 @@ const AnalyticsPage: React.FC = () => {
                             placeholder="ค้นหารหัส หรือ อำเภอ..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64 shadow-sm"
+                            className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-56 shadow-sm"
                         />
                     </div>
                     <button
@@ -302,7 +354,7 @@ const AnalyticsPage: React.FC = () => {
                             }`}
                     >
                         <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-                        {isLoading ? 'กำลังรีเฟรช...' : 'รีเฟรช'}
+                        {isLoading ? '...' : 'รีเฟรช'}
                     </button>
                     <button
                         onClick={handleSave}
@@ -313,7 +365,7 @@ const AnalyticsPage: React.FC = () => {
                             }`}
                     >
                         <TrendingUp className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                        {isSyncing ? 'กำลังประมวลผล...' : 'อัปเดตข้อมูลใหม่'}
+                        {isSyncing ? '...' : 'อัปเดต v4.0'}
                     </button>
                     <div className="flex gap-4 text-sm font-semibold text-slate-600 border-l pl-4 border-slate-300">
                         <div className="flex items-center gap-2">
@@ -382,18 +434,18 @@ const AnalyticsPage: React.FC = () => {
                         )}
 
                         {provinceData
-                            .filter(p => !searchTerm || p.zipCode.includes(searchTerm) || p.district.includes(searchTerm) || p.province.includes(searchTerm))
+                            .filter(p => (!searchTerm || p.zipCode.includes(searchTerm) || p.district.includes(searchTerm) || p.province.includes(searchTerm)) && p.count >= minOrders)
                             .map((data, idx) => (
                                 <CircleMarker
                                     key={idx}
                                     center={[data.lat, data.lng]}
                                     pathOptions={{
-                                        color: !data.isMatched ? '#94a3b8' : (selectedProvince === data.zipCode ? '#ef4444' : '#4338ca'),
-                                        fillColor: !data.isMatched ? '#cbd5e1' : (selectedProvince === data.zipCode ? '#f87171' : '#6366f1'),
+                                        color: !data.isMatched ? '#94a3b8' : (selectedProvince === data.zipCode ? '#ef4444' : getHeatColor(data.count, maxCount)),
+                                        fillColor: !data.isMatched ? '#cbd5e1' : (selectedProvince === data.zipCode ? '#f87171' : getHeatFillColor(data.count, maxCount)),
                                         fillOpacity: 0.6,
                                         weight: selectedProvince === data.zipCode ? 3 : 1
                                     }}
-                                    radius={5 + Math.sqrt(data.count) * 2.5} // Better scaling using sqrt: 5px to ~25px
+                                    radius={getDynamicRadius(data.count)}
                                     eventHandlers={{
                                         click: () => {
                                             setSelectedProvince(data.zipCode);
@@ -440,26 +492,58 @@ const AnalyticsPage: React.FC = () => {
                     </MapContainer>
 
                     {/* Floating Summary Card */}
-                    <div className="absolute top-4 right-4 z-[400] bg-white/90 backdrop-blur rounded-xl shadow-lg p-4 border border-slate-100 max-w-[200px]">
-                        <p className="text-xs font-bold text-slate-400 uppercase mb-2">ข้อมูลรวมทั้งหมด</p>
-                        <h3 className="text-2xl font-bold text-slate-800">{provinceData.reduce((sum, p) => sum + p.count, 0)}</h3>
-                        <p className="text-xs text-slate-500 font-medium">รายการจัดส่ง</p>
-                        <div className="mt-3 pt-3 border-t border-slate-200">
-                            <h3 className="text-lg font-bold text-emerald-600">฿{provinceData.reduce((sum, p) => sum + p.totalCOD, 0).toLocaleString()}</h3>
-                            <p className="text-xs text-slate-500 font-medium">ยอก COD รวม</p>
+                    <div className="absolute top-4 right-4 z-[400] bg-white/95 border border-slate-200 backdrop-blur rounded-2xl shadow-xl p-5 space-y-4 max-w-[240px]">
+                        <div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">ยอดออร์เดอร์รวม</p>
+                            <div className="flex items-baseline gap-2">
+                                <h3 className="text-3xl font-black text-slate-800 tracking-tighter">
+                                    {provinceData.reduce((sum, p) => sum + p.count, 0).toLocaleString()}
+                                </h3>
+                                <span className="text-xs font-bold text-indigo-500 bg-indigo-50 px-1.5 rounded">รายการ</span>
+                            </div>
+                        </div>
+
+                        <div className="pt-3 border-t border-slate-100">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">ยอด COD รวม</p>
+                            <h3 className="text-xl font-bold text-emerald-600 tracking-tight">
+                                ฿{provinceData.reduce((sum, p) => sum + p.totalCOD, 0).toLocaleString()}
+                            </h3>
+                            <div className="flex items-center gap-1 mt-1">
+                                <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+                                <span className="text-[10px] text-slate-500 font-medium">เฉลี่ย ฿{Math.round(provinceData.reduce((sum, p) => sum + p.totalCOD, 0) / Math.max(1, provinceData.reduce((sum, p) => sum + p.count, 0))).toLocaleString()} / ออร์เดอร์</span>
+                            </div>
+                        </div>
+
+                        <div className="pt-3 border-t border-slate-100">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">เป้าหมายรายจังหวัด</p>
+                            <div className="flex items-center justify-between text-sm mb-1">
+                                <span className="text-xs font-bold text-slate-600">ความครอบคลุม</span>
+                                <span className="text-xs font-mono font-bold text-indigo-600">{Math.round((provinceData.length / 77) * 100)}%</span>
+                            </div>
+                            <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                <div
+                                    className="bg-indigo-500 h-full rounded-full transition-all duration-1000"
+                                    style={{ width: `${Math.min(100, (provinceData.length / 77) * 100)}%` }}
+                                ></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Sidebar Stats */}
-                <div className="w-full lg:w-80 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col shrink-0 overflow-hidden h-[300px] lg:h-auto">
-                    <div className="p-4 bg-slate-50 border-b border-slate-100 font-bold text-slate-700 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-indigo-500" />
-                        อันดับรหัสไปรษณีย์ (Top Zip Codes)
+                <div className="w-full lg:w-96 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col shrink-0 overflow-hidden h-full">
+                    <div className="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-indigo-500" />
+                            <h2 className="font-bold text-slate-800">ลำดับพื้นที่ (Top Zip Codes)</h2>
+                        </div>
+                        <span className="text-[10px] bg-white border px-2 py-1 rounded-full font-bold text-slate-500 shadow-sm">
+                            {provinceData.filter(p => (!searchTerm || p.zipCode.includes(searchTerm) || p.district.includes(searchTerm)) && p.count >= minOrders).length} พื้นที่
+                        </span>
                     </div>
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
                         {provinceData
-                            .filter(p => !searchTerm || p.zipCode.includes(searchTerm) || p.district.includes(searchTerm))
+                            .filter(p => (!searchTerm || p.zipCode.includes(searchTerm) || p.district.includes(searchTerm)) && p.count >= minOrders)
                             .map((data, idx) => (
                                 <div
                                     key={idx}
@@ -467,30 +551,47 @@ const AnalyticsPage: React.FC = () => {
                                         setSelectedProvince(data.zipCode);
                                         setFocusPoint({ lat: data.lat, lng: data.lng });
                                     }}
-                                    className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${selectedProvince === data.zipCode
-                                        ? 'bg-indigo-50 border-indigo-200 shadow-sm ring-1 ring-indigo-200'
-                                        : 'bg-white border-slate-100 hover:bg-slate-50'
+                                    className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer group ${selectedProvince === data.zipCode
+                                        ? 'bg-indigo-50 border-indigo-200 shadow-md ring-1 ring-indigo-200 scale-[1.02]'
+                                        : 'bg-white border-slate-100 hover:border-indigo-100 hover:bg-slate-50/50 hover:shadow-sm'
                                         }`}
                                 >
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${idx < 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shadow-sm transition-colors ${idx < 3
+                                                ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                                                : 'bg-slate-100 text-slate-500 border border-slate-200'
                                                 }`}>
                                                 {idx + 1}
-                                            </span>
+                                            </div>
                                             <div>
-                                                <span className="font-bold text-slate-700 text-sm block">{data.zipCode}</span>
-                                                <span className="text-xs text-indigo-600 font-medium">อ.{data.district}</span>
-                                                <span className="text-xs text-slate-400 ml-1">{data.province}</span>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="font-black text-slate-800 text-base">{data.zipCode}</span>
+                                                    <Target className={`w-3 h-3 ${data.isMatched ? 'text-emerald-500' : 'text-slate-300'}`} />
+                                                </div>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-xs font-bold text-indigo-600">อ.{data.district}</span>
+                                                    <span className="text-[10px] text-slate-400">({data.province})</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="text-xs text-emerald-600 font-semibold mt-1 ml-7">
-                                            ฿{data.totalCOD.toLocaleString()}
+                                        <div className="text-right">
+                                            <div className="flex items-baseline justify-end gap-1">
+                                                <span className="text-2xl font-black text-slate-800 tracking-tighter">{data.count}</span>
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase">ออร์เดอร์</span>
+                                            </div>
+                                            <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded inline-block">
+                                                ฿{data.totalCOD.toLocaleString()}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <span className="text-lg font-bold text-indigo-600 block">{data.count}</span>
-                                        <span className="text-[10px] text-slate-400 uppercase font-bold">Orders</span>
+
+                                    {/* Progress mini bar */}
+                                    <div className="w-full bg-slate-100 h-1 rounded-full overflow-hidden mt-3 opacity-60">
+                                        <div
+                                            className="bg-indigo-600 h-full rounded-full"
+                                            style={{ width: `${(data.count / maxCount) * 100}%` }}
+                                        ></div>
                                     </div>
                                 </div>
                             ))}
