@@ -425,9 +425,9 @@ const ImportPage: React.FC = () => {
                                 )}
                                 {stagedFiles.map(file => (
                                     <div key={file.id} className={`p-3 rounded-xl border flex items-center justify-between group transition-all ${file.status === 'done' ? 'bg-emerald-50 border-emerald-100' :
-                                            file.status === 'processing' ? 'bg-indigo-50 border-indigo-200' :
-                                                file.status === 'error' ? 'bg-rose-50 border-rose-100' :
-                                                    'bg-white border-slate-200 hover:border-indigo-300'
+                                        file.status === 'processing' ? 'bg-indigo-50 border-indigo-200' :
+                                            file.status === 'error' ? 'bg-rose-50 border-rose-100' :
+                                                'bg-white border-slate-200 hover:border-indigo-300'
                                         }`}>
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
@@ -481,7 +481,7 @@ const ImportPage: React.FC = () => {
                         <div className="p-6 overflow-y-auto custom-scrollbar space-y-6">
                             {/* Summary by Batch */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {Object.entries(previewResult.byFile).map(([key, stats]) => (
+                                {Object.entries(previewResult.byFile).map(([key, stats]: [string, { count: number, date: string }]) => (
                                     <div key={key} className="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
                                         <h4 className="font-bold text-indigo-900 mb-1">{stats.date} {key.split(' ')[1] || ''}</h4>
                                         <div className="flex justify-between items-center">
