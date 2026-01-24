@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Search, FileInput, Database, TrendingUp, Map } from 'lucide-react';
+import { LayoutDashboard, Search, FileInput, Database, TrendingUp, Map, RotateCcw } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const MobileNav: React.FC = () => {
@@ -12,7 +12,7 @@ const MobileNav: React.FC = () => {
     { path: '/analytics', label: 'แผนที่', icon: Map },
     { path: '/search', label: 'ค้นหา', icon: Search },
     { path: '/import', label: 'นำเข้า', icon: FileInput },
-    { path: '/management', label: 'จัดการ', icon: Database },
+    { path: '/rts', label: 'RTS', icon: RotateCcw },
   ];
 
   return (

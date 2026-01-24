@@ -11,6 +11,7 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import CostAnalyticsPage from './pages/CostAnalyticsPage';
 import VisualMetricsPage from './pages/VisualMetricsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
+import RTSManagementPage from './pages/RTSManagementPage';
 import LoginPage from './pages/LoginPage';
 import { DataProvider } from './context/DataContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -47,6 +48,7 @@ const AppContent: React.FC = () => {
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/cost-analytics" element={<CostAnalyticsPage />} />
         <Route path="/management" element={<DataManagementPage />} />
+        <Route path="/rts" element={<RTSManagementPage />} />
         <Route path="/admin" element={<AdminSettingsPage />} />
       </Routes>
     </Layout>

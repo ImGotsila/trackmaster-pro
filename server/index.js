@@ -3,6 +3,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
 const db = require('./database');
 
 const app = express();
@@ -10,6 +12,25 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
+
+const uploadBaseDir = process.env.DB_PATH ? path.dirname(process.env.DB_PATH) : __dirname;
+const uploadDir = path.join(uploadBaseDir, 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+// Configure Multer for photo uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `${uuidv4()}${ext}`);
+    }
+});
+const upload = multer({ storage });
+
+// Serve uploaded photos
+app.use('/uploads', express.static(uploadDir));
 
 // API: Get History Logs
 app.get('/api/history', (req, res) => {
@@ -120,6 +141,52 @@ app.delete('/api/users/:id', (req, res) => {
     db.run(`DELETE FROM users WHERE id = ?`, [req.params.id], (err) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ success: true });
+    });
+});
+
+// --- RTS & QUALITY CHECK API ---
+
+// API: Save RTS Report
+app.post('/api/rts', upload.single('photo'), (req, res) => {
+    const {
+        trackingNumber,
+        status,
+        customerName,
+        actionType,
+        notes,
+        reportedBy
+    } = req.body;
+
+    const photoUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    const id = uuidv4();
+    const timestamp = Date.now();
+
+    const stmt = db.prepare(`INSERT INTO rts_reports (id, trackingNumber, status, customerName, actionType, notes, photoUrl, timestamp, reportedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+
+    stmt.run(id, trackingNumber, status, customerName, actionType, notes, photoUrl, timestamp, reportedBy, function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true, id: this.lastID, photoUrl });
+
+        // Also log to history
+        db.run(`INSERT INTO history_logs (id, action, timestamp, details, status) VALUES (?, ?, ?, ?, ?)`,
+            [uuidv4(), 'rts_report', timestamp, `Reported RTS for ${trackingNumber}: ${status}`, 'success']);
+    });
+    stmt.finalize();
+});
+
+// API: Get RTS History
+app.get('/api/rts', (req, res) => {
+    db.all(`SELECT * FROM rts_reports ORDER BY timestamp DESC LIMIT 100`, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// API: Get RTS for specific tracking
+app.get('/api/rts/:trackingNumber', (req, res) => {
+    db.all(`SELECT * FROM rts_reports WHERE trackingNumber = ? ORDER BY timestamp DESC`, [req.params.trackingNumber], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
     });
 });
 

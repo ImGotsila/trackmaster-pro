@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Search, FileInput, Package, Database, TrendingUp, Map, DollarSign, BarChart3, Shield, LogOut } from 'lucide-react';
+import { LayoutDashboard, Search, FileInput, Package, Database, TrendingUp, Map, DollarSign, BarChart3, Shield, LogOut, RotateCcw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,7 @@ const Sidebar: React.FC = () => {
     { path: '/visual-stats', label: 'วิเคราะห์เชิงภาพ (Charts)', icon: BarChart3 },
     { path: '/analytics', label: 'วิเคราะห์พื้นที่ (Map)', icon: Map },
     { path: '/cost-analytics', label: 'วิเคราะห์ค่าส่ง (Cost)', icon: DollarSign },
+    { path: '/rts', label: 'เช็คสินค้า & RTS', icon: RotateCcw },
     { path: '/search', label: 'ค้นหาพัสดุ (Search)', icon: Search },
     { path: '/import', label: 'นำเข้าข้อมูล (Import)', icon: FileInput },
     { path: '/management', label: 'จัดการข้อมูล (Data)', icon: Database },

@@ -52,6 +52,18 @@ db.serialize(() => {
         value TEXT
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS rts_reports (
+        id TEXT PRIMARY KEY,
+        trackingNumber TEXT NOT NULL,
+        status TEXT NOT NULL,
+        customerName TEXT,
+        actionType TEXT, -- resend_original, new_production, cancelled
+        notes TEXT,
+        photoUrl TEXT,
+        timestamp INTEGER NOT NULL,
+        reportedBy TEXT
+    )`);
+
     // Seed Initial Data
     db.get(`SELECT COUNT(*) as count FROM users`, (err, row) => {
         if (!err && row.count === 0) {
