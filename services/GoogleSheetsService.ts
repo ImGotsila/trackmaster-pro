@@ -1,17 +1,14 @@
 import { Shipment } from '../types';
+import { isDemoMode, getApiUrl } from '../utils/environment';
 
 const SEARCH_ENDPOINT = import.meta.env.VITE_GOOGLE_SHEETS_SCRIPT_URL;
-const isDemoMode = typeof window !== 'undefined' && (
-    window.location.hostname.includes('github.io') ||
-    window.location.hostname.includes('localhost') && !SEARCH_ENDPOINT
-);
 
 // Helper to determine if we should use local NAS proxy or direct GAS
 const getServiceUrl = (action: string) => {
-    if (isDemoMode) {
+    if (isDemoMode()) {
         return `${SEARCH_ENDPOINT}?action=${action}`;
     }
-    return `/api/gsheets/${action}`;
+    return getApiUrl(`api/gsheets/${action}`);
 };
 
 export const GoogleSheetsService = {
@@ -55,7 +52,7 @@ export const GoogleSheetsService = {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': isDemoMode ? 'text/plain;charset=utf-8' : 'application/json',
+                    'Content-Type': isDemoMode() ? 'text/plain;charset=utf-8' : 'application/json',
                 },
                 body: JSON.stringify(shipments),
             });
@@ -85,7 +82,7 @@ export const GoogleSheetsService = {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': isDemoMode ? 'text/plain;charset=utf-8' : 'application/json',
+                    'Content-Type': isDemoMode() ? 'text/plain;charset=utf-8' : 'application/json',
                 },
                 body: JSON.stringify({ trackingNumber }),
             });

@@ -7,6 +7,7 @@ import {
     RotateCcw, Trash2, Save, History, RefreshCw, ChevronRight, X
 } from 'lucide-react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
+import { isDemoMode } from '../utils/environment';
 
 interface RTSReport {
     id: string;
@@ -175,26 +176,27 @@ const RTSManagementPage: React.FC = () => {
         }
 
         try {
-            const res = await fetch('/api/rts', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (res.ok) {
-                alert('บันทึกข้อมูลสำเร็จ!');
-                // Reset form
-                setSelectedShipment(null);
-                setNotes('');
-                setPhoto(null);
-                setPreviewUrl(null);
-                setScanResult(null);
-                setNewTrackingNumber('');
-                setTrackHistory([]);
-                fetchHistory();
-                setActiveTab('history');
+            if (isDemoMode()) {
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
             } else {
-                throw new Error('Failed to save');
+                const res = await fetch('/api/rts', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!res.ok) throw new Error('Failed to save');
             }
+
+            alert('บันทึกข้อมูลสำเร็จ!' + (isDemoMode() ? ' (Demo Mode)' : ''));
+            // Reset form
+            setSelectedShipment(null);
+            setNotes('');
+            setPhoto(null);
+            setPreviewUrl(null);
+            setScanResult(null);
+            setNewTrackingNumber('');
+            setTrackHistory([]);
+            fetchHistory();
+            setActiveTab('history');
         } catch (err) {
             alert('เกิดข้อผิดพลาดในการบันทึก');
         } finally {
