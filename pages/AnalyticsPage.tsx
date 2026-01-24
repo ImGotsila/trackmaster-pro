@@ -13,46 +13,106 @@ const AnalyticsPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
 
-    // Fetch Analytics from Server
+    // Compute analytics client-side (by ZIP CODE, not province)
+    const computeAnalytics = () => {
+        const stats = new Map<string, { zipCode: string; province: string; count: number; totalCOD: number; totalCost: number }>();
+
+        shipments.forEach(s => {
+            if (!s.zipCode) return;
+
+            const addresses = getAddressByZipCode(s.zipCode);
+            if (addresses.length === 0) return;
+
+            const provinceName = addresses[0].province;
+            const zipKey = s.zipCode;
+
+            const existing = stats.get(zipKey);
+            if (existing) {
+                existing.count++;
+                existing.totalCOD += (s.codAmount || 0);
+                existing.totalCost += (s.shippingCost || 0);
+            } else {
+                stats.set(zipKey, {
+                    zipCode: s.zipCode,
+                    province: provinceName,
+                    count: 1,
+                    totalCOD: (s.codAmount || 0),
+                    totalCost: (s.shippingCost || 0)
+                });
+            }
+        });
+
+        return Array.from(stats.values()).sort((a, b) => b.count - a.count);
+    };
+
+    // Fetch Analytics from Server (JSON file)
     const fetchAnalytics = async () => {
         setIsLoading(true);
         try {
             const res = await fetch('/api/analytics/geo');
             if (res.ok) {
                 const data = await res.json();
-                // Merge with coordinates
-                const merged = thaiProvinces.map(p => {
-                    const stat = data.find((d: any) => d.province === p.province) || { count: 0, totalCOD: 0, totalCost: 0 };
-                    return { ...p, ...stat };
-                }).filter(p => p.count > 0).sort((a, b) => b.count - a.count);
+                // Data is now by zip code, need to map to province coordinates
+                const mappedData = data.map((item: any) => {
+                    const provinceInfo = thaiProvinces.find(p => p.province === item.province);
+                    return {
+                        ...item,
+                        lat: provinceInfo?.lat || 13.7563,
+                        lng: provinceInfo?.lng || 100.5018
+                    };
+                });
 
-                setProvinceData(merged);
+                setProvinceData(mappedData.filter((p: any) => p.count > 0));
+            } else {
+                // If no saved data, compute from current shipments
+                const computed = computeAnalytics();
+                const mappedData = computed.map((item: any) => {
+                    const provinceInfo = thaiProvinces.find(p => p.province === item.province);
+                    return {
+                        ...item,
+                        lat: provinceInfo?.lat || 13.7563,
+                        lng: provinceInfo?.lng || 100.5018
+                    };
+                });
+                setProvinceData(mappedData.filter((p: any) => p.count > 0));
             }
         } catch (err) {
             console.error("Failed to fetch analytics:", err);
+            // Fallback to client-side computation
+            const computed = computeAnalytics();
+            const mappedData = computed.map((item: any) => {
+                const provinceInfo = thaiProvinces.find(p => p.province === item.province);
+                return {
+                    ...item,
+                    lat: provinceInfo?.lat || 13.7563,
+                    lng: provinceInfo?.lng || 100.5018
+                };
+            });
+            setProvinceData(mappedData.filter((p: any) => p.count > 0));
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Sync current frontend data to server
-    const handleSync = async () => {
+    // Save analytics to server as JSON
+    const handleSave = async () => {
         if (shipments.length === 0) return;
         setIsSyncing(true);
         try {
-            const res = await fetch('/api/shipments/sync', {
+            const analytics = computeAnalytics();
+            const res = await fetch('/api/analytics/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(shipments)
+                body: JSON.stringify(analytics)
             });
             if (res.ok) {
-                await fetchAnalytics(); // Refresh after sync
-                alert('Sync complete! Database updated.');
+                await fetchAnalytics(); // Refresh
+                alert('Analytics saved to server!');
             } else {
-                alert('Sync failed.');
+                alert('Save failed.');
             }
         } catch (err) {
-            console.error("Sync error:", err);
+            console.error("Save error:", err);
             alert('Error connecting to server.');
         } finally {
             setIsSyncing(false);
@@ -77,19 +137,19 @@ const AnalyticsPage: React.FC = () => {
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800">วิเคราะห์พื้นที่ (Geo Analytics)</h1>
                         <p className="text-sm text-slate-500">
-                            ข้อมูลจาก Server (อัพเดทเมื่อซิงค์)
+                            ข้อมูลจาก Server (บันทึกเป็น JSON)
                         </p>
                     </div>
                 </div>
                 <div className="flex gap-4 items-center">
                     <button
-                        onClick={handleSync}
+                        onClick={handleSave}
                         disabled={isSyncing}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isSyncing ? 'bg-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
                             }`}
                     >
                         <TrendingUp className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                        {isSyncing ? 'กำลังบันทึกข้อมูล...' : 'อัพเดทข้อมูลลง Server'}
+                        {isSyncing ? 'กำลังบันทึก...' : 'บันทึกข้อมูล Analytics'}
                     </button>
                     <div className="flex gap-4 text-sm font-semibold text-slate-600 border-l pl-4 border-slate-300">
                         <div className="flex items-center gap-2">
@@ -130,12 +190,13 @@ const AnalyticsPage: React.FC = () => {
                                 }}
                                 radius={5 + (data.count / maxCount) * 40} // Dynamic radius: 5px to 45px
                                 eventHandlers={{
-                                    click: () => setSelectedProvince(data.province)
+                                    click: () => setSelectedProvince(data.zipCode || data.province)
                                 }}
                             >
                                 <Tooltip direction="top" offset={[0, -10]} opacity={1}>
                                     <div className="text-center">
-                                        <b className="text-base text-indigo-700">{data.province}</b><br />
+                                        <b className="text-base text-indigo-700">{data.zipCode || data.province}</b><br />
+                                        <span className="text-xs text-slate-500">{data.province}</span><br />
                                         <span className="text-slate-600 font-semibold">{data.count} Orders</span>
                                     </div>
                                 </Tooltip>
@@ -159,14 +220,14 @@ const AnalyticsPage: React.FC = () => {
                 <div className="w-full lg:w-80 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col shrink-0 overflow-hidden h-[300px] lg:h-auto">
                     <div className="p-4 bg-slate-50 border-b border-slate-100 font-bold text-slate-700 flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-indigo-500" />
-                        อันดับจังหวัด (Top Provinces)
+                        อันดับรหัสไปรษณีย์ (Top Zip Codes)
                     </div>
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
                         {provinceData.map((data, idx) => (
                             <div
                                 key={idx}
-                                onClick={() => setSelectedProvince(data.province)}
-                                className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${selectedProvince === data.province
+                                onClick={() => setSelectedProvince(data.zipCode || data.province)}
+                                className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${selectedProvince === (data.zipCode || data.province)
                                     ? 'bg-indigo-50 border-indigo-200 shadow-sm'
                                     : 'bg-white border-slate-100 hover:bg-slate-50'
                                     }`}
@@ -177,7 +238,10 @@ const AnalyticsPage: React.FC = () => {
                                             }`}>
                                             {idx + 1}
                                         </span>
-                                        <span className="font-bold text-slate-700 text-sm">{data.province}</span>
+                                        <div>
+                                            <span className="font-bold text-slate-700 text-sm block">{data.zipCode}</span>
+                                            <span className="text-xs text-slate-400">{data.province}</span>
+                                        </div>
                                     </div>
                                     <div className="text-xs text-emerald-600 font-semibold mt-1 ml-7">
                                         ฿{data.totalCOD.toLocaleString()}
