@@ -1,21 +1,20 @@
 import { Shipment } from '../types';
 
 const SEARCH_ENDPOINT = import.meta.env.VITE_GOOGLE_SHEETS_SCRIPT_URL;
+const isDemoMode = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
 
 export const GoogleSheetsService = {
     /**
      * Fetch all shipments from the Google Sheet
      */
     async fetchShipments(): Promise<Shipment[]> {
-        console.log('Fetching shipments from:', SEARCH_ENDPOINT);
-        if (!SEARCH_ENDPOINT) {
-            console.warn('Google Sheets URL is not configured.');
-            return [];
-        }
+        // Use backend proxy on NAS, direct fetch on Demo/Dev if needed
+        const url = isDemoMode ? `${SEARCH_ENDPOINT}?action=get` : '/api/gsheets/get';
+
+        console.log('Fetching shipments from:', url);
 
         try {
-            // The GAS script uses 'action=get' for fetching data
-            const response = await fetch(`${SEARCH_ENDPOINT}?action=get`);
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -26,7 +25,7 @@ export const GoogleSheetsService = {
             if (json.status === 'success' && Array.isArray(json.data)) {
                 return json.data as Shipment[];
             } else {
-                console.error('Invalid data format from Google Sheets:', json);
+                console.error('Invalid data format:', json);
                 return [];
             }
         } catch (error) {
@@ -39,31 +38,13 @@ export const GoogleSheetsService = {
      * Save (Append/Update) shipments to the Google Sheet
      */
     async saveShipments(shipments: Shipment[]): Promise<{ added: number; updated: number }> {
-        if (!SEARCH_ENDPOINT) {
-            console.warn('Google Sheets URL is not configured.');
-            return { added: 0, updated: 0 };
-        }
+        const url = isDemoMode ? `${SEARCH_ENDPOINT}?action=save` : '/api/gsheets/save';
 
         try {
-            // The GAS script expects POST data with 'action=save'
-            // Note: GAS Web Apps often require 'no-cors' for POST from browser, 
-            // BUT 'no-cors' prevents reading the response. 
-            // Standard practice for GAS is using `application/x-www-form-urlencoded` or JSON.
-            // However, to read response, we might need a proxy or rely on the script headers (CORS).
-            // If the user deployed with "Anyone", it usually supports CORS for GET.
-            // For POST, simple requests are better.
-            //
-            // Using 'no-cors' means we won't know if it succeeded, but it will work.
-            // Let's try standard fetch first. 
-            // If CORS fails, we might need to use `no-cors` mode or ask user to fix script headers (which they can't easily).
-            // actually, standard GAS "Web App" doesn't fully support CORS preflight options easily.
-            // The most reliable way for browser-to-GAS is often `no-cors` or JSONP (deprecated).
-            // But let's try standard POST. The simple "text/plain" content-type usually avoids preflight.
-
-            const response = await fetch(`${SEARCH_ENDPOINT}?action=save`, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'text/plain;charset=utf-8', // Avoids preflight
+                    'Content-Type': isDemoMode ? 'text/plain;charset=utf-8' : 'application/json',
                 },
                 body: JSON.stringify(shipments),
             });
@@ -86,17 +67,14 @@ export const GoogleSheetsService = {
      * Delete a shipment by Tracking Number
      */
     async deleteShipment(trackingNumber: string): Promise<boolean> {
-        if (!SEARCH_ENDPOINT) {
-            console.warn('Google Sheets URL is not configured.');
-            return false;
-        }
+        const url = isDemoMode ? `${SEARCH_ENDPOINT}?action=delete` : '/api/gsheets/delete';
 
         try {
             // Send delete action
-            const response = await fetch(`${SEARCH_ENDPOINT}?action=delete`, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'text/plain;charset=utf-8',
+                    'Content-Type': isDemoMode ? 'text/plain;charset=utf-8' : 'application/json',
                 },
                 body: JSON.stringify({ trackingNumber }),
             });

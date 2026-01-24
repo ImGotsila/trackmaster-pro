@@ -59,6 +59,53 @@ app.post('/api/history', (req, res) => {
     stmt.finalize();
 });
 
+// --- GOOGLE SHEETS PROXY API ---
+const GS_URL = process.env.VITE_GOOGLE_SHEETS_SCRIPT_URL;
+
+app.get('/api/gsheets/get', async (req, res) => {
+    if (!GS_URL) return res.status(500).json({ error: 'GAS URL not configured on server' });
+    try {
+        const response = await fetch(`${GS_URL}?action=get`);
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        console.error('Proxy GET error:', err);
+        res.status(502).json({ error: 'Failed to fetch from Google Sheets', details: err.message });
+    }
+});
+
+app.post('/api/gsheets/save', async (req, res) => {
+    if (!GS_URL) return res.status(500).json({ error: 'GAS URL not configured on server' });
+    try {
+        const response = await fetch(`${GS_URL}?action=save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(req.body)
+        });
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        console.error('Proxy SAVE error:', err);
+        res.status(502).json({ error: 'Failed to save to Google Sheets', details: err.message });
+    }
+});
+
+app.post('/api/gsheets/delete', async (req, res) => {
+    if (!GS_URL) return res.status(500).json({ error: 'GAS URL not configured on server' });
+    try {
+        const response = await fetch(`${GS_URL}?action=delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(req.body)
+        });
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        console.error('Proxy DELETE error:', err);
+        res.status(502).json({ error: 'Failed to delete from Google Sheets', details: err.message });
+    }
+});
+
 // API: Save Analytics (JSON File)
 const analyticsPath = path.join(process.env.DB_PATH ? path.dirname(process.env.DB_PATH) : __dirname, 'analytics.json');
 
