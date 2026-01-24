@@ -14,69 +14,102 @@ const AnalyticsPage: React.FC = () => {
     const [isSyncing, setIsSyncing] = useState(false);
     const [progress, setProgress] = useState({ current: 0, total: 0, status: '' });
 
-    // Compute analytics client-side (by ZIP CODE, not province)
-    const computeAnalytics = () => {
+    // Compute analytics client-side (ASYNC with chunks for better performance)
+    const computeAnalytics = async () => {
         const stats = new Map<string, { zipCode: string; province: string; count: number; totalCOD: number; totalCost: number }>();
         const total = shipments.length;
+        const CHUNK_SIZE = 100; // Process 100 items at a time
 
-        setProgress({ current: 0, total, status: 'กำลังวิเคราะห์ข้อมูล...' });
+        setProgress({ current: 0, total, status: 'กำลังเริ่มต้นการวิเคราะห์...' });
 
-        shipments.forEach((s, index) => {
-            if (!s.zipCode) return;
+        // Process in chunks to avoid blocking UI
+        for (let i = 0; i < total; i += CHUNK_SIZE) {
+            const chunk = shipments.slice(i, Math.min(i + CHUNK_SIZE, total));
 
-            const addresses = getAddressByZipCode(s.zipCode);
-            if (addresses.length === 0) return;
+            // Use setTimeout to yield to browser
+            await new Promise(resolve => setTimeout(resolve, 0));
 
-            const provinceName = addresses[0].province;
-            const zipKey = s.zipCode;
+            chunk.forEach(s => {
+                if (!s.zipCode) return;
 
-            const existing = stats.get(zipKey);
-            if (existing) {
-                existing.count++;
-                existing.totalCOD += (s.codAmount || 0);
-                existing.totalCost += (s.shippingCost || 0);
-            } else {
-                stats.set(zipKey, {
-                    zipCode: s.zipCode,
-                    province: provinceName,
-                    count: 1,
-                    totalCOD: (s.codAmount || 0),
-                    totalCost: (s.shippingCost || 0)
-                });
-            }
+                const addresses = getAddressByZipCode(s.zipCode);
+                if (addresses.length === 0) return;
 
-            // Update progress every 50 items
-            if (index % 50 === 0 || index === total - 1) {
-                setProgress({ current: index + 1, total, status: 'กำลังวิเคราะห์ข้อมูล...' });
-            }
-        });
+                const provinceName = addresses[0].province;
+                const zipKey = s.zipCode;
 
-        setProgress({ current: total, total, status: 'เสร็จสิ้น' });
+                const existing = stats.get(zipKey);
+                if (existing) {
+                    existing.count++;
+                    existing.totalCOD += (s.codAmount || 0);
+                    existing.totalCost += (s.shippingCost || 0);
+                } else {
+                    stats.set(zipKey, {
+                        zipCode: s.zipCode,
+                        province: provinceName,
+                        count: 1,
+                        totalCOD: (s.codAmount || 0),
+                        totalCost: (s.shippingCost || 0)
+                    });
+                }
+            });
+
+            // Update progress after each chunk
+            const current = Math.min(i + CHUNK_SIZE, total);
+            setProgress({
+                current,
+                total,
+                status: `กำลังวิเคราะห์... (${current}/${total})`
+            });
+        }
+
+        setProgress({ current: total, total, status: 'การวิเคราะห์เสร็จสมบูรณ์' });
 
         return Array.from(stats.values()).sort((a, b) => b.count - a.count);
     };
 
-    // Fetch Analytics from Server (JSON file)
+    // Fetch Analytics from Server (JSON file) - SEQUENTIAL WORKFLOW
     const fetchAnalytics = async () => {
         setIsLoading(true);
+        setProgress({ current: 0, total: 100, status: 'กำลังโหลดข้อมูลจาก Server...' });
+
         try {
             const res = await fetch('/api/analytics/geo');
-            if (res.ok) {
-                const data = await res.json();
-                // Data is now by zip code, need to map to province coordinates
-                const mappedData = data.map((item: any) => {
-                    const provinceInfo = thaiProvinces.find(p => p.province === item.province);
-                    return {
-                        ...item,
-                        lat: provinceInfo?.lat || 13.7563,
-                        lng: provinceInfo?.lng || 100.5018
-                    };
-                });
 
-                setProvinceData(mappedData.filter((p: any) => p.count > 0));
-            } else {
-                // If no saved data, compute from current shipments
-                const computed = computeAnalytics();
+            if (!res.ok) {
+                throw new Error(`Server responded with ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            setProgress({ current: 50, total: 100, status: 'กำลังประมวลผลพิกัด...' });
+
+            // Map data to coordinates
+            const mappedData = data.map((item: any) => {
+                const provinceInfo = thaiProvinces.find(p => p.province === item.province);
+                return {
+                    ...item,
+                    lat: provinceInfo?.lat || 13.7563,
+                    lng: provinceInfo?.lng || 100.5018
+                };
+            });
+
+            setProgress({ current: 100, total: 100, status: 'โหลดข้อมูลสำเร็จ' });
+            setProvinceData(mappedData.filter((p: any) => p.count > 0));
+
+            // Clear progress after 1 second
+            setTimeout(() => {
+                setProgress({ current: 0, total: 0, status: '' });
+            }, 1000);
+
+        } catch (err) {
+            console.error("Failed to fetch analytics:", err);
+
+            // Fallback: Compute from current shipments
+            setProgress({ current: 0, total: 100, status: 'ไม่พบข้อมูลบน Server - กำลังคำนวณใหม่...' });
+
+            try {
+                const computed = await computeAnalytics();
                 const mappedData = computed.map((item: any) => {
                     const provinceInfo = thaiProvinces.find(p => p.province === item.province);
                     return {
@@ -86,58 +119,81 @@ const AnalyticsPage: React.FC = () => {
                     };
                 });
                 setProvinceData(mappedData.filter((p: any) => p.count > 0));
+
+                setTimeout(() => {
+                    setProgress({ current: 0, total: 0, status: '' });
+                }, 1000);
+            } catch (computeErr) {
+                console.error("Computation error:", computeErr);
+                setProgress({ current: 0, total: 0, status: '' });
             }
-        } catch (err) {
-            console.error("Failed to fetch analytics:", err);
-            // Fallback to client-side computation
-            const computed = computeAnalytics();
-            const mappedData = computed.map((item: any) => {
-                const provinceInfo = thaiProvinces.find(p => p.province === item.province);
-                return {
-                    ...item,
-                    lat: provinceInfo?.lat || 13.7563,
-                    lng: provinceInfo?.lng || 100.5018
-                };
-            });
-            setProvinceData(mappedData.filter((p: any) => p.count > 0));
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Save analytics to server as JSON
+    // Save analytics to server as JSON - IMPROVED SEQUENTIAL WORKFLOW
     const handleSave = async () => {
-        if (shipments.length === 0) return;
+        if (shipments.length === 0) {
+            alert('ไม่มีข้อมูลให้บันทึก');
+            return;
+        }
+
         setIsSyncing(true);
-        setProgress({ current: 0, total: 100, status: 'เริ่มต้นการบันทึก...' });
 
         try {
-            setProgress({ current: 10, total: 100, status: 'กำลังคำนวณข้อมูล...' });
-            const analytics = computeAnalytics();
+            // Step 1: Initialize
+            setProgress({ current: 0, total: 100, status: 'เริ่มต้นการบันทึก...' });
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-            setProgress({ current: 80, total: 100, status: 'กำลังบันทึกลง Server...' });
+            // Step 2: Compute analytics (10-80%)
+            setProgress({ current: 10, total: 100, status: 'กำลังคำนวณข้อมูล Analytics...' });
+            const analytics = await computeAnalytics();
+
+            if (!analytics || analytics.length === 0) {
+                throw new Error('ไม่สามารถคำนวณข้อมูลได้');
+            }
+
+            // Step 3: Prepare data for server (80-85%)
+            setProgress({ current: 80, total: 100, status: 'กำลังเตรียมข้อมูลสำหรับบันทึก...' });
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            // Step 4: Save to server (85-95%)
+            setProgress({ current: 85, total: 100, status: 'กำลังบันทึกลง Server...' });
             const res = await fetch('/api/analytics/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(analytics)
             });
 
-            if (res.ok) {
-                setProgress({ current: 90, total: 100, status: 'กำลังโหลดข้อมูลใหม่...' });
-                await fetchAnalytics(); // Refresh
-                setProgress({ current: 100, total: 100, status: 'บันทึกสำเร็จ!' });
-                setTimeout(() => {
-                    setProgress({ current: 0, total: 0, status: '' });
-                }, 2000);
-                alert('Analytics saved to server!');
-            } else {
-                setProgress({ current: 0, total: 0, status: '' });
-                alert('Save failed.');
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Server error: ${res.status} - ${errorText}`);
             }
+
+            const result = await res.json();
+            console.log('Save result:', result);
+
+            // Step 5: Refresh data (95-98%)
+            setProgress({ current: 95, total: 100, status: 'กำลังโหลดข้อมูลใหม่...' });
+            await fetchAnalytics();
+
+            // Step 6: Complete (98-100%)
+            setProgress({ current: 100, total: 100, status: 'บันทึกสำเร็จ!' });
+
+            // Auto-hide progress after 2 seconds
+            setTimeout(() => {
+                setProgress({ current: 0, total: 0, status: '' });
+            }, 2000);
+
+            alert(`✅ บันทึกข้อมูลสำเร็จ!\n\nจำนวนรหัสไปรษณีย์: ${analytics.length} รายการ`);
+
         } catch (err) {
             console.error("Save error:", err);
             setProgress({ current: 0, total: 0, status: '' });
-            alert('Error connecting to server.');
+
+            const errorMessage = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
+            alert(`❌ บันทึกล้มเหลว\n\n${errorMessage}\n\nกรุณาลองใหม่อีกครั้ง`);
         } finally {
             setIsSyncing(false);
         }
