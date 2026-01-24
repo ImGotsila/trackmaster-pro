@@ -101,24 +101,30 @@ const AnalyticsPage: React.FC = () => {
     // Generate unique coordinates for each zip code (Robust Spread v2.3)
     const getUniqueCoordinates = (zipCode: string, baseProvince: string) => {
         const cleanedProvince = baseProvince?.trim();
-        const provinceInfo = thaiProvinces.find(p => p.province.trim() === cleanedProvince);
+        // Match by Thai name or English name from the new thaiProvinces structure
+        const provinceInfo = thaiProvinces.find(p =>
+            p.provinceThai === cleanedProvince ||
+            p.province === cleanedProvince ||
+            (cleanedProvince && p.provinceThai.includes(cleanedProvince)) ||
+            (cleanedProvince && cleanedProvince.includes(p.provinceThai))
+        );
         const baseLat = provinceInfo?.lat || 13.7563;
         const baseLng = provinceInfo?.lng || 100.5018;
 
         // Use zipCode as deterministic seed
         const seed = parseInt(zipCode) || zipCode.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
 
-        // Spread radius: 0.1 - 0.5 degrees (~10-55km)
-        // Increased for better separation v2.3
+        // Spread radius: 0.1 - 0.4 degrees (~10-45km)
         const angle = (seed * 137.5) % 360;
-        const radius = 0.1 + ((seed * 23) % 100) / 100 * 0.4;
+        const radius = 0.1 + ((seed * 23) % 100) / 100 * 0.35;
 
         const offsetLat = Math.cos(angle * (Math.PI / 180)) * radius;
         const offsetLng = Math.sin(angle * (Math.PI / 180)) * radius;
 
         return {
             lat: baseLat + offsetLat,
-            lng: baseLng + offsetLng
+            lng: baseLng + offsetLng,
+            isMatched: !!provinceInfo
         };
     };
 
@@ -269,10 +275,10 @@ const AnalyticsPage: React.FC = () => {
                     <MapIcon className="w-8 h-8 text-indigo-600" />
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                            วิเคราะห์พิกัดรหัสไปรษณีย์ <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-mono">v2.3 (Robust)</span>
+                            วิเคราะห์พิกัดรายย่อย <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-mono animate-bounce">v3.0 (FIXED)</span>
                         </h1>
                         <p className="text-sm text-slate-500">
-                            ตำแหน่งหมุดกระจายตัว (กด "อัปเดตข้อมูลใหม่" หากข้อมูลไม่กระจาย)
+                            แก้ไขตำแหน่งหมุดในแต่ละจังหวัด (กด "อัปเดตข้อมูลใหม่" เพื่อล้างข้อมูลเก่า)
                         </p>
                     </div>
                 </div>
@@ -382,12 +388,12 @@ const AnalyticsPage: React.FC = () => {
                                     key={idx}
                                     center={[data.lat, data.lng]}
                                     pathOptions={{
-                                        color: selectedProvince === data.zipCode ? '#ef4444' : '#4338ca',
-                                        fillColor: selectedProvince === data.zipCode ? '#f87171' : '#6366f1',
-                                        fillOpacity: 0.5,
+                                        color: !data.isMatched ? '#94a3b8' : (selectedProvince === data.zipCode ? '#ef4444' : '#4338ca'),
+                                        fillColor: !data.isMatched ? '#cbd5e1' : (selectedProvince === data.zipCode ? '#f87171' : '#6366f1'),
+                                        fillOpacity: 0.6,
                                         weight: selectedProvince === data.zipCode ? 3 : 1
                                     }}
-                                    radius={5 + Math.sqrt(data.count) * 3} // Better scaling using sqrt: 5px to ~25px
+                                    radius={5 + Math.sqrt(data.count) * 2.5} // Better scaling using sqrt: 5px to ~25px
                                     eventHandlers={{
                                         click: () => {
                                             setSelectedProvince(data.zipCode);
