@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Lock, User, AlertCircle } from 'lucide-react';
+import { Shield, Lock, User, AlertCircle, Info } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
