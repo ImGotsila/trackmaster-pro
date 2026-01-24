@@ -12,12 +12,16 @@ const AnalyticsPage: React.FC = () => {
     const [provinceData, setProvinceData] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
+    const [progress, setProgress] = useState({ current: 0, total: 0, status: '' });
 
     // Compute analytics client-side (by ZIP CODE, not province)
     const computeAnalytics = () => {
         const stats = new Map<string, { zipCode: string; province: string; count: number; totalCOD: number; totalCost: number }>();
+        const total = shipments.length;
 
-        shipments.forEach(s => {
+        setProgress({ current: 0, total, status: 'กำลังวิเคราะห์ข้อมูล...' });
+
+        shipments.forEach((s, index) => {
             if (!s.zipCode) return;
 
             const addresses = getAddressByZipCode(s.zipCode);
@@ -40,7 +44,14 @@ const AnalyticsPage: React.FC = () => {
                     totalCost: (s.shippingCost || 0)
                 });
             }
+
+            // Update progress every 50 items
+            if (index % 50 === 0 || index === total - 1) {
+                setProgress({ current: index + 1, total, status: 'กำลังวิเคราะห์ข้อมูล...' });
+            }
         });
+
+        setProgress({ current: total, total, status: 'เสร็จสิ้น' });
 
         return Array.from(stats.values()).sort((a, b) => b.count - a.count);
     };
@@ -98,21 +109,34 @@ const AnalyticsPage: React.FC = () => {
     const handleSave = async () => {
         if (shipments.length === 0) return;
         setIsSyncing(true);
+        setProgress({ current: 0, total: 100, status: 'เริ่มต้นการบันทึก...' });
+
         try {
+            setProgress({ current: 10, total: 100, status: 'กำลังคำนวณข้อมูล...' });
             const analytics = computeAnalytics();
+
+            setProgress({ current: 80, total: 100, status: 'กำลังบันทึกลง Server...' });
             const res = await fetch('/api/analytics/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(analytics)
             });
+
             if (res.ok) {
+                setProgress({ current: 90, total: 100, status: 'กำลังโหลดข้อมูลใหม่...' });
                 await fetchAnalytics(); // Refresh
+                setProgress({ current: 100, total: 100, status: 'บันทึกสำเร็จ!' });
+                setTimeout(() => {
+                    setProgress({ current: 0, total: 0, status: '' });
+                }, 2000);
                 alert('Analytics saved to server!');
             } else {
+                setProgress({ current: 0, total: 0, status: '' });
                 alert('Save failed.');
             }
         } catch (err) {
             console.error("Save error:", err);
+            setProgress({ current: 0, total: 0, status: '' });
             alert('Error connecting to server.');
         } finally {
             setIsSyncing(false);
@@ -163,6 +187,31 @@ const AnalyticsPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Progress Bar */}
+            {(isSyncing || progress.total > 0) && (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-semibold text-slate-700">{progress.status}</span>
+                        <span className="text-sm font-mono text-indigo-600">
+                            {progress.total > 0 ? `${Math.round((progress.current / progress.total) * 100)}%` : ''}
+                        </span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                        <div
+                            className="bg-gradient-to-r from-indigo-500 to-violet-600 h-3 rounded-full transition-all duration-300 ease-out"
+                            style={{ width: `${progress.total > 0 ? (progress.current / progress.total) * 100 : 0}%` }}
+                        >
+                            <div className="h-full w-full bg-white/20 animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div className="mt-2 text-xs text-slate-500">
+                        {progress.current > 0 && progress.total > 0 && (
+                            <span>ประมวลผลแล้ว {progress.current.toLocaleString()} / {progress.total.toLocaleString()} รายการ</span>
+                        )}
+                    </div>
+                </div>
+            )}
 
             <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0">
 
