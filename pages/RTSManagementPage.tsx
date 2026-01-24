@@ -6,7 +6,7 @@ import {
     QrCode, Search, Camera, Package, User, AlertCircle, CheckCircle2,
     RotateCcw, Trash2, Save, History, RefreshCw, ChevronRight, X
 } from 'lucide-react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5QrcodeScanner, Html5Qrcode } from 'html5-qrcode';
 import { isDemoMode } from '../utils/environment';
 
 interface RTSReport {
@@ -57,6 +57,15 @@ const RTSManagementPage: React.FC = () => {
 
     const [isScanning, setIsScanning] = useState(false);
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const isSecureContext = window.isSecureContext;
+
+    // Determine connection status text
+    const getConnectionStatus = () => {
+        if (isDemoMode()) return { text: 'Demo Mode', color: 'bg-amber-100 text-amber-700' };
+        if (isSecureContext) return { text: 'Secure Connection', color: 'bg-emerald-100 text-emerald-700' };
+        return { text: 'Insecure (Camera Restricted)', color: 'bg-rose-100 text-rose-700' };
+    };
 
     // Load History
     const fetchHistory = async () => {
@@ -76,6 +85,12 @@ const RTSManagementPage: React.FC = () => {
     }, []);
 
     const startScanner = () => {
+        if (!isSecureContext && !isDemoMode()) {
+            // Fallback for HTTP NAS: Click hidden file input
+            fileInputRef.current?.click();
+            return;
+        }
+
         if (!scannerRef.current) {
             const scanner = new Html5QrcodeScanner(
                 "reader",
@@ -86,6 +101,22 @@ const RTSManagementPage: React.FC = () => {
             scannerRef.current = scanner;
             setIsScanning(true);
         }
+    };
+
+    // Handle file scan result
+    const handleFileScan = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.scanFile(file, true)
+            .then(decodedText => {
+                onScanSuccess(decodedText);
+            })
+            .catch(err => {
+                alert("ไม่สามารถอ่านบาร์โค้ดจากรูปภาพได้");
+                console.error("File scan error", err);
+            });
     };
 
     const stopScanner = async () => {
@@ -258,19 +289,35 @@ const RTSManagementPage: React.FC = () => {
                         <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl overflow-hidden text-center">
                             {!isScanning ? (
                                 <div className="py-12 space-y-6">
+                                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4 ${getConnectionStatus().color}`}>
+                                        <AlertCircle className="w-3 h-3" />
+                                        {getConnectionStatus().text}
+                                    </div>
                                     <div className="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
                                         <Camera className="w-10 h-10" />
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-black text-slate-800">พร้อมสแกนพัสดุ</h3>
-                                        <p className="text-slate-400 font-medium max-w-[250px] mx-auto mt-2">กดปุ่มด้านล่างเพื่อเริ่มเปิดกล้องสแกนบาร์โค้ดหน้ากล่อง</p>
+                                        <p className="text-slate-400 font-medium max-w-[250px] mx-auto mt-2">
+                                            {!isSecureContext && !isDemoMode()
+                                                ? "เนื่องจากไม่ได้เชื่อมต่อผ่าน HTTPS ระบบจะเปิดกล้องผ่านไฟล์ภาพแทน"
+                                                : "กดปุ่มด้านล่างเพื่อเริ่มเปิดกล้องสแกนบาร์โค้ดหน้ากล่อง"
+                                            }
+                                        </p>
                                     </div>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                        onChange={handleFileScan}
+                                    />
                                     <button
                                         onClick={startScanner}
                                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-6 rounded-3xl font-black text-2xl shadow-2xl shadow-indigo-200 transition-all active:scale-90 flex items-center gap-4 mx-auto animate-pulse"
                                     >
                                         <QrCode className="w-8 h-8" />
-                                        เริ่มสแกนพัสดุ
+                                        {!isSecureContext && !isDemoMode() ? 'ถ่ายรูปบาร์โค้ด' : 'เริ่มสแกนพัสดุ'}
                                     </button>
                                 </div>
                             ) : (
@@ -568,7 +615,7 @@ const RTSManagementPage: React.FC = () => {
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
