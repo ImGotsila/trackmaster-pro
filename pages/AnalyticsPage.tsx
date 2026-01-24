@@ -157,6 +157,8 @@ const AnalyticsPage: React.FC = () => {
         return '#f1f5f9';
     };
 
+    const isDemoMode = window.location.hostname.includes('github.io');
+
     // Calculate dynamic radius based on zoom and volume
     const getDynamicRadius = (count: number) => {
         // Base size from math
@@ -172,8 +174,12 @@ const AnalyticsPage: React.FC = () => {
         setProgress({ current: 0, total: 100, status: 'กำลังโหลดข้อมูลจาก Server...' });
 
         try {
+            if (isDemoMode) {
+                console.log("Demo Mode: Skipping server fetch");
+                throw new Error("Demo Mode");
+            }
             // Add cache buster to ensure fresh data
-            const res = await fetch(`/api/analytics/geo?t=${Date.now()}`);
+            const res = await fetch(`/api/analytics?t=${Date.now()}`);
 
             if (!res.ok) {
                 throw new Error(`Server responded with ${res.status}`);
@@ -256,20 +262,24 @@ const AnalyticsPage: React.FC = () => {
             await new Promise(resolve => setTimeout(resolve, 200));
 
             // Step 4: Save to server (85-95%)
-            setProgress({ current: 85, total: 100, status: 'กำลังบันทึกลง Server...' });
-            const res = await fetch('/api/analytics/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(analytics)
-            });
+            if (isDemoMode) {
+                setProgress({ current: 90, total: 100, status: 'Demo Mode: บันทึกข้อมูลจำลองสำเร็จ (ไม่ลง Server)...' });
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            } else {
+                setProgress({ current: 85, total: 100, status: 'กำลังบันทึกลง Server...' });
+                const res = await fetch('/api/analytics', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(analytics)
+                });
 
-            if (!res.ok) {
-                const errorText = await res.text();
-                throw new Error(`Server error: ${res.status} - ${errorText}`);
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(`Server error: ${res.status} - ${errorText}`);
+                }
+                const result = await res.json();
+                console.log('Save result:', result);
             }
-
-            const result = await res.json();
-            console.log('Save result:', result);
 
             // Step 5: Refresh data (95-98%)
             setProgress({ current: 95, total: 100, status: 'กำลังโหลดข้อมูลใหม่...' });

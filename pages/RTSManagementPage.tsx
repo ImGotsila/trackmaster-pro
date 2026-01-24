@@ -265,10 +265,10 @@ const RTSManagementPage: React.FC = () => {
                                     </div>
                                     <button
                                         onClick={startScanner}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-3xl font-black text-xl shadow-xl shadow-indigo-100 transition-all active:scale-95 flex items-center gap-3 mx-auto"
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-6 rounded-3xl font-black text-2xl shadow-2xl shadow-indigo-200 transition-all active:scale-90 flex items-center gap-4 mx-auto animate-pulse"
                                     >
-                                        <QrCode className="w-6 h-6" />
-                                        เปิดกล้องสแกน
+                                        <QrCode className="w-8 h-8" />
+                                        เริ่มสแกนพัสดุ
                                     </button>
                                 </div>
                             ) : (
@@ -549,10 +549,10 @@ const RTSManagementPage: React.FC = () => {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-lg shadow-xl shadow-slate-200 flex items-center justify-center gap-3 active:scale-95 transition-all"
+                                className="w-full py-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-3xl font-black text-xl shadow-2xl shadow-slate-200 flex items-center justify-center gap-3 active:scale-95 transition-all"
                             >
-                                {isSubmitting ? <RefreshCw className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
-                                บันทึกรายงาน
+                                {isSubmitting ? <RefreshCw className="w-7 h-7 animate-spin" /> : <Save className="w-7 h-7" />}
+                                บันทึกรายงานทันที
                             </button>
                         </form>
                     ) : (
