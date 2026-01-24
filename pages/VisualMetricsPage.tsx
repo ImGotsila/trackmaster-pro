@@ -10,7 +10,7 @@ import { TrendingUp, BarChart3, PieChart as PieChartIcon, Activity, DollarSign, 
 
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 
-const VisualStatsPage: React.FC = () => {
+const VisualMetricsPage: React.FC = () => {
     const { shipments } = useData();
     const { settings } = useSettings();
     const codFeePercent = settings.cod_fee || 0;
@@ -280,4 +280,4 @@ const VisualStatsPage: React.FC = () => {
     );
 };
 
-export default VisualStatsPage;
+export default VisualMetricsPage;

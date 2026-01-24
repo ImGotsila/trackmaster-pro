@@ -9,7 +9,7 @@ import SummaryPage from './pages/SummaryPage';
 import DataManagementPage from './pages/DataManagementPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import CostAnalyticsPage from './pages/CostAnalyticsPage';
-import VisualStatsPage from './pages/VisualStatsPage';
+import VisualMetricsPage from './pages/VisualMetricsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import LoginPage from './pages/LoginPage';
 import { DataProvider } from './context/DataContext';
@@ -43,7 +43,7 @@ const AppContent: React.FC = () => {
         <Route path="/import" element={<ImportPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/summary" element={<SummaryPage />} />
-        <Route path="/visual-stats" element={<VisualStatsPage />} />
+        <Route path="/visual-stats" element={<VisualMetricsPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/cost-analytics" element={<CostAnalyticsPage />} />
         <Route path="/management" element={<DataManagementPage />} />
