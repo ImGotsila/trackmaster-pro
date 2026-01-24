@@ -68,25 +68,6 @@ const AnalyticsPage: React.FC = () => {
         return Array.from(stats.values()).sort((a, b) => b.count - a.count);
     };
 
-    // Generate unique coordinates for each zip code (deterministic offset)
-    const getUniqueCoordinates = (zipCode: string, baseProvince: string) => {
-        const provinceInfo = thaiProvinces.find(p => p.province === baseProvince);
-        const baseLat = provinceInfo?.lat || 13.7563;
-        const baseLng = provinceInfo?.lng || 100.5018;
-
-        // Use zipCode as seed for deterministic random offset
-        const seed = zipCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
-        // Create pseudo-random offset based on seed (-0.15 to +0.15 degrees, ~16km radius)
-        const offsetLat = ((seed * 17) % 100) / 100 * 0.3 - 0.15;
-        const offsetLng = ((seed * 31) % 100) / 100 * 0.3 - 0.15;
-
-        return {
-            lat: baseLat + offsetLat,
-            lng: baseLng + offsetLng
-        };
-    };
-
     // Fetch Analytics from Server (JSON file) - SEQUENTIAL WORKFLOW
     const fetchAnalytics = async () => {
         setIsLoading(true);
@@ -101,14 +82,15 @@ const AnalyticsPage: React.FC = () => {
 
             const data = await res.json();
 
-            setProgress({ current: 50, total: 100, status: 'กำลังสร้างพิกัดสำหรับแต่ละรหัส...' });
+            setProgress({ current: 50, total: 100, status: 'กำลังประมวลผลพิกัด...' });
 
-            // Map data to UNIQUE coordinates per zip code
+            // Map data to coordinates
             const mappedData = data.map((item: any) => {
-                const coords = getUniqueCoordinates(item.zipCode, item.province);
+                const provinceInfo = thaiProvinces.find(p => p.province === item.province);
                 return {
                     ...item,
-                    ...coords
+                    lat: provinceInfo?.lat || 13.7563,
+                    lng: provinceInfo?.lng || 100.5018
                 };
             });
 
@@ -129,10 +111,11 @@ const AnalyticsPage: React.FC = () => {
             try {
                 const computed = await computeAnalytics();
                 const mappedData = computed.map((item: any) => {
-                    const coords = getUniqueCoordinates(item.zipCode, item.province);
+                    const provinceInfo = thaiProvinces.find(p => p.province === item.province);
                     return {
                         ...item,
-                        ...coords
+                        lat: provinceInfo?.lat || 13.7563,
+                        lng: provinceInfo?.lng || 100.5018
                     };
                 });
                 setProvinceData(mappedData.filter((p: any) => p.count > 0));
@@ -216,10 +199,10 @@ const AnalyticsPage: React.FC = () => {
         }
     };
 
-    // Initial Load
-    useEffect(() => {
-        fetchAnalytics();
-    }, []);
+    // Initial Load - DISABLED for performance
+    // useEffect(() => {
+    //     fetchAnalytics();
+    // }, []);
 
     // Calculate max count for dynamic scaling
     const maxCount = Math.max(...provinceData.map(p => p.count), 1);
@@ -300,6 +283,17 @@ const AnalyticsPage: React.FC = () => {
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
+
+                        {provinceData.length === 0 && !isLoading && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-[1000]">
+                                <div className="text-center p-8">
+                                    <MapIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-slate-600 mb-2">ยังไม่มีข้อมูล Analytics</h3>
+                                    <p className="text-slate-500">กดปุ่ม "โหลดข้อมูล" หรือ "คำนวณ & บันทึก" เพื่อเริ่มต้น</p>
+                                </div>
+                            </div>
+                        )}
+
                         {provinceData.map((data, idx) => (
                             <CircleMarker
                                 key={idx}
