@@ -8,6 +8,10 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('./database');
 
 const app = express();
+// Load .env from root (two levels up because we are in /app/server in docker, but logic below handles it)
+// In Docker, .env will be at /app/.env. server is at /app/server.
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
