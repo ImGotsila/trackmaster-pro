@@ -36,7 +36,15 @@ const LoginPage: React.FC = () => {
                         <p className="text-slate-400 font-medium">เข้าสู่ระบบจัดการการจัดส่ง</p>
                     </div>
 
+                    {window.location.hostname.includes('github.io') && (
+                        <div className="bg-indigo-50 text-indigo-700 p-4 rounded-xl text-xs font-bold border border-indigo-100 mb-4">
+                            <Info className="w-4 h-4 inline mr-2" />
+                            ระบบ Demo (GitHub Pages): ใช้ User `guest` และรหัสผ่านอะไรก็ได้ครับ
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-4">
+
                         {error && (
                             <div className="bg-rose-50 text-rose-600 p-4 rounded-xl text-sm font-bold flex items-center gap-3 border border-rose-100">
                                 <AlertCircle className="w-5 h-5 shrink-0" />

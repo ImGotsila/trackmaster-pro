@@ -31,7 +31,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
+    const isDemoMode = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+
     const login = async (username: string, password: string) => {
+        // demo mode bypass
+        if (isDemoMode && username === 'guest') {
+            const guestUser: User = { id: 'guest', username: 'guest', role: 'user' };
+            setUser(guestUser);
+            localStorage.setItem('trackmaster_user', JSON.stringify(guestUser));
+            return;
+        }
+
         const res = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -58,12 +68,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             user,
             login,
             logout,
-            isAuthenticated: !!user,
+            isAuthenticated: !!user || (isDemoMode && !!localStorage.getItem('trackmaster_user')),
             isAdmin: user?.role === 'admin'
         }}>
             {children}
         </AuthContext.Provider>
     );
+
 };
 
 export const useAuth = () => {
