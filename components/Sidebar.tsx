@@ -14,8 +14,7 @@ const Sidebar: React.FC = () => {
     { path: '/visual-stats', label: 'วิเคราะห์เชิงภาพ (Charts)', icon: BarChart3 },
     { path: '/analytics', label: 'วิเคราะห์พื้นที่ (Map)', icon: Map },
     { path: '/cost-analytics', label: 'วิเคราะห์ค่าส่ง (Cost)', icon: DollarSign },
-    { path: '/rts', label: 'เช็คสินค้า & RTS', icon: RotateCcw },
-    { path: '/search', label: 'ค้นหาพัสดุ (Search)', icon: Search },
+    { path: '/rts', label: 'ค้นหาพัสดุ (Search & Scan)', icon: Search },
     { path: '/import', label: 'นำเข้าข้อมูล (Import)', icon: FileInput },
     { path: '/management', label: 'จัดการข้อมูล (Data)', icon: Database },
   ];

@@ -251,8 +251,8 @@ const RTSManagementPage: React.FC = () => {
                         <Package className="w-6 h-6" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">จัดการสินค้า & ตีกลับ (Check-out/RTS)</h1>
-                        <p className="text-sm text-slate-500 font-medium">สแกนพัสดุ ตรวจสอบคุณภาพ และรายงานสินค้าตีกลับ</p>
+                        <h1 className="text-2xl font-bold text-slate-800">ค้นหาพัสดุ (Search & Scan)</h1>
+                        <p className="text-sm text-slate-500 font-medium">สแกนเลขพัสดุหรือค้นหาชื่อเพื่อตรวจสอบสถานะ</p>
                     </div>
                 </div>
             </div>
@@ -260,18 +260,18 @@ const RTSManagementPage: React.FC = () => {
             {/* Tabs */}
             <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-fit">
                 <button
-                    onClick={() => setActiveTab('scan')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'scan' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
-                >
-                    <QrCode className="w-4 h-4" />
-                    สแกน QR/Barcode
-                </button>
-                <button
                     onClick={() => setActiveTab('search')}
                     className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'search' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
                 >
                     <Search className="w-4 h-4" />
                     ค้นหารายชื่อ
+                </button>
+                <button
+                    onClick={() => setActiveTab('scan')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'scan' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
+                >
+                    <QrCode className="w-4 h-4" />
+                    สแกนกล้อง
                 </button>
                 <button
                     onClick={() => setActiveTab('history')}
