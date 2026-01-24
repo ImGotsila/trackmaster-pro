@@ -38,6 +38,33 @@ db.serialize(() => {
         timestamp INTEGER,
         raw_data TEXT
     )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL,
+        permissions TEXT
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    )`);
+
+    // Seed Initial Data
+    db.get(`SELECT COUNT(*) as count FROM users`, (err, row) => {
+        if (!err && row.count === 0) {
+            db.run(`INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)`,
+                ['admin-init', 'admin', 'admin1234', 'admin']);
+        }
+    });
+
+    db.get(`SELECT COUNT(*) as count FROM settings WHERE key = 'cod_fee'`, (err, row) => {
+        if (!err && row.count === 0) {
+            db.run(`INSERT INTO settings (key, value) VALUES (?, ?)`, ['cod_fee', '3']);
+        }
+    });
 });
 
 module.exports = db;

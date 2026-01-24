@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../context/DataContext';
-import { TrendingUp, MapPin, Users, DollarSign, Package, Award, Calendar, Download, BarChart3, PieChart, Search } from 'lucide-react';
+import { TrendingUp, MapPin, Users, DollarSign, Package, Award, Calendar, Download, BarChart3, PieChart, Search, Percent } from 'lucide-react';
+import { useSettings } from '../context/SettingsContext';
 import AddressDetailModal from '../components/AddressDetailModal';
 import { getAddressByZipCode } from '../services/AddressService';
 
@@ -8,6 +9,8 @@ type TimeFilter = 'all' | 'today' | 'week' | 'month' | 'custom';
 
 const SummaryPage: React.FC = () => {
     const { shipments } = useData();
+    const { settings } = useSettings();
+    const codFeePercent = settings.cod_fee || 0;
     const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
 
     // Address Lookup State
@@ -50,11 +53,13 @@ const SummaryPage: React.FC = () => {
     }, [shipments, timeFilter]);
 
     const stats = useMemo(() => {
-        // 1. Total Shipping Cost & COD
+        // 1. Total Shipping Cost & COD & Fees
         const totalShippingCost = filteredShipments.reduce((sum, s) => sum + (s.shippingCost || 0), 0);
         const totalCOD = filteredShipments.reduce((sum, s) => sum + (s.codAmount || 0), 0);
-        const profit = totalCOD - totalShippingCost;
-        const costPercentage = totalCOD > 0 ? (totalShippingCost / totalCOD) * 100 : 0;
+        const totalCodFees = totalCOD * (codFeePercent / 100);
+        const profit = totalCOD - totalShippingCost - totalCodFees;
+        const totalActualCost = totalShippingCost + totalCodFees;
+        const costPercentage = totalCOD > 0 ? (totalActualCost / totalCOD) * 100 : 0;
         const roi = totalShippingCost > 0 ? ((profit / totalShippingCost) * 100) : 0;
 
         // 2. Average metrics
@@ -170,9 +175,11 @@ const SummaryPage: React.FC = () => {
             statusMap,
             courierStats,
             batchStats,
+            totalCodFees,
+            totalActualCost,
             totalOrders: filteredShipments.length
         };
-    }, [filteredShipments]);
+    }, [filteredShipments, codFeePercent]);
 
     const exportToCSV = () => {
         const headers = ['รหัสติดตาม', 'ชื่อลูกค้า', 'เบอร์โทร', 'COD', 'ค่าส่ง', 'รหัสไปรษณีย์', 'สถานะ', 'ขนส่ง', 'วันที่', 'เวลา'];
@@ -260,8 +267,25 @@ const SummaryPage: React.FC = () => {
                         <h3 className="text-2xl font-bold text-rose-600 tracking-tight">
                             ฿{stats.totalShippingCost.toLocaleString()}
                         </h3>
-                        <p className="text-xs text-slate-400 mt-1">
-                            เฉลี่ย ฿{stats.avgShippingCost.toLocaleString(undefined, { maximumFractionDigits: 0 })} /ชิ้น
+                        <div className="flex justify-between items-center mt-1">
+                            <p className="text-[10px] text-slate-400">เฉลี่ย ฿{stats.avgShippingCost.toLocaleString(undefined, { maximumFractionDigits: 0 })} /ชิ้น</p>
+                            <span className="text-[10px] font-bold text-slate-300">GROSS COST</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* COD Fee Card */}
+                <div className="card p-6 relative group border-rose-100 bg-rose-50/20">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Percent className="w-16 h-16 text-rose-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">ค่าธรรมเนียม COD ({codFeePercent}%)</p>
+                        <h3 className="text-2xl font-bold text-rose-500 tracking-tight">
+                            ฿{stats.totalCodFees.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </h3>
+                        <p className="text-[10px] text-slate-400 mt-1">
+                            หักจากยอด COD สะสม
                         </p>
                     </div>
                 </div>
@@ -283,21 +307,24 @@ const SummaryPage: React.FC = () => {
                 </div>
 
                 {/* Profit Card */}
-                <div className="card p-6 relative group">
+                <div className="card p-6 relative group bg-indigo-50/30 border-indigo-100 shadow-indigo-100/50">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <TrendingUp className="w-16 h-16 text-indigo-600" />
                     </div>
                     <div>
-                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">กำไรโดยประมาณ (Profit)</p>
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">กำไรสุทธิ (Net Profit)</p>
                         <h3 className="text-2xl font-bold text-indigo-600 tracking-tight">
-                            ฿{stats.profit.toLocaleString()}
+                            ฿{stats.profit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </h3>
-                        <p className="text-xs text-slate-400 mt-1">
-                            ROI: {stats.roi.toFixed(1)}%
+                        <p className="text-[10px] text-slate-400 mt-1 font-bold">
+                            ROI (Net): {stats.roi.toFixed(1)}%
                         </p>
                     </div>
                 </div>
+            </div>
 
+            {/* Row 2: Stats */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Cost Percentage Card */}
                 <div className="card p-6 relative group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">

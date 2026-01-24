@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useData } from '../context/DataContext';
+import { useSettings } from '../context/SettingsContext';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
     LineChart, Line, AreaChart, Area, PieChart, Pie, Cell
@@ -10,6 +11,8 @@ const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 const VisualStatsPage: React.FC = () => {
     const { shipments } = useData();
+    const { settings } = useSettings();
+    const codFeePercent = settings.cod_fee || 0;
 
     // 1. Data Processing for Daily Trend (Area Chart)
     const dailyData = useMemo(() => {
@@ -73,12 +76,18 @@ const VisualStatsPage: React.FC = () => {
         return Array.from(map.values())
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .slice(-10)
-            .map(d => ({
-                date: d.date,
-                avgCOD: Math.round(d.totalCOD / d.count),
-                avgCost: Math.round(d.totalCost / d.count)
-            }));
-    }, [shipments]);
+            .map(d => {
+                const avgCOD = d.totalCOD / d.count;
+                const avgCost = d.totalCost / d.count;
+                const avgFee = avgCOD * (codFeePercent / 100);
+                return {
+                    date: d.date,
+                    avgCOD: Math.round(avgCOD),
+                    avgNet: Math.round(avgCOD - avgCost - avgFee),
+                    avgCost: Math.round(avgCost + avgFee)
+                };
+            });
+    }, [shipments, codFeePercent]);
 
     const totalCOD = shipments.reduce((sum, s) => sum + (s.codAmount || 0), 0);
     const totalCost = shipments.reduce((sum, s) => sum + (s.shippingCost || 0), 0);
@@ -129,11 +138,11 @@ const VisualStatsPage: React.FC = () => {
                     <div className="absolute -right-2 -top-2 opacity-5 group-hover:opacity-10 transition-opacity">
                         <Activity className="w-20 h-20 text-rose-600" />
                     </div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">ต้นทุนค่าส่งรวม</p>
-                    <h3 className="text-3xl font-black text-rose-500 tracking-tighter">฿{totalCost.toLocaleString()}</h3>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">ต้นทุนค่าส่ง + COD Fee</p>
+                    <h3 className="text-3xl font-black text-rose-500 tracking-tighter">฿{(totalCost + (totalCOD * (codFeePercent / 100))).toLocaleString(undefined, { maximumFractionDigits: 0 })}</h3>
                     <div className="flex items-center gap-1 mt-2 text-rose-600 font-bold text-xs bg-rose-50 w-fit px-2 py-0.5 rounded-full">
                         <ArrowDownRight className="w-3 h-3" />
-                        <span>{((totalCost / Math.max(1, totalCOD)) * 100).toFixed(1)}% Ratio</span>
+                        <span>{(((totalCost + (totalCOD * (codFeePercent / 100))) / Math.max(1, totalCOD)) * 100).toFixed(1)}% All-in Cost</span>
                     </div>
                 </div>
 
@@ -258,7 +267,8 @@ const VisualStatsPage: React.FC = () => {
                                 <RechartsTooltip />
                                 <Legend />
                                 <Line type="stepAfter" dataKey="avgCOD" name="เฉลี่ย COD" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
-                                <Line type="stepAfter" dataKey="avgCost" name="เฉลี่ยค่าส่ง" stroke="#ef4444" strokeWidth={3} strokeDasharray="5 5" dot={{ r: 4, fill: '#ef4444' }} />
+                                <Line type="stepAfter" dataKey="avgNet" name="กำไรสุทธิเฉลี่ย (Net)" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1' }} />
+                                <Line type="stepAfter" dataKey="avgCost" name="ต้นทุน+Feeเฉลี่ย" stroke="#ef4444" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 2, fill: '#ef4444' }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>

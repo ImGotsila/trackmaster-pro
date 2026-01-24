@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useData } from '../context/DataContext';
+import { useSettings } from '../context/SettingsContext';
 import { Calendar, RefreshCw, Search, Package, ExternalLink, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Trash2 } from 'lucide-react';
 import AddressDetailModal from '../components/AddressDetailModal';
 
@@ -7,6 +8,8 @@ const ITEMS_PER_PAGE = 50;
 
 const Dashboard: React.FC = () => {
   const { shipments, isLoading, deleteShipment } = useData();
+  const { settings } = useSettings();
+  const codFeePercent = settings.cod_fee || 0;
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,12 +75,14 @@ const Dashboard: React.FC = () => {
 
         // Custom Sort Keys (Computed)
         if (sortConfig.key === 'profit') {
-          aValue = (a.codAmount || 0) - (a.shippingCost || 0);
-          bValue = (b.codAmount || 0) - (b.shippingCost || 0);
+          const aFee = (a.codAmount || 0) * (codFeePercent / 100);
+          const bFee = (b.codAmount || 0) * (codFeePercent / 100);
+          aValue = (a.codAmount || 0) - (a.shippingCost || 0) - aFee;
+          bValue = (b.codAmount || 0) - (b.shippingCost || 0) - bFee;
         }
         if (sortConfig.key === 'costPercent') {
-          aValue = a.codAmount > 0 ? (a.shippingCost || 0) / a.codAmount : 0;
-          bValue = b.codAmount > 0 ? (b.shippingCost || 0) / b.codAmount : 0;
+          aValue = a.codAmount > 0 ? ((a.shippingCost || 0) / a.codAmount) * 100 : 0;
+          bValue = b.codAmount > 0 ? ((b.shippingCost || 0) / b.codAmount) * 100 : 0;
         }
 
         if (aValue < bValue) {
@@ -100,12 +105,16 @@ const Dashboard: React.FC = () => {
   }, [sortedShipments, currentPage]);
 
   const stats = useMemo(() => {
-    return filteredShipments.reduce((acc, curr) => ({
-      count: acc.count + 1,
-      totalCOD: acc.totalCOD + (curr.codAmount || 0),
-      totalCost: acc.totalCost + (curr.shippingCost || 0)
-    }), { count: 0, totalCOD: 0, totalCost: 0 });
-  }, [filteredShipments]);
+    return filteredShipments.reduce((acc, curr) => {
+      const codFee = (curr.codAmount || 0) * (codFeePercent / 100);
+      return {
+        count: acc.count + 1,
+        totalCOD: acc.totalCOD + (curr.codAmount || 0),
+        totalCost: acc.totalCost + (curr.shippingCost || 0),
+        totalFee: acc.totalFee + codFee
+      };
+    }, { count: 0, totalCOD: 0, totalCost: 0, totalFee: 0 });
+  }, [filteredShipments, codFeePercent]);
 
   const formatDate = (dateStr: string) => {
     try {
@@ -211,14 +220,15 @@ const Dashboard: React.FC = () => {
                 {/* Cost Analysis */}
                 <div className="flex items-center gap-3 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">
                   <span className="text-slate-500 font-medium">
-                    กำไร (Est): <b className="text-indigo-600">{(stats.totalCOD - stats.totalCost).toLocaleString()}</b> บ.
+                    กำไร (Est): <b className="text-indigo-600">{(stats.totalCOD - stats.totalCost - stats.totalFee).toLocaleString(undefined, { maximumFractionDigits: 0 })}</b> บ.
                   </span>
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${(stats.totalCost / (stats.totalCOD || 1)) * 100 > 30
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${((stats.totalCost + stats.totalFee) / (stats.totalCOD || 1)) * 100 > 30
                     ? 'bg-rose-100 text-rose-700'
                     : 'bg-emerald-100 text-emerald-700'
                     }`}>
-                    ต้นทุน {stats.totalCOD > 0 ? ((stats.totalCost / stats.totalCOD) * 100).toFixed(1) : 0}%
+                    ต้นทุน {stats.totalCOD > 0 ? (((stats.totalCost + stats.totalFee) / stats.totalCOD) * 100).toFixed(1) : 0}%
                   </span>
+                  {codFeePercent > 0 && <span className="text-[10px] font-bold text-slate-400 tracking-tight">(หักค่า COD {codFeePercent}%)</span>}
                 </div>
               </div>
             </div>
@@ -309,8 +319,9 @@ const Dashboard: React.FC = () => {
                   </td>
                   <td className="px-3 py-3 text-xs md:text-sm font-medium text-slate-600 text-right">{item.shippingCost}</td>
                   <td className="px-3 py-3 text-xs md:text-sm font-bold text-right bg-indigo-50/20">
-                    <span className={(item.codAmount - item.shippingCost) > 0 ? 'text-indigo-700' : 'text-slate-400'}>
-                      {(item.codAmount - item.shippingCost) > 0 ? (item.codAmount - item.shippingCost).toLocaleString() : '-'}
+                    <span className={(item.codAmount - item.shippingCost - ((item.codAmount || 0) * (codFeePercent / 100))) > 0 ? 'text-indigo-700' : 'text-slate-400'}>
+                      {(item.codAmount - item.shippingCost - ((item.codAmount || 0) * (codFeePercent / 100))) > 0 ?
+                        (item.codAmount - item.shippingCost - ((item.codAmount || 0) * (codFeePercent / 100))).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '-'}
                     </span>
                   </td>
                   <td className="px-3 py-3 text-center">

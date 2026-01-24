@@ -64,6 +64,65 @@ app.get('/api/analytics/geo', (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// --- ADMIN & AUTH API ---
+
+// API: Login (Simple for now, will enhance with hashing/JWT if needed)
+app.post('/api/auth/login', (req, res) => {
+    const { username, password } = req.body;
+    db.get(`SELECT * FROM users WHERE username = ? AND password = ?`, [username, password], (err, user) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!user) return res.status(401).json({ error: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
+
+        const { password: _, ...userWithoutPassword } = user;
+        res.json({ success: true, user: userWithoutPassword });
+    });
+});
+
+// API: Get Settings
+app.get('/api/settings', (req, res) => {
+    db.all(`SELECT * FROM settings`, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        const settings = {};
+        rows.forEach(row => { settings[row.key] = row.value; });
+        res.json(settings);
+    });
+});
+
+// API: Update Setting
+app.post('/api/settings', (req, res) => {
+    const { key, value } = req.body;
+    db.run(`INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
+        [key, value.toString()], (err) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ success: true });
+        });
+});
+
+// API: Manage Users
+app.get('/api/users', (req, res) => {
+    db.all(`SELECT id, username, role, permissions FROM users`, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+app.post('/api/users', (req, res) => {
+    const { id, username, password, role } = req.body;
+    db.run(`INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)`,
+        [id || Date.now().toString(), username, password, role || 'user'], (err) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ success: true });
+        });
+});
+
+app.delete('/api/users/:id', (req, res) => {
+    db.run(`DELETE FROM users WHERE id = ?`, [req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+    });
+});
+
 // Serve Frontend (Production)
 // In Docker, we will copy 'dist' to 'public' or similar
 const staticPath = path.join(__dirname, '../dist');
