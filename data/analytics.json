@@ -2,6 +2,8 @@
   {
     "zipCode": "20150",
     "province": "ชลบุรี",
+    "district": "บางละมุง",
+    "subdistrict": "ตะเคียนเตี้ย",
     "count": 76,
     "totalCOD": 17044,
     "totalCost": 1816
@@ -9,6 +11,8 @@
   {
     "zipCode": "12120",
     "province": "ปทุมธานี",
+    "district": "คลองหลวง",
+    "subdistrict": "คลองสอง",
     "count": 43,
     "totalCOD": 10001,
     "totalCost": 1248
@@ -16,6 +20,8 @@
   {
     "zipCode": "10510",
     "province": "กรุงเทพมหานคร",
+    "district": "คลองสามวา",
+    "subdistrict": "ทรายกองดิน",
     "count": 43,
     "totalCOD": 7750,
     "totalCost": 988
@@ -23,6 +29,8 @@
   {
     "zipCode": "20000",
     "province": "ชลบุรี",
+    "district": "เมืองชลบุรี",
+    "subdistrict": "คลองตำหรุ",
     "count": 37,
     "totalCOD": 5960,
     "totalCost": 672
@@ -30,6 +38,8 @@
   {
     "zipCode": "10540",
     "province": "สมุทรปราการ",
+    "district": "บางพลี",
+    "subdistrict": "บางปลา",
     "count": 37,
     "totalCOD": 7583,
     "totalCost": 992
@@ -37,6 +47,8 @@
   {
     "zipCode": "90110",
     "province": "สงขลา",
+    "district": "บางกล่ำ",
+    "subdistrict": "ท่าช้าง",
     "count": 37,
     "totalCOD": 8333,
     "totalCost": 932
@@ -44,6 +56,8 @@
   {
     "zipCode": "21140",
     "province": "ระยอง",
+    "district": "ปลวกแดง",
+    "subdistrict": "ตาสิทธิ์",
     "count": 34,
     "totalCOD": 5110,
     "totalCost": 784
@@ -51,6 +65,8 @@
   {
     "zipCode": "10150",
     "province": "กรุงเทพมหานคร",
+    "district": "จอมทอง",
+    "subdistrict": "จอมทอง",
     "count": 33,
     "totalCOD": 8801,
     "totalCost": 1018
@@ -58,6 +74,8 @@
   {
     "zipCode": "10280",
     "province": "สมุทรปราการ",
+    "district": "เมืองสมุทรปราการ",
+    "subdistrict": "ท้ายบ้าน",
     "count": 32,
     "totalCOD": 7514,
     "totalCost": 872
@@ -65,6 +83,8 @@
   {
     "zipCode": "10250",
     "province": "กรุงเทพมหานคร",
+    "district": "ประเวศ",
+    "subdistrict": "ดอกไม้",
     "count": 32,
     "totalCOD": 6239,
     "totalCost": 732
@@ -72,6 +92,8 @@
   {
     "zipCode": "83000",
     "province": "พังงา",
+    "district": "เกาะยาว",
+    "subdistrict": "พรุใน",
     "count": 32,
     "totalCOD": 6684,
     "totalCost": 1512
@@ -79,6 +101,8 @@
   {
     "zipCode": "10160",
     "province": "กรุงเทพมหานคร",
+    "district": "บางแค",
+    "subdistrict": "บางแค",
     "count": 30,
     "totalCOD": 4657,
     "totalCost": 580
@@ -86,6 +110,8 @@
   {
     "zipCode": "11110",
     "province": "นนทบุรี",
+    "district": "บางบัวทอง",
+    "subdistrict": "บางคูรัด",
     "count": 29,
     "totalCOD": 5977,
     "totalCost": 904
@@ -93,6 +119,8 @@
   {
     "zipCode": "74000",
     "province": "สมุทรสาคร",
+    "district": "เมืองสมุทรสาคร",
+    "subdistrict": "กาหลง",
     "count": 28,
     "totalCOD": 5169,
     "totalCost": 568
@@ -100,6 +128,8 @@
   {
     "zipCode": "10240",
     "province": "กรุงเทพมหานคร",
+    "district": "บางกะปิ",
+    "subdistrict": "คลองจั่น",
     "count": 27,
     "totalCOD": 5869,
     "totalCost": 632
@@ -107,6 +137,8 @@
   {
     "zipCode": "65000",
     "province": "พิษณุโลก",
+    "district": "เมืองพิษณุโลก",
+    "subdistrict": "จอมทอง",
     "count": 27,
     "totalCOD": 4525,
     "totalCost": 712
@@ -114,6 +146,8 @@
   {
     "zipCode": "20230",
     "province": "ชลบุรี",
+    "district": "ศรีราชา",
+    "subdistrict": "ทุ่งสุขลา",
     "count": 26,
     "totalCOD": 4890,
     "totalCost": 696
@@ -121,6 +155,8 @@
   {
     "zipCode": "80000",
     "province": "นครศรีธรรมราช",
+    "district": "พระพรหม",
+    "subdistrict": "ช้างซ้าย",
     "count": 26,
     "totalCOD": 4415,
     "totalCost": 536
@@ -128,6 +164,8 @@
   {
     "zipCode": "20110",
     "province": "ชลบุรี",
+    "district": "ศรีราชา",
+    "subdistrict": "บางพระ",
     "count": 26,
     "totalCOD": 3685,
     "totalCost": 416
@@ -135,6 +173,8 @@
   {
     "zipCode": "11000",
     "province": "นนทบุรี",
+    "district": "เมืองนนทบุรี",
+    "subdistrict": "ตลาดขวัญ",
     "count": 25,
     "totalCOD": 4644,
     "totalCost": 500
@@ -142,6 +182,8 @@
   {
     "zipCode": "12000",
     "province": "ปทุมธานี",
+    "district": "เมืองปทุมธานี",
+    "subdistrict": "บางกะดี",
     "count": 25,
     "totalCOD": 4355,
     "totalCost": 540
@@ -149,6 +191,8 @@
   {
     "zipCode": "10210",
     "province": "กรุงเทพมหานคร",
+    "district": "ดอนเมือง",
+    "subdistrict": "ดอนเมือง",
     "count": 24,
     "totalCOD": 4062,
     "totalCost": 634
@@ -156,6 +200,8 @@
   {
     "zipCode": "10520",
     "province": "กรุงเทพมหานคร",
+    "district": "ลาดกระบัง",
+    "subdistrict": "ขุมทอง",
     "count": 24,
     "totalCOD": 4505,
     "totalCost": 584
@@ -163,6 +209,8 @@
   {
     "zipCode": "10220",
     "province": "กรุงเทพมหานคร",
+    "district": "บางเขน",
+    "subdistrict": "ท่าแร้ง",
     "count": 24,
     "totalCOD": 4959,
     "totalCost": 584
@@ -170,6 +218,8 @@
   {
     "zipCode": "10270",
     "province": "สมุทรปราการ",
+    "district": "เมืองสมุทรปราการ",
+    "subdistrict": "บางด้วน",
     "count": 24,
     "totalCOD": 4164,
     "totalCost": 594
@@ -177,6 +227,8 @@
   {
     "zipCode": "40000",
     "province": "ขอนแก่น",
+    "district": "เมืองขอนแก่น",
+    "subdistrict": "ดอนช้าง",
     "count": 23,
     "totalCOD": 4374,
     "totalCost": 488
@@ -184,6 +236,8 @@
   {
     "zipCode": "41000",
     "province": "อุดรธานี",
+    "district": "เมืองอุดรธานี",
+    "subdistrict": "กุดสระ",
     "count": 23,
     "totalCOD": 5874,
     "totalCost": 808
@@ -191,6 +245,8 @@
   {
     "zipCode": "92000",
     "province": "ตรัง",
+    "district": "วังวิเศษ",
+    "subdistrict": "ท่าสะบ้า",
     "count": 22,
     "totalCOD": 4402,
     "totalCost": 572
@@ -198,6 +254,8 @@
   {
     "zipCode": "30000",
     "province": "นครราชสีมา",
+    "district": "เฉลิมพระเกียรติ",
+    "subdistrict": "หนองงูเหลือม",
     "count": 22,
     "totalCOD": 3285,
     "totalCost": 452
@@ -205,6 +263,8 @@
   {
     "zipCode": "84000",
     "province": "สุราษฎร์ธานี",
+    "district": "เมืองสุราษฎร์ธานี",
+    "subdistrict": "คลองฉนาก",
     "count": 22,
     "totalCOD": 4642,
     "totalCost": 512
@@ -212,6 +272,8 @@
   {
     "zipCode": "21000",
     "province": "ระยอง",
+    "district": "เมืองระยอง",
+    "subdistrict": "ตะพง",
     "count": 22,
     "totalCOD": 3259,
     "totalCost": 352
@@ -219,6 +281,8 @@
   {
     "zipCode": "12150",
     "province": "ปทุมธานี",
+    "district": "ลำลูกกา",
+    "subdistrict": "บึงคอไห",
     "count": 21,
     "totalCOD": 4186,
     "totalCost": 516
@@ -226,6 +290,8 @@
   {
     "zipCode": "12130",
     "province": "ปทุมธานี",
+    "district": "ธัญบุรี",
+    "subdistrict": "บึงยี่โถ",
     "count": 21,
     "totalCOD": 3617,
     "totalCost": 416
@@ -233,6 +299,8 @@
   {
     "zipCode": "25140",
     "province": "ปราจีนบุรี",
+    "district": "ศรีมหาโพธิ",
+    "subdistrict": "กรอกสมบูรณ์",
     "count": 21,
     "totalCOD": 4045,
     "totalCost": 416
@@ -240,6 +308,8 @@
   {
     "zipCode": "10400",
     "province": "กรุงเทพมหานคร",
+    "district": "ดินแดง",
+    "subdistrict": "ดินแดง",
     "count": 20,
     "totalCOD": 3937,
     "totalCost": 400
@@ -247,6 +317,8 @@
   {
     "zipCode": "11120",
     "province": "นนทบุรี",
+    "district": "ปากเกร็ด",
+    "subdistrict": "คลองข่อย",
     "count": 20,
     "totalCOD": 5894,
     "totalCost": 750
@@ -254,6 +326,8 @@
   {
     "zipCode": "10310",
     "province": "กรุงเทพมหานคร",
+    "district": "วังทองหลาง",
+    "subdistrict": "คลองเจ้าคุณสิงห์",
     "count": 20,
     "totalCOD": 2789,
     "totalCost": 320
@@ -261,6 +335,8 @@
   {
     "zipCode": "10130",
     "province": "สมุทรปราการ",
+    "district": "พระประแดง",
+    "subdistrict": "ตลาด",
     "count": 20,
     "totalCOD": 4107,
     "totalCost": 420
@@ -268,6 +344,8 @@
   {
     "zipCode": "22000",
     "province": "จันทบุรี",
+    "district": "เมืองจันทบุรี",
+    "subdistrict": "คมบาง",
     "count": 19,
     "totalCOD": 3018,
     "totalCost": 504
@@ -275,6 +353,8 @@
   {
     "zipCode": "10230",
     "province": "กรุงเทพมหานคร",
+    "district": "คันนายาว",
+    "subdistrict": "คันนายาว",
     "count": 19,
     "totalCOD": 3010,
     "totalCost": 404
@@ -282,6 +362,8 @@
   {
     "zipCode": "32000",
     "province": "สุรินทร์",
+    "district": "เขวาสินรินทร์",
+    "subdistrict": "ตากูก",
     "count": 19,
     "totalCOD": 4584,
     "totalCost": 474
@@ -289,6 +371,8 @@
   {
     "zipCode": "77110",
     "province": "ประจวบคีรีขันธ์",
+    "district": "หัวหิน",
+    "subdistrict": "ทับใต้",
     "count": 19,
     "totalCOD": 3755,
     "totalCost": 394
@@ -296,6 +380,8 @@
   {
     "zipCode": "24000",
     "province": "ฉะเชิงเทรา",
+    "district": "คลองเขื่อน",
+    "subdistrict": "ก้อนแก้ว",
     "count": 19,
     "totalCOD": 4856,
     "totalCost": 754
@@ -303,6 +389,8 @@
   {
     "zipCode": "10120",
     "province": "กรุงเทพมหานคร",
+    "district": "บางคอแหลม",
+    "subdistrict": "บางคอแหลม",
     "count": 19,
     "totalCOD": 4671,
     "totalCost": 524
@@ -310,6 +398,8 @@
   {
     "zipCode": "20160",
     "province": "ชลบุรี",
+    "district": "พานทอง",
+    "subdistrict": "บางนาง",
     "count": 18,
     "totalCOD": 3429,
     "totalCost": 508
@@ -317,6 +407,8 @@
   {
     "zipCode": "31000",
     "province": "บุรีรัมย์",
+    "district": "บ้านด่าน",
+    "subdistrict": "บ้านด่าน",
     "count": 18,
     "totalCOD": 4112,
     "totalCost": 468
@@ -324,6 +416,8 @@
   {
     "zipCode": "45000",
     "province": "ร้อยเอ็ด",
+    "district": "จังหาร",
+    "subdistrict": "จังหาร",
     "count": 18,
     "totalCOD": 4359,
     "totalCost": 458
@@ -331,6 +425,8 @@
   {
     "zipCode": "30130",
     "province": "นครราชสีมา",
+    "district": "ปากช่อง",
+    "subdistrict": "ขนงพระ",
     "count": 18,
     "totalCOD": 3859,
     "totalCost": 369
@@ -338,6 +434,8 @@
   {
     "zipCode": "11140",
     "province": "นนทบุรี",
+    "district": "บางใหญ่",
+    "subdistrict": "บางม่วง",
     "count": 18,
     "totalCOD": 3509,
     "totalCost": 498
@@ -345,6 +443,8 @@
   {
     "zipCode": "60000",
     "province": "นครสวรรค์",
+    "district": "เมืองนครสวรรค์",
+    "subdistrict": "กลางแดด",
     "count": 17,
     "totalCOD": 3846,
     "totalCost": 412
@@ -352,6 +452,8 @@
   {
     "zipCode": "10530",
     "province": "กรุงเทพมหานคร",
+    "district": "หนองจอก",
+    "subdistrict": "กระทุ่มราย",
     "count": 17,
     "totalCOD": 2921,
     "totalCost": 272
@@ -359,6 +461,8 @@
   {
     "zipCode": "46000",
     "province": "กาฬสินธุ์",
+    "district": "ดอนจาน",
+    "subdistrict": "ดงพยุง",
     "count": 17,
     "totalCOD": 3515,
     "totalCost": 372
@@ -366,6 +470,8 @@
   {
     "zipCode": "10290",
     "province": "สมุทรปราการ",
+    "district": "พระสมุทรเจดีย์",
+    "subdistrict": "นาเกลือ",
     "count": 17,
     "totalCOD": 2887,
     "totalCost": 392
@@ -373,6 +479,8 @@
   {
     "zipCode": "10110",
     "province": "กรุงเทพมหานคร",
+    "district": "คลองเตย",
+    "subdistrict": "คลองตัน",
     "count": 17,
     "totalCOD": 2434,
     "totalCost": 372
@@ -380,6 +488,8 @@
   {
     "zipCode": "34000",
     "province": "อุบลราชธานี",
+    "district": "ดอนมดแดง",
+    "subdistrict": "คำไฮใหญ่",
     "count": 17,
     "totalCOD": 2590,
     "totalCost": 272
@@ -387,6 +497,8 @@
   {
     "zipCode": "70000",
     "province": "ราชบุรี",
+    "district": "เมืองราชบุรี",
+    "subdistrict": "คุ้งกระถิน",
     "count": 17,
     "totalCOD": 3595,
     "totalCost": 352
@@ -394,6 +506,8 @@
   {
     "zipCode": "73000",
     "province": "นครปฐม",
+    "district": "เมืองนครปฐม",
+    "subdistrict": "ดอนยายหอม",
     "count": 16,
     "totalCOD": 4163,
     "totalCost": 556
@@ -401,6 +515,8 @@
   {
     "zipCode": "25110",
     "province": "ปราจีนบุรี",
+    "district": "กบินทร์บุรี",
+    "subdistrict": "กบินทร์",
     "count": 16,
     "totalCOD": 3286,
     "totalCost": 296
@@ -408,6 +524,8 @@
   {
     "zipCode": "76000",
     "province": "เพชรบุรี",
+    "district": "เมืองเพชรบุรี",
+    "subdistrict": "คลองกระแชง",
     "count": 16,
     "totalCOD": 3288,
     "totalCost": 356
@@ -415,6 +533,8 @@
   {
     "zipCode": "80110",
     "province": "นครศรีธรรมราช",
+    "district": "ทุ่งสง",
+    "subdistrict": "ควนกรด",
     "count": 16,
     "totalCOD": 2789,
     "totalCost": 296
@@ -422,6 +542,8 @@
   {
     "zipCode": "63110",
     "province": "ตาก",
+    "district": "แม่สอด",
+    "subdistrict": "ด่านแม่ละเมา",
     "count": 15,
     "totalCOD": 5059,
     "totalCost": 650
@@ -429,6 +551,8 @@
   {
     "zipCode": "93000",
     "province": "พัทลุง",
+    "district": "กงหรา",
+    "subdistrict": "ชะรัด",
     "count": 15,
     "totalCOD": 2091,
     "totalCost": 240
@@ -436,6 +560,8 @@
   {
     "zipCode": "57000",
     "province": "เชียงราย",
+    "district": "เมืองเชียงราย",
+    "subdistrict": "ดอยลาน",
     "count": 15,
     "totalCOD": 5176,
     "totalCost": 560
@@ -443,6 +569,8 @@
   {
     "zipCode": "10260",
     "province": "กรุงเทพมหานคร",
+    "district": "บางนา",
+    "subdistrict": "บางนา",
     "count": 15,
     "totalCOD": 1942,
     "totalCost": 340
@@ -450,6 +578,8 @@
   {
     "zipCode": "34160",
     "province": "อุบลราชธานี",
+    "district": "ทุ่งศรีอุดม",
+    "subdistrict": "กุดเรือ",
     "count": 14,
     "totalCOD": 2787,
     "totalCost": 264
@@ -457,6 +587,8 @@
   {
     "zipCode": "73120",
     "province": "นครปฐม",
+    "district": "นครชัยศรี",
+    "subdistrict": "ขุนแก้ว",
     "count": 14,
     "totalCOD": 2729,
     "totalCost": 344
@@ -464,6 +596,8 @@
   {
     "zipCode": "13000",
     "province": "พระนครศรีอยุธยา",
+    "district": "พระนครศรีอยุธยา",
+    "subdistrict": "กะมัง",
     "count": 14,
     "totalCOD": 1395,
     "totalCost": 264
@@ -471,6 +605,8 @@
   {
     "zipCode": "85000",
     "province": "ระนอง",
+    "district": "เมืองระนอง",
+    "subdistrict": "บางนอน",
     "count": 14,
     "totalCOD": 2967,
     "totalCost": 324
@@ -478,6 +614,8 @@
   {
     "zipCode": "81130",
     "province": "กระบี่",
+    "district": "เหนือคลอง",
+    "subdistrict": "คลองขนาน",
     "count": 14,
     "totalCOD": 2643,
     "totalCost": 284
@@ -485,6 +623,8 @@
   {
     "zipCode": "81000",
     "province": "กระบี่",
+    "district": "เมืองกระบี่",
+    "subdistrict": "กระบี่น้อย",
     "count": 14,
     "totalCOD": 3379,
     "totalCost": 304
@@ -492,6 +632,8 @@
   {
     "zipCode": "10570",
     "province": "สมุทรปราการ",
+    "district": "บางเสาธง",
+    "subdistrict": "บางเสาธง",
     "count": 14,
     "totalCOD": 1875,
     "totalCost": 224
@@ -499,6 +641,8 @@
   {
     "zipCode": "13160",
     "province": "พระนครศรีอยุธยา",
+    "district": "บางปะอิน",
+    "subdistrict": "ขนอนหลวง",
     "count": 13,
     "totalCOD": 2991,
     "totalCost": 348
@@ -506,6 +650,8 @@
   {
     "zipCode": "67000",
     "province": "เพชรบูรณ์",
+    "district": "เมืองเพชรบูรณ์",
+    "subdistrict": "ชอนไพร",
     "count": 13,
     "totalCOD": 1993,
     "totalCost": 248
@@ -513,6 +659,8 @@
   {
     "zipCode": "21110",
     "province": "ระยอง",
+    "district": "เขาชะเมา",
+    "subdistrict": "ชำฆ้อ",
     "count": 13,
     "totalCOD": 3116,
     "totalCost": 328
@@ -520,6 +668,8 @@
   {
     "zipCode": "18000",
     "province": "สระบุรี",
+    "district": "เฉลิมพระเกียรติ",
+    "subdistrict": "บ้านแก้ง",
     "count": 13,
     "totalCOD": 2440,
     "totalCost": 208
@@ -527,6 +677,8 @@
   {
     "zipCode": "73110",
     "province": "นครปฐม",
+    "district": "สามพราน",
+    "subdistrict": "คลองจินดา",
     "count": 13,
     "totalCOD": 1892,
     "totalCost": 268
@@ -534,6 +686,8 @@
   {
     "zipCode": "12140",
     "province": "ปทุมธานี",
+    "district": "ลาดหลุมแก้ว",
+    "subdistrict": "คลองพระอุดม",
     "count": 13,
     "totalCOD": 2361,
     "totalCost": 288
@@ -541,6 +695,8 @@
   {
     "zipCode": "77000",
     "province": "ประจวบคีรีขันธ์",
+    "district": "เมืองประจวบคีรีขันธ์",
+    "subdistrict": "คลองวาฬ",
     "count": 13,
     "totalCOD": 2789,
     "totalCost": 328
@@ -548,6 +704,8 @@
   {
     "zipCode": "10560",
     "province": "สมุทรปราการ",
+    "district": "บางบ่อ",
+    "subdistrict": "คลองนิยมยาตรา",
     "count": 13,
     "totalCOD": 1892,
     "totalCost": 208
@@ -555,6 +713,8 @@
   {
     "zipCode": "80160",
     "province": "นครศรีธรรมราช",
+    "district": "ท่าศาลา",
+    "subdistrict": "กลาย",
     "count": 13,
     "totalCOD": 2632,
     "totalCost": 248
@@ -562,6 +722,8 @@
   {
     "zipCode": "57100",
     "province": "เชียงราย",
+    "district": "เมืองเชียงราย",
+    "subdistrict": "ท่าสุด",
     "count": 13,
     "totalCOD": 2411,
     "totalCost": 328
@@ -569,6 +731,8 @@
   {
     "zipCode": "10170",
     "province": "กรุงเทพมหานคร",
+    "district": "ตลิ่งชัน",
+    "subdistrict": "คลองชักพระ",
     "count": 13,
     "totalCOD": 2729,
     "totalCost": 368
@@ -576,6 +740,8 @@
   {
     "zipCode": "74130",
     "province": "สมุทรสาคร",
+    "district": "กระทุ่มแบน",
+    "subdistrict": "อ้อมน้อย",
     "count": 13,
     "totalCOD": 2874,
     "totalCost": 288
@@ -583,6 +749,8 @@
   {
     "zipCode": "43000",
     "province": "หนองคาย",
+    "district": "เมืองหนองคาย",
+    "subdistrict": "กวนวัน",
     "count": 13,
     "totalCOD": 3643,
     "totalCost": 458
@@ -590,6 +758,8 @@
   {
     "zipCode": "51000",
     "province": "ลำพูน",
+    "district": "เมืองลำพูน",
+    "subdistrict": "ต้นธง",
     "count": 13,
     "totalCOD": 2652,
     "totalCost": 268
@@ -597,6 +767,8 @@
   {
     "zipCode": "81120",
     "province": "กระบี่",
+    "district": "คลองท่อม",
+    "subdistrict": "คลองท่อมเหนือ",
     "count": 12,
     "totalCOD": 1935,
     "totalCost": 232
@@ -604,6 +776,8 @@
   {
     "zipCode": "58110",
     "province": "แม่ฮ่องสอน",
+    "district": "สบเมย",
+    "subdistrict": "กองก๋อย",
     "count": 12,
     "totalCOD": 2528,
     "totalCost": 612
@@ -611,6 +785,8 @@
   {
     "zipCode": "21150",
     "province": "ระยอง",
+    "district": "เมืองระยอง",
+    "subdistrict": "มาบตาพุด",
     "count": 12,
     "totalCOD": 3873,
     "totalCost": 452
@@ -618,6 +794,8 @@
   {
     "zipCode": "10140",
     "province": "กรุงเทพมหานคร",
+    "district": "ทุ่งครุ",
+    "subdistrict": "ทุ่งครุ",
     "count": 12,
     "totalCOD": 2182,
     "totalCost": 232
@@ -625,6 +803,8 @@
   {
     "zipCode": "83110",
     "province": "ภูเก็ต",
+    "district": "ถลาง",
+    "subdistrict": "ป่าคลอก",
     "count": 12,
     "totalCOD": 1833,
     "totalCost": 432
@@ -632,6 +812,8 @@
   {
     "zipCode": "39000",
     "province": "หนองบัวลำภู",
+    "district": "เมืองหนองบัวลำภู",
+    "subdistrict": "กุดจิก",
     "count": 12,
     "totalCOD": 1795,
     "totalCost": 192
@@ -639,6 +821,8 @@
   {
     "zipCode": "10600",
     "province": "กรุงเทพมหานคร",
+    "district": "คลองสาน",
+    "subdistrict": "คลองต้นไทร",
     "count": 12,
     "totalCOD": 2390,
     "totalCost": 272
@@ -646,6 +830,8 @@
   {
     "zipCode": "31110",
     "province": "บุรีรัมย์",
+    "district": "ชำนิ",
+    "subdistrict": "ชำนิ",
     "count": 12,
     "totalCOD": 2431,
     "totalCost": 412
@@ -653,6 +839,8 @@
   {
     "zipCode": "32140",
     "province": "สุรินทร์",
+    "district": "ปราสาท",
+    "subdistrict": "กังแอน",
     "count": 12,
     "totalCOD": 2491,
     "totalCost": 312
@@ -660,6 +848,8 @@
   {
     "zipCode": "70110",
     "province": "ราชบุรี",
+    "district": "บ้านโป่ง",
+    "subdistrict": "คุ้งพยอม",
     "count": 12,
     "totalCOD": 1736,
     "totalCost": 352
@@ -667,6 +857,8 @@
   {
     "zipCode": "35000",
     "province": "ยโสธร",
+    "district": "เมืองยโสธร",
+    "subdistrict": "ขั้นไดใหญ่",
     "count": 11,
     "totalCOD": 3972,
     "totalCost": 296
@@ -674,6 +866,8 @@
   {
     "zipCode": "24130",
     "province": "ฉะเชิงเทรา",
+    "district": "บางปะกง",
+    "subdistrict": "ท่าข้าม",
     "count": 11,
     "totalCOD": 2670,
     "totalCost": 296
@@ -681,6 +875,8 @@
   {
     "zipCode": "30140",
     "province": "นครราชสีมา",
+    "district": "สีคิ้ว",
+    "subdistrict": "กฤษณา",
     "count": 11,
     "totalCOD": 1798,
     "totalCost": 336
@@ -688,6 +884,8 @@
   {
     "zipCode": "91130",
     "province": "สตูล",
+    "district": "ควนกาหลง",
+    "subdistrict": "ควนกาหลง",
     "count": 11,
     "totalCOD": 1992,
     "totalCost": 216
@@ -695,6 +893,8 @@
   {
     "zipCode": "42000",
     "province": "เลย",
+    "district": "เมืองเลย",
+    "subdistrict": "กกดู่",
     "count": 11,
     "totalCOD": 1792,
     "totalCost": 176
@@ -702,6 +902,8 @@
   {
     "zipCode": "20180",
     "province": "ชลบุรี",
+    "district": "สัตหีบ",
+    "subdistrict": "พลูตาหลวง",
     "count": 11,
     "totalCOD": 2428,
     "totalCost": 266
@@ -709,6 +911,8 @@
   {
     "zipCode": "80240",
     "province": "กระบี่",
+    "district": "เขาพนม",
+    "subdistrict": "สินปุน",
     "count": 11,
     "totalCOD": 1924,
     "totalCost": 176
@@ -716,6 +920,8 @@
   {
     "zipCode": "63150",
     "province": "ตาก",
+    "district": "ท่าสองยาง",
+    "subdistrict": "ท่าสองยาง",
     "count": 11,
     "totalCOD": 2758,
     "totalCost": 516
@@ -723,6 +929,8 @@
   {
     "zipCode": "70130",
     "province": "ราชบุรี",
+    "district": "ดำเนินสะดวก",
+    "subdistrict": "ขุนพิทักษ์",
     "count": 11,
     "totalCOD": 2152,
     "totalCost": 216
@@ -730,6 +938,8 @@
   {
     "zipCode": "84210",
     "province": "สุราษฎร์ธานี",
+    "district": "พระแสง",
+    "subdistrict": "บางสวรรค์",
     "count": 10,
     "totalCOD": 1496,
     "totalCost": 160
@@ -737,6 +947,8 @@
   {
     "zipCode": "71000",
     "province": "กาญจนบุรี",
+    "district": "ท่าม่วง",
+    "subdistrict": "ท่าล้อ",
     "count": 10,
     "totalCOD": 3423,
     "totalCost": 460
@@ -744,6 +956,8 @@
   {
     "zipCode": "15000",
     "province": "ลพบุรี",
+    "district": "เมืองลพบุรี",
+    "subdistrict": "กกโก",
     "count": 10,
     "totalCOD": 1935,
     "totalCost": 280
@@ -751,6 +965,8 @@
   {
     "zipCode": "24190",
     "province": "ฉะเชิงเทรา",
+    "district": "แปลงยาว",
+    "subdistrict": "วังเย็น",
     "count": 10,
     "totalCOD": 2768,
     "totalCost": 320
@@ -758,6 +974,8 @@
   {
     "zipCode": "10900",
     "province": "กรุงเทพมหานคร",
+    "district": "จตุจักร",
+    "subdistrict": "จตุจักร",
     "count": 10,
     "totalCOD": 1831,
     "totalCost": 280
@@ -765,6 +983,8 @@
   {
     "zipCode": "11130",
     "province": "นนทบุรี",
+    "district": "บางกรวย",
+    "subdistrict": "บางกรวย",
     "count": 10,
     "totalCOD": 1872,
     "totalCost": 260
@@ -772,6 +992,8 @@
   {
     "zipCode": "23000",
     "province": "ตราด",
+    "district": "เกาะกูด",
+    "subdistrict": "เกาะกูด",
     "count": 10,
     "totalCOD": 1896,
     "totalCost": 260
@@ -779,6 +1001,8 @@
   {
     "zipCode": "57130",
     "province": "เชียงราย",
+    "district": "แม่สาย",
+    "subdistrict": "ศรีเมืองชุม",
     "count": 10,
     "totalCOD": 3017,
     "totalCost": 280
@@ -786,6 +1010,8 @@
   {
     "zipCode": "21180",
     "province": "ระยอง",
+    "district": "นิคมพัฒนา",
+    "subdistrict": "นิคมพัฒนา",
     "count": 10,
     "totalCOD": 2670,
     "totalCost": 300
@@ -793,6 +1019,8 @@
   {
     "zipCode": "92110",
     "province": "ตรัง",
+    "district": "กันตัง",
+    "subdistrict": "กันตัง",
     "count": 10,
     "totalCOD": 2092,
     "totalCost": 280
@@ -800,6 +1028,8 @@
   {
     "zipCode": "84110",
     "province": "สุราษฎร์ธานี",
+    "district": "ไชยา",
+    "subdistrict": "ตลาดไชยา",
     "count": 9,
     "totalCOD": 1495,
     "totalCost": 144
@@ -807,6 +1037,8 @@
   {
     "zipCode": "13170",
     "province": "พระนครศรีอยุธยา",
+    "district": "บางปะอิน",
+    "subdistrict": "บ้านสร้าง",
     "count": 9,
     "totalCOD": 1494,
     "totalCost": 204
@@ -814,6 +1046,8 @@
   {
     "zipCode": "30150",
     "province": "นครราชสีมา",
+    "district": "ปักธงชัย",
+    "subdistrict": "งิ้ว",
     "count": 9,
     "totalCOD": 1992,
     "totalCost": 184
@@ -821,6 +1055,8 @@
   {
     "zipCode": "37000",
     "province": "อำนาจเจริญ",
+    "district": "เมืองอำนาจเจริญ",
+    "subdistrict": "กุดปลาดุก",
     "count": 9,
     "totalCOD": 2956,
     "totalCost": 354
@@ -828,6 +1064,8 @@
   {
     "zipCode": "14000",
     "province": "อ่างทอง",
+    "district": "เมืองอ่างทอง",
+    "subdistrict": "คลองวัว",
     "count": 9,
     "totalCOD": 1992,
     "totalCost": 224
@@ -835,6 +1073,8 @@
   {
     "zipCode": "36000",
     "province": "ชัยภูมิ",
+    "district": "เมืองชัยภูมิ",
+    "subdistrict": "กุดตุ้ม",
     "count": 9,
     "totalCOD": 2289,
     "totalCost": 244
@@ -842,6 +1082,8 @@
   {
     "zipCode": "27120",
     "province": "สระแก้ว",
+    "district": "อรัญประเทศ",
+    "subdistrict": "คลองทับจันทร์",
     "count": 9,
     "totalCOD": 1990,
     "totalCost": 224
@@ -849,6 +1091,8 @@
   {
     "zipCode": "50140",
     "province": "เชียงใหม่",
+    "district": "สารภี",
+    "subdistrict": "ขัวมุง",
     "count": 9,
     "totalCOD": 2241,
     "totalCost": 264
@@ -856,6 +1100,8 @@
   {
     "zipCode": "84130",
     "province": "สุราษฎร์ธานี",
+    "district": "พุนพิน",
+    "subdistrict": "กรูด",
     "count": 9,
     "totalCOD": 1875,
     "totalCost": 184
@@ -863,6 +1109,8 @@
   {
     "zipCode": "90130",
     "province": "สงขลา",
+    "district": "จะนะ",
+    "subdistrict": "ขุนตัดหวาย",
     "count": 9,
     "totalCOD": 1783,
     "totalCost": 144
@@ -870,6 +1118,8 @@
   {
     "zipCode": "72110",
     "province": "สุพรรณบุรี",
+    "district": "สองพี่น้อง",
+    "subdistrict": "ดอนมะนาว",
     "count": 9,
     "totalCOD": 1794,
     "totalCost": 224
@@ -877,6 +1127,8 @@
   {
     "zipCode": "83150",
     "province": "ภูเก็ต",
+    "district": "กะทู้",
+    "subdistrict": "ป่าตอง",
     "count": 9,
     "totalCOD": 2011,
     "totalCost": 444
@@ -884,6 +1136,8 @@
   {
     "zipCode": "18110",
     "province": "สระบุรี",
+    "district": "แก่งคอย",
+    "subdistrict": "ชะอม",
     "count": 9,
     "totalCOD": 1873,
     "totalCost": 264
@@ -891,6 +1145,8 @@
   {
     "zipCode": "25220",
     "province": "ปราจีนบุรี",
+    "district": "นาดี",
+    "subdistrict": "ทุ่งโพธิ์",
     "count": 9,
     "totalCOD": 1295,
     "totalCost": 224
@@ -898,6 +1154,8 @@
   {
     "zipCode": "70120",
     "province": "ราชบุรี",
+    "district": "โพธาราม",
+    "subdistrict": "คลองข่อย",
     "count": 9,
     "totalCOD": 1555,
     "totalCost": 144
@@ -905,6 +1163,8 @@
   {
     "zipCode": "50000",
     "province": "เชียงใหม่",
+    "district": "เมืองเชียงใหม่",
+    "subdistrict": "ท่าศาลา",
     "count": 9,
     "totalCOD": 2190,
     "totalCost": 224
@@ -912,6 +1172,8 @@
   {
     "zipCode": "72000",
     "province": "สุพรรณบุรี",
+    "district": "เมืองสุพรรณบุรี",
+    "subdistrict": "ดอนกำยาน",
     "count": 8,
     "totalCOD": 1286,
     "totalCost": 188
@@ -919,6 +1181,8 @@
   {
     "zipCode": "90000",
     "province": "สงขลา",
+    "district": "เมืองสงขลา",
+    "subdistrict": "ทุ่งหวัง",
     "count": 8,
     "totalCOD": 1017,
     "totalCost": 128
@@ -926,6 +1190,8 @@
   {
     "zipCode": "27000",
     "province": "สระแก้ว",
+    "district": "เขาฉกรรจ์",
+    "subdistrict": "พระเพลิง",
     "count": 8,
     "totalCOD": 1635,
     "totalCost": 168
@@ -933,6 +1199,8 @@
   {
     "zipCode": "71240",
     "province": "กาญจนบุรี",
+    "district": "สังขละบุรี",
+    "subdistrict": "ปรังเผล",
     "count": 8,
     "totalCOD": 2091,
     "totalCost": 328
@@ -940,6 +1208,8 @@
   {
     "zipCode": "30250",
     "province": "นครราชสีมา",
+    "district": "ครบุรี",
+    "subdistrict": "ครบุรี",
     "count": 8,
     "totalCOD": 2232,
     "totalCost": 308
@@ -947,6 +1217,8 @@
   {
     "zipCode": "84190",
     "province": "สุราษฎร์ธานี",
+    "district": "เวียงสระ",
+    "subdistrict": "คลองฉนวน",
     "count": 8,
     "totalCOD": 1607,
     "totalCost": 128
@@ -954,6 +1226,8 @@
   {
     "zipCode": "74110",
     "province": "สมุทรสาคร",
+    "district": "กระทุ่มแบน",
+    "subdistrict": "คลองมะเดื่อ",
     "count": 8,
     "totalCOD": 1693,
     "totalCost": 208
@@ -961,6 +1235,8 @@
   {
     "zipCode": "83130",
     "province": "ภูเก็ต",
+    "district": "เมืองภูเก็ต",
+    "subdistrict": "ฉลอง",
     "count": 8,
     "totalCOD": 2387,
     "totalCost": 308
@@ -968,6 +1244,8 @@
   {
     "zipCode": "84170",
     "province": "สุราษฎร์ธานี",
+    "district": "ท่าชนะ",
+    "subdistrict": "คลองพา",
     "count": 8,
     "totalCOD": 1002,
     "totalCost": 128
@@ -975,6 +1253,8 @@
   {
     "zipCode": "73140",
     "province": "นครปฐม",
+    "district": "กำแพงแสน",
+    "subdistrict": "กำแพงแสน",
     "count": 8,
     "totalCOD": 1594,
     "totalCost": 168
@@ -982,6 +1262,8 @@
   {
     "zipCode": "84140",
     "province": "สุราษฎร์ธานี",
+    "district": "เกาะสมุย",
+    "subdistrict": "ตลิ่งงาม",
     "count": 8,
     "totalCOD": 1097,
     "totalCost": 368
@@ -989,6 +1271,8 @@
   {
     "zipCode": "20140",
     "province": "ชลบุรี",
+    "district": "พนัสนิคม",
+    "subdistrict": "กุฎโง้ง",
     "count": 8,
     "totalCOD": 1933,
     "totalCost": 188
@@ -996,6 +1280,8 @@
   {
     "zipCode": "80130",
     "province": "นครศรีธรรมราช",
+    "district": "จุฬาภรณ์",
+    "subdistrict": "ควนหนองคว้า",
     "count": 8,
     "totalCOD": 1394,
     "totalCost": 128
@@ -1003,6 +1289,8 @@
   {
     "zipCode": "54000",
     "province": "แพร่",
+    "district": "สูงเม่น",
+    "subdistrict": "เวียงทอง",
     "count": 8,
     "totalCOD": 1896,
     "totalCost": 168
@@ -1010,6 +1298,8 @@
   {
     "zipCode": "13210",
     "province": "พระนครศรีอยุธยา",
+    "district": "อุทัย",
+    "subdistrict": "ข้าวเม่า",
     "count": 8,
     "totalCOD": 1487,
     "totalCost": 168
@@ -1017,6 +1307,8 @@
   {
     "zipCode": "48000",
     "province": "นครพนม",
+    "district": "เมืองนครพนม",
+    "subdistrict": "กุรุคุ",
     "count": 8,
     "totalCOD": 2968,
     "totalCost": 338
@@ -1024,6 +1316,8 @@
   {
     "zipCode": "30210",
     "province": "นครราชสีมา",
+    "district": "ด่านขุนทด",
+    "subdistrict": "กุดพิมาน",
     "count": 8,
     "totalCOD": 1596,
     "totalCost": 188
@@ -1031,6 +1325,8 @@
   {
     "zipCode": "50120",
     "province": "เชียงใหม่",
+    "district": "สันป่าตอง",
+    "subdistrict": "ทุ่งต้อม",
     "count": 8,
     "totalCOD": 1892,
     "totalCost": 228
@@ -1038,6 +1334,8 @@
   {
     "zipCode": "27210",
     "province": "สระแก้ว",
+    "district": "วังน้ำเย็น",
+    "subdistrict": "คลองหินปูน",
     "count": 8,
     "totalCOD": 2587,
     "totalCost": 288
@@ -1045,6 +1343,8 @@
   {
     "zipCode": "12110",
     "province": "ปทุมธานี",
+    "district": "ธัญบุรี",
+    "subdistrict": "คลองหก",
     "count": 8,
     "totalCOD": 1697,
     "totalCost": 128
@@ -1052,6 +1352,8 @@
   {
     "zipCode": "50300",
     "province": "เชียงใหม่",
+    "district": "เมืองเชียงใหม่",
+    "subdistrict": "ช้างม่อย",
     "count": 8,
     "totalCOD": 1931,
     "totalCost": 268
@@ -1059,6 +1361,8 @@
   {
     "zipCode": "71180",
     "province": "กาญจนบุรี",
+    "district": "ทองผาภูมิ",
+    "subdistrict": "ชะแล",
     "count": 8,
     "totalCOD": 2095,
     "totalCost": 438
@@ -1066,6 +1370,8 @@
   {
     "zipCode": "10700",
     "province": "กรุงเทพมหานคร",
+    "district": "บางกอกน้อย",
+    "subdistrict": "บางขุนนนท์",
     "count": 8,
     "totalCOD": 1733,
     "totalCost": 228
@@ -1073,6 +1379,8 @@
   {
     "zipCode": "20170",
     "province": "ชลบุรี",
+    "district": "บ้านบึง",
+    "subdistrict": "บ้านบึง",
     "count": 8,
     "totalCOD": 1095,
     "totalCost": 128
@@ -1080,6 +1388,8 @@
   {
     "zipCode": "55000",
     "province": "น่าน",
+    "district": "ภูเพียง",
+    "subdistrict": "ท่าน้าว",
     "count": 8,
     "totalCOD": 1791,
     "totalCost": 208
@@ -1087,6 +1397,8 @@
   {
     "zipCode": "86180",
     "province": "ชุมพร",
+    "district": "พะโต๊ะ",
+    "subdistrict": "ปังหวาน",
     "count": 8,
     "totalCOD": 1593,
     "totalCost": 128
@@ -1094,6 +1406,8 @@
   {
     "zipCode": "50100",
     "province": "เชียงใหม่",
+    "district": "เมืองเชียงใหม่",
+    "subdistrict": "ช้างคลาน",
     "count": 8,
     "totalCOD": 1393,
     "totalCost": 128
@@ -1101,6 +1415,8 @@
   {
     "zipCode": "90160",
     "province": "สงขลา",
+    "district": "นาทวี",
+    "subdistrict": "คลองกวาง",
     "count": 8,
     "totalCOD": 1634,
     "totalCost": 218
@@ -1108,6 +1424,8 @@
   {
     "zipCode": "50230",
     "province": "เชียงใหม่",
+    "district": "หางดง",
+    "subdistrict": "ขุนคง",
     "count": 8,
     "totalCOD": 1096,
     "totalCost": 128
@@ -1115,6 +1433,8 @@
   {
     "zipCode": "92130",
     "province": "ตรัง",
+    "district": "รัษฎา",
+    "subdistrict": "หนองปรือ",
     "count": 7,
     "totalCOD": 1435,
     "totalCost": 172
@@ -1122,6 +1442,8 @@
   {
     "zipCode": "10800",
     "province": "กรุงเทพมหานคร",
+    "district": "บางซื่อ",
+    "subdistrict": "บางซื่อ",
     "count": 7,
     "totalCOD": 1336,
     "totalCost": 112
@@ -1129,6 +1451,8 @@
   {
     "zipCode": "50130",
     "province": "เชียงใหม่",
+    "district": "สันกำแพง",
+    "subdistrict": "ต้นเปา",
     "count": 7,
     "totalCOD": 2020,
     "totalCost": 212
@@ -1136,6 +1460,8 @@
   {
     "zipCode": "76120",
     "province": "เพชรบุรี",
+    "district": "ชะอำ",
+    "subdistrict": "ชะอำ",
     "count": 7,
     "totalCOD": 1493,
     "totalCost": 152
@@ -1143,6 +1469,8 @@
   {
     "zipCode": "57110",
     "province": "เชียงราย",
+    "district": "ดอยหลวง",
+    "subdistrict": "ปงน้อย",
     "count": 7,
     "totalCOD": 1504,
     "totalCost": 172
@@ -1150,6 +1478,8 @@
   {
     "zipCode": "63160",
     "province": "ตาก",
+    "district": "พบพระ",
+    "subdistrict": "คีรีราษฎร์",
     "count": 7,
     "totalCOD": 2209,
     "totalCost": 272
@@ -1157,6 +1487,8 @@
   {
     "zipCode": "67110",
     "province": "เพชรบูรณ์",
+    "district": "หล่มสัก",
+    "subdistrict": "ช้างตะลูด",
     "count": 7,
     "totalCOD": 1195,
     "totalCost": 262
@@ -1164,6 +1496,8 @@
   {
     "zipCode": "82000",
     "province": "พังงา",
+    "district": "เมืองพังงา",
+    "subdistrict": "ตากแดด",
     "count": 7,
     "totalCOD": 1195,
     "totalCost": 172
@@ -1171,6 +1505,8 @@
   {
     "zipCode": "40170",
     "province": "ขอนแก่น",
+    "district": "กระนวน",
+    "subdistrict": "ดูนสาด",
     "count": 7,
     "totalCOD": 1294,
     "totalCost": 152
@@ -1178,6 +1514,8 @@
   {
     "zipCode": "45110",
     "province": "ร้อยเอ็ด",
+    "district": "โพนทอง",
+    "subdistrict": "คำนาดี",
     "count": 7,
     "totalCOD": 2333,
     "totalCost": 292
@@ -1185,6 +1523,8 @@
   {
     "zipCode": "71190",
     "province": "กาญจนบุรี",
+    "district": "เมืองกาญจนบุรี",
+    "subdistrict": "ช่องสะเดา",
     "count": 7,
     "totalCOD": 1118,
     "totalCost": 112
@@ -1192,6 +1532,8 @@
   {
     "zipCode": "86190",
     "province": "ชุมพร",
+    "district": "ท่าแซะ",
+    "subdistrict": "รับร่อ",
     "count": 7,
     "totalCOD": 2206,
     "totalCost": 212
@@ -1199,6 +1541,8 @@
   {
     "zipCode": "13250",
     "province": "พระนครศรีอยุธยา",
+    "district": "บางบาล",
+    "subdistrict": "กบเจา",
     "count": 7,
     "totalCOD": 1693,
     "totalCost": 192
@@ -1206,6 +1550,8 @@
   {
     "zipCode": "90140",
     "province": "สงขลา",
+    "district": "ระโนด",
+    "subdistrict": "คลองแดน",
     "count": 7,
     "totalCOD": 1914,
     "totalCost": 232
@@ -1213,6 +1559,8 @@
   {
     "zipCode": "92150",
     "province": "ตรัง",
+    "district": "สิเกา",
+    "subdistrict": "กะลาเส",
     "count": 7,
     "totalCOD": 997,
     "totalCost": 112
@@ -1220,6 +1568,8 @@
   {
     "zipCode": "44000",
     "province": "มหาสารคาม",
+    "district": "เมืองมหาสารคาม",
+    "subdistrict": "ดอนหว่าน",
     "count": 7,
     "totalCOD": 1476,
     "totalCost": 152
@@ -1227,6 +1577,8 @@
   {
     "zipCode": "33000",
     "province": "ศรีสะเกษ",
+    "district": "เมืองศรีสะเกษ",
+    "subdistrict": "คูซอด",
     "count": 7,
     "totalCOD": 1532,
     "totalCost": 332
@@ -1234,6 +1586,8 @@
   {
     "zipCode": "21130",
     "province": "ระยอง",
+    "district": "บ้านฉาง",
+    "subdistrict": "บ้านฉาง",
     "count": 7,
     "totalCOD": 1991,
     "totalCost": 232
@@ -1241,6 +1595,8 @@
   {
     "zipCode": "62000",
     "province": "กำแพงเพชร",
+    "district": "เมืองกำแพงเพชร",
+    "subdistrict": "คณฑี",
     "count": 7,
     "totalCOD": 1335,
     "totalCost": 172
@@ -1248,6 +1604,8 @@
   {
     "zipCode": "63170",
     "province": "ตาก",
+    "district": "อุ้มผาง",
+    "subdistrict": "หนองหลวง",
     "count": 7,
     "totalCOD": 2170,
     "totalCost": 372
@@ -1255,6 +1613,8 @@
   {
     "zipCode": "52000",
     "province": "ลำปาง",
+    "district": "เมืองลำปาง",
+    "subdistrict": "กล้วยแพะ",
     "count": 7,
     "totalCOD": 1394,
     "totalCost": 112
@@ -1262,6 +1622,8 @@
   {
     "zipCode": "13130",
     "province": "พระนครศรีอยุธยา",
+    "district": "ท่าเรือ",
+    "subdistrict": "จำปา",
     "count": 7,
     "totalCOD": 995,
     "totalCost": 112
@@ -1269,6 +1631,8 @@
   {
     "zipCode": "49000",
     "province": "มุกดาหาร",
+    "district": "เมืองมุกดาหาร",
+    "subdistrict": "กุดแข้",
     "count": 7,
     "totalCOD": 1254,
     "totalCost": 152
@@ -1276,6 +1640,8 @@
   {
     "zipCode": "73220",
     "province": "นครปฐม",
+    "district": "สามพราน",
+    "subdistrict": "กระทุ่มล้ม",
     "count": 7,
     "totalCOD": 1533,
     "totalCost": 152
@@ -1283,6 +1649,8 @@
   {
     "zipCode": "92170",
     "province": "ตรัง",
+    "district": "นาโยง",
+    "subdistrict": "ช่อง",
     "count": 7,
     "totalCOD": 1595,
     "totalCost": 112
@@ -1290,6 +1658,8 @@
   {
     "zipCode": "34110",
     "province": "อุบลราชธานี",
+    "district": "พิบูลมังสาหาร",
+    "subdistrict": "กุดชมภู",
     "count": 7,
     "totalCOD": 1187,
     "totalCost": 112
@@ -1297,6 +1667,8 @@
   {
     "zipCode": "71110",
     "province": "กาญจนบุรี",
+    "district": "ท่าม่วง",
+    "subdistrict": "ทุ่งทอง",
     "count": 7,
     "totalCOD": 1575,
     "totalCost": 152
@@ -1304,6 +1676,8 @@
   {
     "zipCode": "10330",
     "province": "กรุงเทพมหานคร",
+    "district": "ปทุมวัน",
+    "subdistrict": "ปทุมวัน",
     "count": 7,
     "totalCOD": 1696,
     "totalCost": 172
@@ -1311,6 +1685,8 @@
   {
     "zipCode": "91000",
     "province": "สตูล",
+    "district": "เมืองสตูล",
+    "subdistrict": "คลองขุด",
     "count": 7,
     "totalCOD": 3221,
     "totalCost": 272
@@ -1318,6 +1694,8 @@
   {
     "zipCode": "73210",
     "province": "นครปฐม",
+    "district": "สามพราน",
+    "subdistrict": "ทรงคนอง",
     "count": 7,
     "totalCOD": 896,
     "totalCost": 112
@@ -1325,6 +1703,8 @@
   {
     "zipCode": "86000",
     "province": "ชุมพร",
+    "district": "เมืองชุมพร",
+    "subdistrict": "ตากแดด",
     "count": 7,
     "totalCOD": 1195,
     "totalCost": 112
@@ -1332,6 +1712,8 @@
   {
     "zipCode": "58000",
     "province": "แม่ฮ่องสอน",
+    "district": "เมืองแม่ฮ่องสอน",
+    "subdistrict": "จองคำ",
     "count": 7,
     "totalCOD": 1446,
     "totalCost": 312
@@ -1339,6 +1721,8 @@
   {
     "zipCode": "75000",
     "province": "สมุทรสงคราม",
+    "district": "เมืองสมุทรสงคราม",
+    "subdistrict": "คลองเขิน",
     "count": 7,
     "totalCOD": 1195,
     "totalCost": 152
@@ -1346,6 +1730,8 @@
   {
     "zipCode": "32130",
     "province": "สุรินทร์",
+    "district": "รัตนบุรี",
+    "subdistrict": "กุดขาคีม",
     "count": 6,
     "totalCOD": 1564,
     "totalCost": 216
@@ -1353,6 +1739,8 @@
   {
     "zipCode": "23150",
     "province": "ตราด",
+    "district": "เขาสมิง",
+    "subdistrict": "ท่าโสม",
     "count": 6,
     "totalCOD": 967,
     "totalCost": 96
@@ -1360,6 +1748,8 @@
   {
     "zipCode": "21120",
     "province": "ระยอง",
+    "district": "บ้านค่าย",
+    "subdistrict": "ชากบก",
     "count": 6,
     "totalCOD": 927,
     "totalCost": 156
@@ -1367,6 +1757,8 @@
   {
     "zipCode": "40130",
     "province": "ขอนแก่น",
+    "district": "ชุมแพ",
+    "subdistrict": "ขัวเรียง",
     "count": 6,
     "totalCOD": 797,
     "totalCost": 196
@@ -1374,6 +1766,8 @@
   {
     "zipCode": "63000",
     "province": "ตาก",
+    "district": "เมืองตาก",
+    "subdistrict": "ตลุกกลางทุ่ง",
     "count": 6,
     "totalCOD": 796,
     "totalCost": 156
@@ -1381,6 +1775,8 @@
   {
     "zipCode": "35120",
     "province": "ยโสธร",
+    "district": "เลิงนกทา",
+    "subdistrict": "กุดเชียงหมี",
     "count": 6,
     "totalCOD": 1772,
     "totalCost": 246
@@ -1388,6 +1784,8 @@
   {
     "zipCode": "30220",
     "province": "นครราชสีมา",
+    "district": "พระทองคำ",
+    "subdistrict": "ทัพรั้ง",
     "count": 6,
     "totalCOD": 499,
     "totalCost": 96
@@ -1395,6 +1793,8 @@
   {
     "zipCode": "60150",
     "province": "นครสวรรค์",
+    "district": "ชุมตาบง",
+    "subdistrict": "ชุมตาบง",
     "count": 6,
     "totalCOD": 897,
     "totalCost": 136
@@ -1402,6 +1802,8 @@
   {
     "zipCode": "31130",
     "province": "บุรีรัมย์",
+    "district": "ลำปลายมาศ",
+    "subdistrict": "ตลาดโพธิ์",
     "count": 6,
     "totalCOD": 898,
     "totalCost": 96
@@ -1409,6 +1811,8 @@
   {
     "zipCode": "53120",
     "province": "อุตรดิตถ์",
+    "district": "พิชัย",
+    "subdistrict": "คอรุม",
     "count": 6,
     "totalCOD": 1648,
     "totalCost": 197
@@ -1416,6 +1820,8 @@
   {
     "zipCode": "24160",
     "province": "ฉะเชิงเทรา",
+    "district": "ท่าตะเกียบ",
+    "subdistrict": "คลองตะเกรา",
     "count": 6,
     "totalCOD": 1467,
     "totalCost": 176
@@ -1423,6 +1829,8 @@
   {
     "zipCode": "93130",
     "province": "พัทลุง",
+    "district": "เขาชัยสน",
+    "subdistrict": "ควนขนุน",
     "count": 6,
     "totalCOD": 1533,
     "totalCost": 196
@@ -1430,6 +1838,8 @@
   {
     "zipCode": "81110",
     "province": "กระบี่",
+    "district": "อ่าวลึก",
+    "subdistrict": "คลองยา",
     "count": 6,
     "totalCOD": 996,
     "totalCost": 96
@@ -1437,6 +1847,8 @@
   {
     "zipCode": "71170",
     "province": "กาญจนบุรี",
+    "district": "พนมทวน",
+    "subdistrict": "รางหวาย",
     "count": 6,
     "totalCOD": 1953,
     "totalCost": 216
@@ -1444,6 +1856,8 @@
   {
     "zipCode": "86140",
     "province": "ชุมพร",
+    "district": "ท่าแซะ",
+    "subdistrict": "คุริง",
     "count": 6,
     "totalCOD": 1673,
     "totalCost": 216
@@ -1451,6 +1865,8 @@
   {
     "zipCode": "84320",
     "province": "สุราษฎร์ธานี",
+    "district": "เกาะสมุย",
+    "subdistrict": "บ่อผุด",
     "count": 6,
     "totalCOD": 1197,
     "totalCost": 256
@@ -1458,6 +1874,8 @@
   {
     "zipCode": "60180",
     "province": "นครสวรรค์",
+    "district": "บรรพตพิสัย",
+    "subdistrict": "ด่านช้าง",
     "count": 6,
     "totalCOD": 996,
     "totalCost": 136
@@ -1465,6 +1883,8 @@
   {
     "zipCode": "43100",
     "province": "หนองคาย",
+    "district": "สระใคร",
+    "subdistrict": "คอกช้าง",
     "count": 6,
     "totalCOD": 1235,
     "totalCost": 156
@@ -1472,6 +1892,8 @@
   {
     "zipCode": "25000",
     "province": "ปราจีนบุรี",
+    "district": "เมืองปราจีนบุรี",
+    "subdistrict": "ดงขี้เหล็ก",
     "count": 6,
     "totalCOD": 798,
     "totalCost": 96
@@ -1479,6 +1901,8 @@
   {
     "zipCode": "30310",
     "province": "นครราชสีมา",
+    "district": "เมืองนครราชสีมา",
+    "subdistrict": "จอหอ",
     "count": 6,
     "totalCOD": 1234,
     "totalCost": 156
@@ -1486,6 +1910,8 @@
   {
     "zipCode": "66000",
     "province": "พิจิตร",
+    "district": "เมืองพิจิตร",
+    "subdistrict": "คลองคะเชนทร์",
     "count": 6,
     "totalCOD": 1326,
     "totalCost": 136
@@ -1493,6 +1919,8 @@
   {
     "zipCode": "57240",
     "province": "เชียงราย",
+    "district": "แม่จัน",
+    "subdistrict": "แม่คำ",
     "count": 6,
     "totalCOD": 1492,
     "totalCost": 276
@@ -1500,6 +1928,8 @@
   {
     "zipCode": "22180",
     "province": "จันทบุรี",
+    "district": "สอยดาว",
+    "subdistrict": "ทรายขาว",
     "count": 6,
     "totalCOD": 699,
     "totalCost": 96
@@ -1507,6 +1937,8 @@
   {
     "zipCode": "41130",
     "province": "อุดรธานี",
+    "district": "กู่แก้ว",
+    "subdistrict": "คอนสาย",
     "count": 6,
     "totalCOD": 1294,
     "totalCost": 136
@@ -1514,6 +1946,8 @@
   {
     "zipCode": "50290",
     "province": "เชียงใหม่",
+    "district": "สันทราย",
+    "subdistrict": "หนองหาร",
     "count": 6,
     "totalCOD": 1086,
     "totalCost": 96
@@ -1521,6 +1955,8 @@
   {
     "zipCode": "77180",
     "province": "ประจวบคีรีขันธ์",
+    "district": "สามร้อยยอด",
+    "subdistrict": "ศาลาลัย",
     "count": 6,
     "totalCOD": 1575,
     "totalCost": 136
@@ -1528,6 +1964,8 @@
   {
     "zipCode": "36170",
     "province": "ชัยภูมิ",
+    "district": "บ้านเขว้า",
+    "subdistrict": "ชีบน",
     "count": 6,
     "totalCOD": 1632,
     "totalCost": 176
@@ -1535,6 +1973,8 @@
   {
     "zipCode": "38000",
     "province": "บึงกาฬ",
+    "district": "บุ่งคล้า",
+    "subdistrict": "บุ่งคล้า",
     "count": 6,
     "totalCOD": 947,
     "totalCost": 136
@@ -1542,6 +1982,8 @@
   {
     "zipCode": "36120",
     "province": "ชัยภูมิ",
+    "district": "เกษตรสมบูรณ์",
+    "subdistrict": "กุดเลาะ",
     "count": 6,
     "totalCOD": 1265,
     "totalCost": 136
@@ -1549,6 +1991,8 @@
   {
     "zipCode": "21210",
     "province": "ระยอง",
+    "district": "วังจันทร์",
+    "subdistrict": "ชุมแสง",
     "count": 6,
     "totalCOD": 1256,
     "totalCost": 96
@@ -1556,6 +2000,8 @@
   {
     "zipCode": "24120",
     "province": "ฉะเชิงเทรา",
+    "district": "พนมสารคาม",
+    "subdistrict": "ท่าถ่าน",
     "count": 6,
     "totalCOD": 1694,
     "totalCost": 176
@@ -1563,6 +2009,8 @@
   {
     "zipCode": "90180",
     "province": "สงขลา",
+    "district": "รัตภูมิ",
+    "subdistrict": "กำแพงเพชร",
     "count": 6,
     "totalCOD": 897,
     "totalCost": 96
@@ -1570,6 +2018,8 @@
   {
     "zipCode": "47000",
     "province": "สกลนคร",
+    "district": "เมืองสกลนคร",
+    "subdistrict": "งิ้วด่อน",
     "count": 6,
     "totalCOD": 896,
     "totalCost": 96
@@ -1577,6 +2027,8 @@
   {
     "zipCode": "15110",
     "province": "ลพบุรี",
+    "district": "บ้านหมี่",
+    "subdistrict": "ชอนม่วง",
     "count": 6,
     "totalCOD": 998,
     "totalCost": 96
@@ -1584,6 +2036,8 @@
   {
     "zipCode": "36130",
     "province": "ชัยภูมิ",
+    "district": "จัตุรัส",
+    "subdistrict": "กุดน้ำใส",
     "count": 6,
     "totalCOD": 996,
     "totalCost": 96
@@ -1591,6 +2045,8 @@
   {
     "zipCode": "46130",
     "province": "กาฬสินธุ์",
+    "district": "กมลาไสย",
+    "subdistrict": "กมลาไสย",
     "count": 6,
     "totalCOD": 1195,
     "totalCost": 136
@@ -1598,6 +2054,8 @@
   {
     "zipCode": "67180",
     "province": "เพชรบูรณ์",
+    "district": "วิเชียรบุรี",
+    "subdistrict": "ซับน้อย",
     "count": 6,
     "totalCOD": 4148,
     "totalCost": 536
@@ -1605,6 +2063,8 @@
   {
     "zipCode": "63130",
     "province": "ตาก",
+    "district": "สามเงา",
+    "subdistrict": "บ้านนา",
     "count": 6,
     "totalCOD": 1195,
     "totalCost": 136
@@ -1612,6 +2072,8 @@
   {
     "zipCode": "40190",
     "province": "ขอนแก่น",
+    "district": "หนองสองห้อง",
+    "subdistrict": "คึมชาด",
     "count": 6,
     "totalCOD": 1395,
     "totalCost": 156
@@ -1619,6 +2081,8 @@
   {
     "zipCode": "64110",
     "province": "สุโขทัย",
+    "district": "สวรรคโลก",
+    "subdistrict": "คลองกระจง",
     "count": 6,
     "totalCOD": 759,
     "totalCost": 156
@@ -1626,6 +2090,8 @@
   {
     "zipCode": "17000",
     "province": "ชัยนาท",
+    "district": "เมืองชัยนาท",
+    "subdistrict": "ชัยนาท",
     "count": 6,
     "totalCOD": 1974,
     "totalCost": 196
@@ -1633,6 +2099,8 @@
   {
     "zipCode": "92180",
     "province": "ตรัง",
+    "district": "ปะเหลียน",
+    "subdistrict": "ทุ่งยาว",
     "count": 6,
     "totalCOD": 1096,
     "totalCost": 96
@@ -1640,6 +2108,8 @@
   {
     "zipCode": "57160",
     "province": "เชียงราย",
+    "district": "เทิง",
+    "subdistrict": "งิ้ว",
     "count": 6,
     "totalCOD": 1215,
     "totalCost": 136
@@ -1647,6 +2117,8 @@
   {
     "zipCode": "26120",
     "province": "นครนายก",
+    "district": "องครักษ์",
+    "subdistrict": "คลองใหญ่",
     "count": 6,
     "totalCOD": 995,
     "totalCost": 96
@@ -1654,6 +2126,8 @@
   {
     "zipCode": "34350",
     "province": "อุบลราชธานี",
+    "district": "สิรินธร",
+    "subdistrict": "คันไร่",
     "count": 6,
     "totalCOD": 1692,
     "totalCost": 236
@@ -1661,6 +2135,8 @@
   {
     "zipCode": "93110",
     "province": "พัทลุง",
+    "district": "ควนขนุน",
+    "subdistrict": "ควนขนุน",
     "count": 6,
     "totalCOD": 1393,
     "totalCost": 196
@@ -1668,6 +2144,8 @@
   {
     "zipCode": "74120",
     "province": "สมุทรสาคร",
+    "district": "บ้านแพ้ว",
+    "subdistrict": "คลองตัน",
     "count": 6,
     "totalCOD": 768,
     "totalCost": 96
@@ -1675,6 +2153,8 @@
   {
     "zipCode": "18130",
     "province": "สระบุรี",
+    "district": "บ้านหมอ",
+    "subdistrict": "ตลาดน้อย",
     "count": 6,
     "totalCOD": 936,
     "totalCost": 96
@@ -1682,6 +2162,8 @@
   {
     "zipCode": "15120",
     "province": "ลพบุรี",
+    "district": "โคกสำโรง",
+    "subdistrict": "คลองเกตุ",
     "count": 6,
     "totalCOD": 398,
     "totalCost": 216
@@ -1689,6 +2171,8 @@
   {
     "zipCode": "13110",
     "province": "พระนครศรีอยุธยา",
+    "district": "เสนา",
+    "subdistrict": "ชายนา",
     "count": 6,
     "totalCOD": 1304,
     "totalCost": 156
@@ -1696,6 +2180,8 @@
   {
     "zipCode": "40110",
     "province": "ขอนแก่น",
+    "district": "บ้านแฮด",
+    "subdistrict": "บ้านแฮด",
     "count": 5,
     "totalCOD": 1096,
     "totalCost": 120
@@ -1703,6 +2189,8 @@
   {
     "zipCode": "86130",
     "province": "ชุมพร",
+    "district": "สวี",
+    "subdistrict": "ครน",
     "count": 5,
     "totalCOD": 1194,
     "totalCost": 120
@@ -1710,6 +2198,8 @@
   {
     "zipCode": "48110",
     "province": "นครพนม",
+    "district": "ธาตุพนม",
+    "subdistrict": "กุดฉิม",
     "count": 5,
     "totalCOD": 1195,
     "totalCost": 290
@@ -1717,6 +2207,8 @@
   {
     "zipCode": "18140",
     "province": "สระบุรี",
+    "district": "หนองแค",
+    "subdistrict": "กุ่มหัก",
     "count": 5,
     "totalCOD": 1294,
     "totalCost": 160
@@ -1724,6 +2216,8 @@
   {
     "zipCode": "26000",
     "province": "นครนายก",
+    "district": "เมืองนครนายก",
+    "subdistrict": "ดงละคร",
     "count": 5,
     "totalCOD": 837,
     "totalCost": 80
@@ -1731,6 +2225,8 @@
   {
     "zipCode": "62120",
     "province": "กำแพงเพชร",
+    "district": "คลองขลุง",
+    "subdistrict": "คลองขลุง",
     "count": 5,
     "totalCOD": 1375,
     "totalCost": 140
@@ -1738,6 +2234,8 @@
   {
     "zipCode": "50360",
     "province": "เชียงใหม่",
+    "district": "แม่วาง",
+    "subdistrict": "ดอนเปา",
     "count": 5,
     "totalCOD": 1293,
     "totalCost": 140
@@ -1745,6 +2243,8 @@
   {
     "zipCode": "50220",
     "province": "เชียงใหม่",
+    "district": "ดอยสะเก็ด",
+    "subdistrict": "ตลาดขวัญ",
     "count": 5,
     "totalCOD": 796,
     "totalCost": 80
@@ -1752,6 +2252,8 @@
   {
     "zipCode": "22120",
     "province": "จันทบุรี",
+    "district": "ท่าใหม่",
+    "subdistrict": "คลองขุด",
     "count": 5,
     "totalCOD": 1496,
     "totalCost": 140
@@ -1759,6 +2261,8 @@
   {
     "zipCode": "22160",
     "province": "จันทบุรี",
+    "district": "นายายอาม",
+    "subdistrict": "ช้างข้าม",
     "count": 5,
     "totalCOD": 988,
     "totalCost": 80
@@ -1766,6 +2270,8 @@
   {
     "zipCode": "84180",
     "province": "สุราษฎร์ธานี",
+    "district": "คีรีรัฐนิคม",
+    "subdistrict": "กะเปา",
     "count": 5,
     "totalCOD": 698,
     "totalCost": 80
@@ -1773,6 +2279,8 @@
   {
     "zipCode": "90250",
     "province": "สงขลา",
+    "district": "หาดใหญ่",
+    "subdistrict": "บ้านพรุ",
     "count": 5,
     "totalCOD": 1334,
     "totalCost": 140
@@ -1780,6 +2288,8 @@
   {
     "zipCode": "67160",
     "province": "เพชรบูรณ์",
+    "district": "บึงสามพัน",
+    "subdistrict": "กันจุ",
     "count": 5,
     "totalCOD": 1096,
     "totalCost": 120
@@ -1787,6 +2297,8 @@
   {
     "zipCode": "10100",
     "province": "กรุงเทพมหานคร",
+    "district": "ป้อมปราบศัตรูพ่าย",
+    "subdistrict": "คลองมหานาค",
     "count": 5,
     "totalCOD": 1047,
     "totalCost": 120
@@ -1794,6 +2306,8 @@
   {
     "zipCode": "13180",
     "province": "พระนครศรีอยุธยา",
+    "district": "บางปะอิน",
+    "subdistrict": "เชียงรากน้อย",
     "count": 5,
     "totalCOD": 1097,
     "totalCost": 140
@@ -1801,6 +2315,8 @@
   {
     "zipCode": "43110",
     "province": "หนองคาย",
+    "district": "ท่าบ่อ",
+    "subdistrict": "กองนาง",
     "count": 5,
     "totalCOD": 797,
     "totalCost": 80
@@ -1808,6 +2324,8 @@
   {
     "zipCode": "45170",
     "province": "ร้อยเอ็ด",
+    "district": "ทุ่งเขาหลวง",
+    "subdistrict": "ทุ่งเขาหลวง",
     "count": 5,
     "totalCOD": 995,
     "totalCost": 120
@@ -1815,6 +2333,8 @@
   {
     "zipCode": "46120",
     "province": "กาฬสินธุ์",
+    "district": "ยางตลาด",
+    "subdistrict": "คลองขาม",
     "count": 5,
     "totalCOD": 897,
     "totalCost": 80
@@ -1822,6 +2342,8 @@
   {
     "zipCode": "71150",
     "province": "กาญจนบุรี",
+    "district": "ไทรโยค",
+    "subdistrict": "ท่าเสา",
     "count": 5,
     "totalCOD": 897,
     "totalCost": 80
@@ -1829,6 +2351,8 @@
   {
     "zipCode": "80220",
     "province": "นครศรีธรรมราช",
+    "district": "นาบอน",
+    "subdistrict": "ทุ่งสง",
     "count": 5,
     "totalCOD": 1673,
     "totalCost": 200
@@ -1836,6 +2360,8 @@
   {
     "zipCode": "49130",
     "province": "มุกดาหาร",
+    "district": "นิคมคำสร้อย",
+    "subdistrict": "กกแดง",
     "count": 5,
     "totalCOD": 996,
     "totalCost": 120
@@ -1843,6 +2369,8 @@
   {
     "zipCode": "73130",
     "province": "นครปฐม",
+    "district": "บางเลน",
+    "subdistrict": "คลองนกกระทุง",
     "count": 5,
     "totalCOD": 867,
     "totalCost": 80
@@ -1850,6 +2378,8 @@
   {
     "zipCode": "80340",
     "province": "นครศรีธรรมราช",
+    "district": "สิชล",
+    "subdistrict": "เทพราช",
     "count": 5,
     "totalCOD": 1898,
     "totalCost": 140
@@ -1857,6 +2387,8 @@
   {
     "zipCode": "40160",
     "province": "ขอนแก่น",
+    "district": "มัญจาคีรี",
+    "subdistrict": "กุดเค้า",
     "count": 5,
     "totalCOD": 1037,
     "totalCost": 120
@@ -1864,6 +2396,8 @@
   {
     "zipCode": "83120",
     "province": "ภูเก็ต",
+    "district": "กะทู้",
+    "subdistrict": "กมลา",
     "count": 5,
     "totalCOD": 1294,
     "totalCost": 240
@@ -1871,6 +2405,8 @@
   {
     "zipCode": "34170",
     "province": "อุบลราชธานี",
+    "district": "นาตาล",
+    "subdistrict": "กองโพน",
     "count": 5,
     "totalCOD": 836,
     "totalCost": 220
@@ -1878,6 +2414,8 @@
   {
     "zipCode": "22140",
     "province": "จันทบุรี",
+    "district": "โป่งน้ำร้อน",
+    "subdistrict": "คลองใหญ่",
     "count": 5,
     "totalCOD": 837,
     "totalCost": 80
@@ -1885,6 +2423,8 @@
   {
     "zipCode": "44130",
     "province": "มหาสารคาม",
+    "district": "กุดรัง",
+    "subdistrict": "กุดรัง",
     "count": 5,
     "totalCOD": 896,
     "totalCost": 80
@@ -1892,6 +2432,8 @@
   {
     "zipCode": "43120",
     "province": "หนองคาย",
+    "district": "รัตนวาปี",
+    "subdistrict": "นาทับไฮ",
     "count": 5,
     "totalCOD": 1236,
     "totalCost": 140
@@ -1899,6 +2441,8 @@
   {
     "zipCode": "56110",
     "province": "พะเยา",
+    "district": "ภูซาง",
+    "subdistrict": "ทุ่งกล้วย",
     "count": 5,
     "totalCOD": 997,
     "totalCost": 80
@@ -1906,6 +2450,8 @@
   {
     "zipCode": "80180",
     "province": "นครศรีธรรมราช",
+    "district": "จุฬาภรณ์",
+    "subdistrict": "บ้านควนมุด",
     "count": 5,
     "totalCOD": 797,
     "totalCost": 80
@@ -1913,6 +2459,8 @@
   {
     "zipCode": "40120",
     "province": "ขอนแก่น",
+    "district": "พล",
+    "subdistrict": "ลอมคอม",
     "count": 5,
     "totalCOD": 399,
     "totalCost": 80
@@ -1920,6 +2468,8 @@
   {
     "zipCode": "76130",
     "province": "เพชรบุรี",
+    "district": "ท่ายาง",
+    "subdistrict": "กลัดหลวง",
     "count": 5,
     "totalCOD": 599,
     "totalCost": 80
@@ -1927,6 +2477,8 @@
   {
     "zipCode": "33150",
     "province": "ศรีสะเกษ",
+    "district": "ขุนหาญ",
+    "subdistrict": "กระหวัน",
     "count": 5,
     "totalCOD": 1116,
     "totalCost": 120
@@ -1934,6 +2486,8 @@
   {
     "zipCode": "45130",
     "province": "ร้อยเอ็ด",
+    "district": "สุวรรณภูมิ",
+    "subdistrict": "จำปาขัน",
     "count": 5,
     "totalCOD": 897,
     "totalCost": 120
@@ -1941,6 +2495,8 @@
   {
     "zipCode": "42130",
     "province": "เลย",
+    "district": "วังสะพุง",
+    "subdistrict": "ทรายขาว",
     "count": 5,
     "totalCOD": 718,
     "totalCost": 80
@@ -1948,6 +2504,8 @@
   {
     "zipCode": "65140",
     "province": "พิษณุโลก",
+    "district": "บางระกำ",
+    "subdistrict": "ท่านางงาม",
     "count": 5,
     "totalCOD": 597,
     "totalCost": 120
@@ -1955,6 +2513,8 @@
   {
     "zipCode": "71160",
     "province": "กาญจนบุรี",
+    "district": "บ่อพลอย",
+    "subdistrict": "ช่องด่าน",
     "count": 5,
     "totalCOD": 898,
     "totalCost": 120
@@ -1962,6 +2522,8 @@
   {
     "zipCode": "10300",
     "province": "กรุงเทพมหานคร",
+    "district": "ดุสิต",
+    "subdistrict": "ดุสิต",
     "count": 5,
     "totalCOD": 1512,
     "totalCost": 140
@@ -1969,6 +2531,8 @@
   {
     "zipCode": "92210",
     "province": "ตรัง",
+    "district": "ห้วยยอด",
+    "subdistrict": "นาวง",
     "count": 5,
     "totalCOD": 698,
     "totalCost": 80
@@ -1976,6 +2540,8 @@
   {
     "zipCode": "14150",
     "province": "อ่างทอง",
+    "district": "แสวงหา",
+    "subdistrict": "จำลอง",
     "count": 5,
     "totalCOD": 887,
     "totalCost": 120
@@ -1983,6 +2549,8 @@
   {
     "zipCode": "36230",
     "province": "ชัยภูมิ",
+    "district": "เทพสถิต",
+    "subdistrict": "นายางกลัก",
     "count": 5,
     "totalCOD": 996,
     "totalCost": 120
@@ -1990,6 +2558,8 @@
   {
     "zipCode": "50200",
     "province": "เชียงใหม่",
+    "district": "เมืองเชียงใหม่",
+    "subdistrict": "พระสิงห์",
     "count": 5,
     "totalCOD": 1895,
     "totalCost": 180
@@ -1997,6 +2567,8 @@
   {
     "zipCode": "13190",
     "province": "พระนครศรีอยุธยา",
+    "district": "บางไทร",
+    "subdistrict": "กกแก้วบูรพา",
     "count": 5,
     "totalCOD": 808,
     "totalCost": 120
@@ -2004,6 +2576,8 @@
   {
     "zipCode": "85110",
     "province": "ระนอง",
+    "district": "กระบุรี",
+    "subdistrict": "จ.ป.ร.",
     "count": 5,
     "totalCOD": 1275,
     "totalCost": 140
@@ -2011,6 +2585,8 @@
   {
     "zipCode": "27160",
     "province": "สระแก้ว",
+    "district": "วัฒนานคร",
+    "subdistrict": "ช่องกุ่ม",
     "count": 5,
     "totalCOD": 867,
     "totalCost": 80
@@ -2018,6 +2594,8 @@
   {
     "zipCode": "30280",
     "province": "นครราชสีมา",
+    "district": "ขามทะเลสอ",
+    "subdistrict": "ขามทะเลสอ",
     "count": 5,
     "totalCOD": 728,
     "totalCost": 80
@@ -2025,6 +2603,8 @@
   {
     "zipCode": "48130",
     "province": "นครพนม",
+    "district": "นาแก",
+    "subdistrict": "ก้านเหลือง",
     "count": 5,
     "totalCOD": 1472,
     "totalCost": 230
@@ -2032,6 +2612,8 @@
   {
     "zipCode": "45210",
     "province": "ร้อยเอ็ด",
+    "district": "หนองพอก",
+    "subdistrict": "กกโพธิ์",
     "count": 4,
     "totalCOD": 916,
     "totalCost": 104
@@ -2039,6 +2621,8 @@
   {
     "zipCode": "50210",
     "province": "เชียงใหม่",
+    "district": "สันทราย",
+    "subdistrict": "ป่าไผ่",
     "count": 4,
     "totalCOD": 299,
     "totalCost": 104
@@ -2046,6 +2630,8 @@
   {
     "zipCode": "30330",
     "province": "นครราชสีมา",
+    "district": "เสิงสาง",
+    "subdistrict": "กุดโบสถ์",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 64
@@ -2053,6 +2639,8 @@
   {
     "zipCode": "80210",
     "province": "นครศรีธรรมราช",
+    "district": "ขนอม",
+    "subdistrict": "ขนอม",
     "count": 4,
     "totalCOD": 668,
     "totalCost": 64
@@ -2060,6 +2648,8 @@
   {
     "zipCode": "80230",
     "province": "นครศรีธรรมราช",
+    "district": "ลานสกา",
+    "subdistrict": "กำโลน",
     "count": 4,
     "totalCOD": 598,
     "totalCost": 64
@@ -2067,6 +2657,8 @@
   {
     "zipCode": "61140",
     "province": "อุทัยธานี",
+    "district": "บ้านไร่",
+    "subdistrict": "คอกควาย",
     "count": 4,
     "totalCOD": 1038,
     "totalCost": 104
@@ -2074,6 +2666,8 @@
   {
     "zipCode": "86100",
     "province": "ชุมพร",
+    "district": "เมืองชุมพร",
+    "subdistrict": "ถ้ำสิงห์",
     "count": 4,
     "totalCOD": 270,
     "totalCost": 64
@@ -2081,6 +2675,8 @@
   {
     "zipCode": "15140",
     "province": "ลพบุรี",
+    "district": "พัฒนานิคม",
+    "subdistrict": "ชอนน้อย",
     "count": 4,
     "totalCOD": 697,
     "totalCost": 64
@@ -2088,6 +2684,8 @@
   {
     "zipCode": "71260",
     "province": "กาญจนบุรี",
+    "district": "ด่านมะขามเตี้ย",
+    "subdistrict": "กลอนโด",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 64
@@ -2095,6 +2693,8 @@
   {
     "zipCode": "72160",
     "province": "สุพรรณบุรี",
+    "district": "อู่ทอง",
+    "subdistrict": "กระจัน",
     "count": 4,
     "totalCOD": 499,
     "totalCost": 64
@@ -2102,6 +2702,8 @@
   {
     "zipCode": "66190",
     "province": "พิจิตร",
+    "district": "โพธิ์ประทับช้าง",
+    "subdistrict": "ดงเสือเหลือง",
     "count": 4,
     "totalCOD": 597,
     "totalCost": 64
@@ -2109,6 +2711,8 @@
   {
     "zipCode": "56000",
     "province": "พะเยา",
+    "district": "ภูกามยาว",
+    "subdistrict": "ดงเจน",
     "count": 4,
     "totalCOD": 1655,
     "totalCost": 144
@@ -2116,6 +2720,8 @@
   {
     "zipCode": "41250",
     "province": "อุดรธานี",
+    "district": "กุดจับ",
+    "subdistrict": "กุดจับ",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 64
@@ -2123,6 +2729,8 @@
   {
     "zipCode": "71210",
     "province": "กาญจนบุรี",
+    "district": "เลาขวัญ",
+    "subdistrict": "ทุ่งกระบ่ำ",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 64
@@ -2130,6 +2738,8 @@
   {
     "zipCode": "47240",
     "province": "สกลนคร",
+    "district": "สว่างแดนดิน",
+    "subdistrict": "ตาลเนิ้ง",
     "count": 4,
     "totalCOD": 896,
     "totalCost": 104
@@ -2137,6 +2747,8 @@
   {
     "zipCode": "70180",
     "province": "ราชบุรี",
+    "district": "บ้านคา",
+    "subdistrict": "บ้านคา",
     "count": 4,
     "totalCOD": 797,
     "totalCost": 64
@@ -2144,6 +2756,8 @@
   {
     "zipCode": "80260",
     "province": "นครศรีธรรมราช",
+    "district": "ฉวาง",
+    "subdistrict": "กะเปียด",
     "count": 4,
     "totalCOD": 697,
     "totalCost": 64
@@ -2151,6 +2765,8 @@
   {
     "zipCode": "30190",
     "province": "นครราชสีมา",
+    "district": "โชคชัย",
+    "subdistrict": "กระโทก",
     "count": 4,
     "totalCOD": 898,
     "totalCost": 84
@@ -2158,6 +2774,8 @@
   {
     "zipCode": "40210",
     "province": "ขอนแก่น",
+    "district": "หนองเรือ",
+    "subdistrict": "กุดกว้าง",
     "count": 4,
     "totalCOD": 1649,
     "totalCost": 204
@@ -2165,6 +2783,8 @@
   {
     "zipCode": "92190",
     "province": "ตรัง",
+    "district": "ห้วยยอด",
+    "subdistrict": "ปากแจ่ม",
     "count": 4,
     "totalCOD": 699,
     "totalCost": 64
@@ -2172,6 +2792,8 @@
   {
     "zipCode": "67280",
     "province": "เพชรบูรณ์",
+    "district": "เขาค้อ",
+    "subdistrict": "เข็กน้อย",
     "count": 4,
     "totalCOD": 598,
     "totalCost": 64
@@ -2179,6 +2801,8 @@
   {
     "zipCode": "63120",
     "province": "ตาก",
+    "district": "บ้านตาก",
+    "subdistrict": "ตากตก",
     "count": 4,
     "totalCOD": 699,
     "totalCost": 64
@@ -2186,6 +2810,8 @@
   {
     "zipCode": "33140",
     "province": "ศรีสะเกษ",
+    "district": "ขุขันธ์",
+    "subdistrict": "กฤษณา",
     "count": 4,
     "totalCOD": 888,
     "totalCost": 104
@@ -2193,6 +2819,8 @@
   {
     "zipCode": "90170",
     "province": "สงขลา",
+    "district": "สะเดา",
+    "subdistrict": "ท่าโพธิ์",
     "count": 4,
     "totalCOD": 599,
     "totalCost": 64
@@ -2200,6 +2828,8 @@
   {
     "zipCode": "60140",
     "province": "นครสวรรค์",
+    "district": "ตาคลี",
+    "subdistrict": "ตาคลี",
     "count": 4,
     "totalCOD": 797,
     "totalCost": 104
@@ -2207,6 +2837,8 @@
   {
     "zipCode": "72150",
     "province": "สุพรรณบุรี",
+    "district": "บางปลาม้า",
+    "subdistrict": "กฤษณา",
     "count": 4,
     "totalCOD": 400,
     "totalCost": 64
@@ -2214,6 +2846,8 @@
   {
     "zipCode": "11150",
     "province": "นนทบุรี",
+    "district": "ไทรน้อย",
+    "subdistrict": "ขุนศรี",
     "count": 4,
     "totalCOD": 519,
     "totalCost": 64
@@ -2221,6 +2855,8 @@
   {
     "zipCode": "93170",
     "province": "พัทลุง",
+    "district": "ป่าบอน",
+    "subdistrict": "ทุ่งนารี",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 64
@@ -2228,6 +2864,8 @@
   {
     "zipCode": "42220",
     "province": "เลย",
+    "district": "เอราวัณ",
+    "subdistrict": "ทรัพย์ไพวัลย์",
     "count": 4,
     "totalCOD": 399,
     "totalCost": 64
@@ -2235,6 +2873,8 @@
   {
     "zipCode": "62110",
     "province": "กำแพงเพชร",
+    "district": "พรานกระต่าย",
+    "subdistrict": "คลองพิไกร",
     "count": 4,
     "totalCOD": 797,
     "totalCost": 64
@@ -2242,6 +2882,8 @@
   {
     "zipCode": "21160",
     "province": "ระยอง",
+    "district": "เมืองระยอง",
+    "subdistrict": "เพ",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 64
@@ -2249,6 +2891,8 @@
   {
     "zipCode": "90240",
     "province": "สงขลา",
+    "district": "สะเดา",
+    "subdistrict": "ทุ่งหมอ",
     "count": 4,
     "totalCOD": 698,
     "totalCost": 104
@@ -2256,6 +2900,8 @@
   {
     "zipCode": "22170",
     "province": "จันทบุรี",
+    "district": "ท่าใหม่",
+    "subdistrict": "ทุ่งเบญจา",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 64
@@ -2263,6 +2909,8 @@
   {
     "zipCode": "42190",
     "province": "เลย",
+    "district": "หนองหิน",
+    "subdistrict": "ตาดข่า",
     "count": 4,
     "totalCOD": 879,
     "totalCost": 104
@@ -2270,6 +2918,8 @@
   {
     "zipCode": "60130",
     "province": "นครสวรรค์",
+    "district": "พยุหะคีรี",
+    "subdistrict": "ท่าน้ำอ้อย",
     "count": 4,
     "totalCOD": 1134,
     "totalCost": 114
@@ -2277,6 +2927,8 @@
   {
     "zipCode": "31160",
     "province": "บุรีรัมย์",
+    "district": "กระสัง",
+    "subdistrict": "กระสัง",
     "count": 4,
     "totalCOD": 936,
     "totalCost": 124
@@ -2284,6 +2936,8 @@
   {
     "zipCode": "57180",
     "province": "เชียงราย",
+    "district": "แม่สรวย",
+    "subdistrict": "ท่าก๊อ",
     "count": 4,
     "totalCOD": 797,
     "totalCost": 184
@@ -2291,6 +2945,8 @@
   {
     "zipCode": "84150",
     "province": "สุราษฎร์ธานี",
+    "district": "ท่าฉาง",
+    "subdistrict": "คลองไทร",
     "count": 4,
     "totalCOD": 599,
     "totalCost": 64
@@ -2298,6 +2954,8 @@
   {
     "zipCode": "84120",
     "province": "สุราษฎร์ธานี",
+    "district": "บ้านนาสาร",
+    "subdistrict": "คลองปราบ",
     "count": 4,
     "totalCOD": 598,
     "totalCost": 64
@@ -2305,6 +2963,8 @@
   {
     "zipCode": "41150",
     "province": "อุดรธานี",
+    "district": "เพ็ญ",
+    "subdistrict": "จอมศรี",
     "count": 4,
     "totalCOD": 838,
     "totalCost": 64
@@ -2312,6 +2972,8 @@
   {
     "zipCode": "31140",
     "province": "บุรีรัมย์",
+    "district": "ประโคนชัย",
+    "subdistrict": "จรเข้มาก",
     "count": 4,
     "totalCOD": 568,
     "totalCost": 64
@@ -2319,6 +2981,8 @@
   {
     "zipCode": "70140",
     "province": "ราชบุรี",
+    "district": "ปากท่อ",
+    "subdistrict": "ดอนทราย",
     "count": 4,
     "totalCOD": 697,
     "totalCost": 64
@@ -2326,6 +2990,8 @@
   {
     "zipCode": "13230",
     "province": "พระนครศรีอยุธยา",
+    "district": "ลาดบัวหลวง",
+    "subdistrict": "คลองพระยาบันลือ",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 64
@@ -2333,6 +2999,8 @@
   {
     "zipCode": "12160",
     "province": "ปทุมธานี",
+    "district": "สามโคก",
+    "subdistrict": "กระแชง",
     "count": 4,
     "totalCOD": 739,
     "totalCost": 64
@@ -2340,6 +3008,8 @@
   {
     "zipCode": "46110",
     "province": "กาฬสินธุ์",
+    "district": "กุฉินารายณ์",
+    "subdistrict": "กุดค้าว",
     "count": 4,
     "totalCOD": 697,
     "totalCost": 64
@@ -2347,6 +3017,8 @@
   {
     "zipCode": "77120",
     "province": "ประจวบคีรีขันธ์",
+    "district": "ปราณบุรี",
+    "subdistrict": "ปราณบุรี",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 104
@@ -2354,6 +3026,8 @@
   {
     "zipCode": "40260",
     "province": "ขอนแก่น",
+    "district": "เมืองขอนแก่น",
+    "subdistrict": "ดอนหัน",
     "count": 4,
     "totalCOD": 1075,
     "totalCost": 124
@@ -2361,6 +3035,8 @@
   {
     "zipCode": "20250",
     "province": "ชลบุรี",
+    "district": "สัตหีบ",
+    "subdistrict": "นาจอมเทียน",
     "count": 4,
     "totalCOD": 998,
     "totalCost": 104
@@ -2368,6 +3044,8 @@
   {
     "zipCode": "50160",
     "province": "เชียงใหม่",
+    "district": "จอมทอง",
+    "subdistrict": "ข่วงเปา",
     "count": 4,
     "totalCOD": 598,
     "totalCost": 64
@@ -2375,6 +3053,8 @@
   {
     "zipCode": "42180",
     "province": "เลย",
+    "district": "ภูกระดึง",
+    "subdistrict": "ผานกเค้า",
     "count": 4,
     "totalCOD": 697,
     "totalCost": 64
@@ -2382,6 +3062,8 @@
   {
     "zipCode": "84160",
     "province": "สุราษฎร์ธานี",
+    "district": "กาญจนดิษฐ์",
+    "subdistrict": "กรูด",
     "count": 4,
     "totalCOD": 598,
     "totalCost": 64
@@ -2389,6 +3071,8 @@
   {
     "zipCode": "41110",
     "province": "อุดรธานี",
+    "district": "กุมภวาปี",
+    "subdistrict": "กุมภวาปี",
     "count": 4,
     "totalCOD": 698,
     "totalCost": 64
@@ -2396,6 +3080,8 @@
   {
     "zipCode": "51120",
     "province": "ลำพูน",
+    "district": "ป่าซาง",
+    "subdistrict": "ท่าตุ้ม",
     "count": 4,
     "totalCOD": 888,
     "totalCost": 64
@@ -2403,6 +3089,8 @@
   {
     "zipCode": "73170",
     "province": "นครปฐม",
+    "district": "พุทธมณฑล",
+    "subdistrict": "คลองโยง",
     "count": 4,
     "totalCOD": 1134,
     "totalCost": 124
@@ -2410,6 +3098,8 @@
   {
     "zipCode": "57170",
     "province": "เชียงราย",
+    "district": "เวียงป่าเป้า",
+    "subdistrict": "บ้านโป่ง",
     "count": 4,
     "totalCOD": 1035,
     "totalCost": 204
@@ -2417,6 +3107,8 @@
   {
     "zipCode": "93140",
     "province": "พัทลุง",
+    "district": "บางแก้ว",
+    "subdistrict": "ท่ามะเดื่อ",
     "count": 4,
     "totalCOD": 698,
     "totalCost": 64
@@ -2424,6 +3116,8 @@
   {
     "zipCode": "41330",
     "province": "อุดรธานี",
+    "district": "เมืองอุดรธานี",
+    "subdistrict": "หนองไผ่",
     "count": 4,
     "totalCOD": 898,
     "totalCost": 104
@@ -2431,6 +3125,8 @@
   {
     "zipCode": "58120",
     "province": "แม่ฮ่องสอน",
+    "district": "แม่ลาน้อย",
+    "subdistrict": "ขุนแม่ลาน้อย",
     "count": 4,
     "totalCOD": 2050,
     "totalCost": 144
@@ -2438,6 +3134,8 @@
   {
     "zipCode": "84260",
     "province": "สุราษฎร์ธานี",
+    "district": "เคียนซา",
+    "subdistrict": "บ้านเสด็จ",
     "count": 4,
     "totalCOD": 597,
     "totalCost": 64
@@ -2445,6 +3143,8 @@
   {
     "zipCode": "77170",
     "province": "ประจวบคีรีขันธ์",
+    "district": "บางสะพานน้อย",
+    "subdistrict": "ช้างแรก",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 64
@@ -2452,6 +3152,8 @@
   {
     "zipCode": "13150",
     "province": "พระนครศรีอยุธยา",
+    "district": "มหาราช",
+    "subdistrict": "กะทุ่ม",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 64
@@ -2459,6 +3161,8 @@
   {
     "zipCode": "32110",
     "province": "สุรินทร์",
+    "district": "ศีขรภูมิ",
+    "subdistrict": "กุดหวาย",
     "count": 4,
     "totalCOD": 1134,
     "totalCost": 124
@@ -2466,6 +3170,8 @@
   {
     "zipCode": "47150",
     "province": "สกลนคร",
+    "district": "วาริชภูมิ",
+    "subdistrict": "คำบ่อ",
     "count": 4,
     "totalCOD": 1592,
     "totalCost": 184
@@ -2473,6 +3179,8 @@
   {
     "zipCode": "73180",
     "province": "นครปฐม",
+    "district": "กำแพงแสน",
+    "subdistrict": "กระตีบ",
     "count": 4,
     "totalCOD": 995,
     "totalCost": 104
@@ -2480,6 +3188,8 @@
   {
     "zipCode": "73150",
     "province": "นครปฐม",
+    "district": "ดอนตูม",
+    "subdistrict": "ดอนพุทรา",
     "count": 4,
     "totalCOD": 299,
     "totalCost": 124
@@ -2487,6 +3197,8 @@
   {
     "zipCode": "86110",
     "province": "ชุมพร",
+    "district": "หลังสวน",
+    "subdistrict": "ขันเงิน",
     "count": 4,
     "totalCOD": 836,
     "totalCost": 124
@@ -2494,6 +3206,8 @@
   {
     "zipCode": "80120",
     "province": "นครศรีธรรมราช",
+    "district": "สิชล",
+    "subdistrict": "ฉลอง",
     "count": 4,
     "totalCOD": 658,
     "totalCost": 64
@@ -2501,6 +3215,8 @@
   {
     "zipCode": "37240",
     "province": "อำนาจเจริญ",
+    "district": "หัวตะพาน",
+    "subdistrict": "คำพระ",
     "count": 4,
     "totalCOD": 697,
     "totalCost": 64
@@ -2508,6 +3224,8 @@
   {
     "zipCode": "84250",
     "province": "สุราษฎร์ธานี",
+    "district": "พนม",
+    "subdistrict": "คลองชะอุ่น",
     "count": 4,
     "totalCOD": 797,
     "totalCost": 64
@@ -2515,6 +3233,8 @@
   {
     "zipCode": "52100",
     "province": "ลำปาง",
+    "district": "เมืองลำปาง",
+    "subdistrict": "ชมพู",
     "count": 4,
     "totalCOD": 688,
     "totalCost": 64
@@ -2522,6 +3242,8 @@
   {
     "zipCode": "30370",
     "province": "นครราชสีมา",
+    "district": "วังน้ำเขียว",
+    "subdistrict": "วังน้ำเขียว",
     "count": 4,
     "totalCOD": 598,
     "totalCost": 64
@@ -2529,6 +3251,8 @@
   {
     "zipCode": "91150",
     "province": "สตูล",
+    "district": "ท่าแพ",
+    "subdistrict": "ท่าเรือ",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 104
@@ -2536,6 +3260,8 @@
   {
     "zipCode": "31150",
     "province": "บุรีรัมย์",
+    "district": "สตึก",
+    "subdistrict": "กระสัง",
     "count": 4,
     "totalCOD": 1035,
     "totalCost": 124
@@ -2543,6 +3269,8 @@
   {
     "zipCode": "30340",
     "province": "นครราชสีมา",
+    "district": "สีคิ้ว",
+    "subdistrict": "คลองไผ่",
     "count": 4,
     "totalCOD": 498,
     "totalCost": 64
@@ -2550,6 +3278,8 @@
   {
     "zipCode": "15130",
     "province": "ลพบุรี",
+    "district": "ชัยบาดาล",
+    "subdistrict": "ชัยนารายณ์",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 64
@@ -2557,6 +3287,8 @@
   {
     "zipCode": "33120",
     "province": "ศรีสะเกษ",
+    "district": "อุทุมพรพิสัย",
+    "subdistrict": "กำแพง",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 64
@@ -2564,6 +3296,8 @@
   {
     "zipCode": "38210",
     "province": "บึงกาฬ",
+    "district": "ศรีวิไล",
+    "subdistrict": "ชุมภูพร",
     "count": 4,
     "totalCOD": 995,
     "totalCost": 104
@@ -2571,6 +3305,8 @@
   {
     "zipCode": "96120",
     "province": "นราธิวาส",
+    "district": "สุไหงโก-ลก",
+    "subdistrict": "ปาเสมัส",
     "count": 4,
     "totalCOD": 1194,
     "totalCost": 224
@@ -2578,6 +3314,8 @@
   {
     "zipCode": "82140",
     "province": "พังงา",
+    "district": "ตะกั่วทุ่ง",
+    "subdistrict": "หล่อยูง",
     "count": 4,
     "totalCOD": 568,
     "totalCost": 64
@@ -2585,6 +3323,8 @@
   {
     "zipCode": "84100",
     "province": "สุราษฎร์ธานี",
+    "district": "เมืองสุราษฎร์ธานี",
+    "subdistrict": "ขุนทะเล",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 104
@@ -2592,6 +3332,8 @@
   {
     "zipCode": "71130",
     "province": "กาญจนบุรี",
+    "district": "ท่ามะกา",
+    "subdistrict": "ดอนชะเอม",
     "count": 4,
     "totalCOD": 597,
     "totalCost": 64
@@ -2599,6 +3341,8 @@
   {
     "zipCode": "65130",
     "province": "พิษณุโลก",
+    "district": "วังทอง",
+    "subdistrict": "ชัยนาม",
     "count": 4,
     "totalCOD": 995,
     "totalCost": 104
@@ -2606,6 +3350,8 @@
   {
     "zipCode": "90190",
     "province": "สงขลา",
+    "district": "สทิงพระ",
+    "subdistrict": "กระดังงา",
     "count": 4,
     "totalCOD": 1134,
     "totalCost": 124
@@ -2613,6 +3359,8 @@
   {
     "zipCode": "60230",
     "province": "นครสวรรค์",
+    "district": "เก้าเลี้ยว",
+    "subdistrict": "มหาโพธิ",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 64
@@ -2620,6 +3368,8 @@
   {
     "zipCode": "13220",
     "province": "พระนครศรีอยุธยา",
+    "district": "บางปะหัน",
+    "subdistrict": "ขยาย",
     "count": 4,
     "totalCOD": 1166,
     "totalCost": 104
@@ -2627,6 +3377,8 @@
   {
     "zipCode": "80140",
     "province": "นครศรีธรรมราช",
+    "district": "ปากพนัง",
+    "subdistrict": "ขนาบนาก",
     "count": 4,
     "totalCOD": 729,
     "totalCost": 64
@@ -2634,6 +3386,8 @@
   {
     "zipCode": "31170",
     "province": "บุรีรัมย์",
+    "district": "ละหานทราย",
+    "subdistrict": "ตาจง",
     "count": 4,
     "totalCOD": 856,
     "totalCost": 124
@@ -2641,6 +3395,8 @@
   {
     "zipCode": "80360",
     "province": "นครศรีธรรมราช",
+    "district": "บางขัน",
+    "subdistrict": "บางขัน",
     "count": 4,
     "totalCOD": 927,
     "totalCost": 64
@@ -2648,6 +3404,8 @@
   {
     "zipCode": "82120",
     "province": "พังงา",
+    "district": "ท้ายเหมือง",
+    "subdistrict": "ทุ่งมะพร้าว",
     "count": 4,
     "totalCOD": 697,
     "totalCost": 64
@@ -2655,6 +3413,8 @@
   {
     "zipCode": "15170",
     "province": "ลพบุรี",
+    "district": "หนองม่วง",
+    "subdistrict": "ชอนสมบูรณ์",
     "count": 4,
     "totalCOD": 987,
     "totalCost": 124
@@ -2662,6 +3422,8 @@
   {
     "zipCode": "52150",
     "province": "ลำปาง",
+    "district": "แม่ทะ",
+    "subdistrict": "ดอนไฟ",
     "count": 4,
     "totalCOD": 896,
     "totalCost": 124
@@ -2669,6 +3431,8 @@
   {
     "zipCode": "77130",
     "province": "ประจวบคีรีขันธ์",
+    "district": "ทับสะแก",
+    "subdistrict": "ทับสะแก",
     "count": 4,
     "totalCOD": 598,
     "totalCost": 64
@@ -2676,6 +3440,8 @@
   {
     "zipCode": "30270",
     "province": "นครราชสีมา",
+    "district": "ชุมพวง",
+    "subdistrict": "ชุมพวง",
     "count": 4,
     "totalCOD": 1833,
     "totalCost": 204
@@ -2683,6 +3449,8 @@
   {
     "zipCode": "86150",
     "province": "ชุมพร",
+    "district": "หลังสวน",
+    "subdistrict": "บางน้ำจืด",
     "count": 4,
     "totalCOD": 697,
     "totalCost": 64
@@ -2690,6 +3458,8 @@
   {
     "zipCode": "57310",
     "province": "เชียงราย",
+    "district": "เวียงแก่น",
+    "subdistrict": "ท่าข้าม",
     "count": 4,
     "totalCOD": 796,
     "totalCost": 124
@@ -2697,6 +3467,8 @@
   {
     "zipCode": "17130",
     "province": "ชัยนาท",
+    "district": "หันคา",
+    "subdistrict": "บ้านเชี่ยน",
     "count": 4,
     "totalCOD": 1314,
     "totalCost": 164
@@ -2704,6 +3476,8 @@
   {
     "zipCode": "41380",
     "province": "อุดรธานี",
+    "district": "นายูง",
+    "subdistrict": "นายูง",
     "count": 4,
     "totalCOD": 1194,
     "totalCost": 144
@@ -2711,6 +3485,8 @@
   {
     "zipCode": "91110",
     "province": "สตูล",
+    "district": "ละงู",
+    "subdistrict": "กำแพง",
     "count": 4,
     "totalCOD": 897,
     "totalCost": 64
@@ -2718,6 +3494,8 @@
   {
     "zipCode": "34260",
     "province": "อุบลราชธานี",
+    "district": "น้ำขุ่น",
+    "subdistrict": "ขี้เหล็ก",
     "count": 3,
     "totalCOD": 399,
     "totalCost": 48
@@ -2725,6 +3503,8 @@
   {
     "zipCode": "24110",
     "province": "ฉะเชิงเทรา",
+    "district": "คลองเขื่อน",
+    "subdistrict": "บางตลาด",
     "count": 3,
     "totalCOD": 419,
     "totalCost": 48
@@ -2732,6 +3512,8 @@
   {
     "zipCode": "60220",
     "province": "นครสวรรค์",
+    "district": "ไพศาลี",
+    "subdistrict": "ตะคร้อ",
     "count": 3,
     "totalCOD": 399,
     "totalCost": 138
@@ -2739,6 +3521,8 @@
   {
     "zipCode": "45140",
     "province": "ร้อยเอ็ด",
+    "district": "พนมไพร",
+    "subdistrict": "กุดน้ำใส",
     "count": 3,
     "totalCOD": 896,
     "totalCost": 108
@@ -2746,6 +3530,8 @@
   {
     "zipCode": "31260",
     "province": "บุรีรัมย์",
+    "district": "โนนดินแดง",
+    "subdistrict": "ลำนางรอง",
     "count": 3,
     "totalCOD": 796,
     "totalCost": 88
@@ -2753,6 +3539,8 @@
   {
     "zipCode": "66110",
     "province": "พิจิตร",
+    "district": "ตะพานหิน",
+    "subdistrict": "คลองคูณ",
     "count": 3,
     "totalCOD": 199,
     "totalCost": 48
@@ -2760,6 +3548,8 @@
   {
     "zipCode": "15230",
     "province": "ลพบุรี",
+    "district": "ชัยบาดาล",
+    "subdistrict": "ชัยบาดาล",
     "count": 3,
     "totalCOD": 399,
     "totalCost": 48
@@ -2767,6 +3557,8 @@
   {
     "zipCode": "30230",
     "province": "นครราชสีมา",
+    "district": "จักราช",
+    "subdistrict": "คลองเมือง",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -2774,6 +3566,8 @@
   {
     "zipCode": "90230",
     "province": "สงขลา",
+    "district": "คลองหอยโข่ง",
+    "subdistrict": "คลองหอยโข่ง",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -2781,6 +3575,8 @@
   {
     "zipCode": "93160",
     "province": "พัทลุง",
+    "district": "ตะโหมด",
+    "subdistrict": "คลองใหญ่",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -2788,6 +3584,8 @@
   {
     "zipCode": "50170",
     "province": "เชียงใหม่",
+    "district": "เชียงดาว",
+    "subdistrict": "ทุ่งข้าวพวง",
     "count": 3,
     "totalCOD": 1295,
     "totalCost": 168
@@ -2795,6 +3593,8 @@
   {
     "zipCode": "47140",
     "province": "สกลนคร",
+    "district": "บ้านม่วง",
+    "subdistrict": "ดงหม้อทอง",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -2802,6 +3602,8 @@
   {
     "zipCode": "52240",
     "province": "ลำปาง",
+    "district": "เมืองปาน",
+    "subdistrict": "ทุ่งกว๋าว",
     "count": 3,
     "totalCOD": 299,
     "totalCost": 48
@@ -2809,6 +3611,8 @@
   {
     "zipCode": "84350",
     "province": "สุราษฎร์ธานี",
+    "district": "ชัยบุรี",
+    "subdistrict": "คลองน้อย",
     "count": 3,
     "totalCOD": 240,
     "totalCost": 48
@@ -2816,6 +3620,8 @@
   {
     "zipCode": "47120",
     "province": "สกลนคร",
+    "district": "วานรนิวาส",
+    "subdistrict": "กุดเรือคำ",
     "count": 3,
     "totalCOD": 299,
     "totalCost": 48
@@ -2823,6 +3629,8 @@
   {
     "zipCode": "50310",
     "province": "เชียงใหม่",
+    "district": "อมก๋อย",
+    "subdistrict": "นาเกียน",
     "count": 3,
     "totalCOD": 200,
     "totalCost": 168
@@ -2830,6 +3638,8 @@
   {
     "zipCode": "57150",
     "province": "เชียงราย",
+    "district": "เชียงแสน",
+    "subdistrict": "บ้านแซว",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -2837,6 +3647,8 @@
   {
     "zipCode": "50240",
     "province": "เชียงใหม่",
+    "district": "จอมทอง",
+    "subdistrict": "บ้านแปะ",
     "count": 3,
     "totalCOD": 100,
     "totalCost": 48
@@ -2844,6 +3656,8 @@
   {
     "zipCode": "58140",
     "province": "แม่ฮ่องสอน",
+    "district": "ขุนยวม",
+    "subdistrict": "ขุนยวม",
     "count": 3,
     "totalCOD": 299,
     "totalCost": 148
@@ -2851,6 +3665,8 @@
   {
     "zipCode": "40140",
     "province": "ขอนแก่น",
+    "district": "น้ำพอง",
+    "subdistrict": "ทรายมูล",
     "count": 3,
     "totalCOD": 399,
     "totalCost": 48
@@ -2858,6 +3674,8 @@
   {
     "zipCode": "13280",
     "province": "พระนครศรีอยุธยา",
+    "district": "ผักไห่",
+    "subdistrict": "จักราช",
     "count": 3,
     "totalCOD": 1177,
     "totalCost": 128
@@ -2865,6 +3683,8 @@
   {
     "zipCode": "30160",
     "province": "นครราชสีมา",
+    "district": "โนนสูง",
+    "subdistrict": "ขามเฒ่า",
     "count": 3,
     "totalCOD": 300,
     "totalCost": 48
@@ -2872,6 +3692,8 @@
   {
     "zipCode": "33130",
     "province": "ศรีสะเกษ",
+    "district": "กันทรารมย์",
+    "subdistrict": "คำเนียม",
     "count": 3,
     "totalCOD": 976,
     "totalCost": 128
@@ -2879,6 +3701,8 @@
   {
     "zipCode": "33160",
     "province": "ศรีสะเกษ",
+    "district": "ราษีไศล",
+    "subdistrict": "จิกสังข์ทอง",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -2886,6 +3710,8 @@
   {
     "zipCode": "34250",
     "province": "อุบลราชธานี",
+    "district": "ศรีเมืองใหม่",
+    "subdistrict": "คำไหล",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -2893,6 +3719,8 @@
   {
     "zipCode": "38150",
     "province": "บึงกาฬ",
+    "district": "เซกา",
+    "subdistrict": "ซาง",
     "count": 3,
     "totalCOD": 200,
     "totalCost": 48
@@ -2900,6 +3728,8 @@
   {
     "zipCode": "90280",
     "province": "สงขลา",
+    "district": "สิงหนคร",
+    "subdistrict": "ชิงโค",
     "count": 3,
     "totalCOD": 1373,
     "totalCost": 168
@@ -2907,6 +3737,8 @@
   {
     "zipCode": "45160",
     "province": "ร้อยเอ็ด",
+    "district": "อาจสามารถ",
+    "subdistrict": "ขี้เหล็ก",
     "count": 3,
     "totalCOD": 669,
     "totalCost": 48
@@ -2914,6 +3746,8 @@
   {
     "zipCode": "94180",
     "province": "ปัตตานี",
+    "district": "แม่ลาน",
+    "subdistrict": "ป่าไร่",
     "count": 3,
     "totalCOD": 628,
     "totalCost": 148
@@ -2921,6 +3755,8 @@
   {
     "zipCode": "54110",
     "province": "แพร่",
+    "district": "เด่นชัย",
+    "subdistrict": "ปงป่าหวาย",
     "count": 3,
     "totalCOD": 398,
     "totalCost": 48
@@ -2928,6 +3764,8 @@
   {
     "zipCode": "84240",
     "province": "สุราษฎร์ธานี",
+    "district": "บ้านนาเดิม",
+    "subdistrict": "ทรัพย์ทวี",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -2935,6 +3773,8 @@
   {
     "zipCode": "34230",
     "province": "อุบลราชธานี",
+    "district": "บุณฑริก",
+    "subdistrict": "คอแลน",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -2942,6 +3782,8 @@
   {
     "zipCode": "61000",
     "province": "อุทัยธานี",
+    "district": "เมืองอุทัยธานี",
+    "subdistrict": "ดอนขวาง",
     "count": 3,
     "totalCOD": 657,
     "totalCost": 48
@@ -2949,6 +3791,8 @@
   {
     "zipCode": "86210",
     "province": "ชุมพร",
+    "district": "ปะทิว",
+    "subdistrict": "ดอนยาง",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -2956,6 +3800,8 @@
   {
     "zipCode": "32150",
     "province": "สุรินทร์",
+    "district": "ศรีณรงค์",
+    "subdistrict": "ณรงค์",
     "count": 3,
     "totalCOD": 398,
     "totalCost": 48
@@ -2963,6 +3809,8 @@
   {
     "zipCode": "10200",
     "province": "กรุงเทพมหานคร",
+    "district": "พระนคร",
+    "subdistrict": "ชนะสงคราม",
     "count": 3,
     "totalCOD": 200,
     "totalCost": 48
@@ -2970,6 +3818,8 @@
   {
     "zipCode": "44120",
     "province": "มหาสารคาม",
+    "district": "วาปีปทุม",
+    "subdistrict": "ขามป้อม",
     "count": 3,
     "totalCOD": 598,
     "totalCost": 48
@@ -2977,6 +3827,8 @@
   {
     "zipCode": "70150",
     "province": "ราชบุรี",
+    "district": "จอมบึง",
+    "subdistrict": "จอมบึง",
     "count": 3,
     "totalCOD": 796,
     "totalCost": 88
@@ -2984,6 +3836,8 @@
   {
     "zipCode": "64140",
     "province": "สุโขทัย",
+    "district": "บ้านด่านลานหอย",
+    "subdistrict": "ตลิ่งชัน",
     "count": 3,
     "totalCOD": 988,
     "totalCost": 88
@@ -2991,6 +3845,8 @@
   {
     "zipCode": "92120",
     "province": "ตรัง",
+    "district": "ปะเหลียน",
+    "subdistrict": "ท่าข้าม",
     "count": 3,
     "totalCOD": 300,
     "totalCost": 48
@@ -2998,6 +3854,8 @@
   {
     "zipCode": "94000",
     "province": "ปัตตานี",
+    "district": "เมืองปัตตานี",
+    "subdistrict": "กะมิยอ",
     "count": 3,
     "totalCOD": 698,
     "totalCost": 108
@@ -3005,6 +3863,8 @@
   {
     "zipCode": "18230",
     "province": "สระบุรี",
+    "district": "หนองแค",
+    "subdistrict": "บัวลอย",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 88
@@ -3012,6 +3872,8 @@
   {
     "zipCode": "23110",
     "province": "ตราด",
+    "district": "คลองใหญ่",
+    "subdistrict": "คลองใหญ่",
     "count": 3,
     "totalCOD": 578,
     "totalCost": 48
@@ -3019,6 +3881,8 @@
   {
     "zipCode": "36190",
     "province": "ชัยภูมิ",
+    "district": "บ้านแท่น",
+    "subdistrict": "บ้านเต่า",
     "count": 3,
     "totalCOD": 896,
     "totalCost": 108
@@ -3026,6 +3890,8 @@
   {
     "zipCode": "63140",
     "province": "ตาก",
+    "district": "แม่ระมาด",
+    "subdistrict": "ขะเนจื้อ",
     "count": 3,
     "totalCOD": 620,
     "totalCost": 48
@@ -3033,6 +3899,8 @@
   {
     "zipCode": "45180",
     "province": "ร้อยเอ็ด",
+    "district": "จตุรพักตร์พิมาน",
+    "subdistrict": "ดงกลาง",
     "count": 3,
     "totalCOD": 299,
     "totalCost": 48
@@ -3040,6 +3908,8 @@
   {
     "zipCode": "82110",
     "province": "พังงา",
+    "district": "ตะกั่วป่า",
+    "subdistrict": "ตะกั่วป่า",
     "count": 3,
     "totalCOD": 200,
     "totalCost": 48
@@ -3047,6 +3917,8 @@
   {
     "zipCode": "55140",
     "province": "น่าน",
+    "district": "ท่าวังผา",
+    "subdistrict": "จอมพระ",
     "count": 3,
     "totalCOD": 598,
     "totalCost": 88
@@ -3054,6 +3926,8 @@
   {
     "zipCode": "93150",
     "province": "พัทลุง",
+    "district": "ควนขนุน",
+    "subdistrict": "ทะเลน้อย",
     "count": 3,
     "totalCOD": 896,
     "totalCost": 108
@@ -3061,6 +3935,8 @@
   {
     "zipCode": "54140",
     "province": "แพร่",
+    "district": "ร้องกวาง",
+    "subdistrict": "ทุ่งศรี",
     "count": 3,
     "totalCOD": 399,
     "totalCost": 48
@@ -3068,6 +3944,8 @@
   {
     "zipCode": "27250",
     "province": "สระแก้ว",
+    "district": "วังสมบูรณ์",
+    "subdistrict": "วังทอง",
     "count": 3,
     "totalCOD": 798,
     "totalCost": 88
@@ -3075,6 +3953,8 @@
   {
     "zipCode": "36210",
     "province": "ชัยภูมิ",
+    "district": "หนองบัวแดง",
+    "subdistrict": "กุดชุมแสง",
     "count": 3,
     "totalCOD": 1019,
     "totalCost": 48
@@ -3082,6 +3962,8 @@
   {
     "zipCode": "61180",
     "province": "อุทัยธานี",
+    "district": "บ้านไร่",
+    "subdistrict": "บ้านใหม่คลองเคียน",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -3089,6 +3971,8 @@
   {
     "zipCode": "41160",
     "province": "อุดรธานี",
+    "district": "บ้านผือ",
+    "subdistrict": "กลางใหญ่",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -3096,6 +3980,8 @@
   {
     "zipCode": "96130",
     "province": "นราธิวาส",
+    "district": "ระแงะ",
+    "subdistrict": "กาลิซา",
     "count": 3,
     "totalCOD": 398,
     "totalCost": 108
@@ -3103,6 +3989,8 @@
   {
     "zipCode": "57290",
     "province": "เชียงราย",
+    "district": "พญาเม็งราย",
+    "subdistrict": "ตาดควัน",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -3110,6 +3998,8 @@
   {
     "zipCode": "18220",
     "province": "ลพบุรี",
+    "district": "พัฒนานิคม",
+    "subdistrict": "ห้วยขุนราม",
     "count": 3,
     "totalCOD": 270,
     "totalCost": 68
@@ -3117,6 +4007,8 @@
   {
     "zipCode": "93210",
     "province": "พัทลุง",
+    "district": "ป่าพะยอม",
+    "subdistrict": "บ้านพร้าว",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -3124,6 +4016,8 @@
   {
     "zipCode": "64000",
     "province": "สุโขทัย",
+    "district": "เมืองสุโขทัย",
+    "subdistrict": "ธานี",
     "count": 3,
     "totalCOD": 400,
     "totalCost": 48
@@ -3131,6 +4025,8 @@
   {
     "zipCode": "46170",
     "province": "กาฬสินธุ์",
+    "district": "ห้วยเม็ก",
+    "subdistrict": "กุดโดน",
     "count": 3,
     "totalCOD": 697,
     "totalCost": 88
@@ -3138,6 +4034,8 @@
   {
     "zipCode": "36110",
     "province": "ชัยภูมิ",
+    "district": "ภูเขียว",
+    "subdistrict": "กวางโจน",
     "count": 3,
     "totalCOD": 100,
     "totalCost": 48
@@ -3145,6 +4043,8 @@
   {
     "zipCode": "22110",
     "province": "จันทบุรี",
+    "district": "ขลุง",
+    "subdistrict": "ขลุง",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 88
@@ -3152,6 +4052,8 @@
   {
     "zipCode": "15160",
     "province": "ลพบุรี",
+    "district": "เมืองลพบุรี",
+    "subdistrict": "เขาพระงาม",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -3159,6 +4061,8 @@
   {
     "zipCode": "86160",
     "province": "ชุมพร",
+    "district": "ปะทิว",
+    "subdistrict": "ชุมโค",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 88
@@ -3166,6 +4070,8 @@
   {
     "zipCode": "20240",
     "province": "ชลบุรี",
+    "district": "เกาะจันทร์",
+    "subdistrict": "ท่าบุญมี",
     "count": 3,
     "totalCOD": 788,
     "totalCost": 48
@@ -3173,6 +4079,8 @@
   {
     "zipCode": "31240",
     "province": "บุรีรัมย์",
+    "district": "หนองหงส์",
+    "subdistrict": "สระทอง",
     "count": 3,
     "totalCOD": 935,
     "totalCost": 108
@@ -3180,6 +4088,8 @@
   {
     "zipCode": "67150",
     "province": "เพชรบูรณ์",
+    "district": "ชนแดน",
+    "subdistrict": "ชนแดน",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -3187,6 +4097,8 @@
   {
     "zipCode": "92140",
     "province": "ตรัง",
+    "district": "ปะเหลียน",
+    "subdistrict": "ท่าพญา",
     "count": 3,
     "totalCOD": 499,
     "totalCost": 48
@@ -3194,6 +4106,8 @@
   {
     "zipCode": "82190",
     "province": "พังงา",
+    "district": "ตะกั่วป่า",
+    "subdistrict": "บางม่วง",
     "count": 3,
     "totalCOD": 1456,
     "totalCost": 108
@@ -3201,6 +4115,8 @@
   {
     "zipCode": "31190",
     "province": "บุรีรัมย์",
+    "district": "คูเมือง",
+    "subdistrict": "คูเมือง",
     "count": 3,
     "totalCOD": 697,
     "totalCost": 88
@@ -3208,6 +4124,8 @@
   {
     "zipCode": "12170",
     "province": "ปทุมธานี",
+    "district": "หนองเสือ",
+    "subdistrict": "นพรัตน์",
     "count": 3,
     "totalCOD": 888,
     "totalCost": 88
@@ -3215,6 +4133,8 @@
   {
     "zipCode": "76100",
     "province": "เพชรบุรี",
+    "district": "บ้านแหลม",
+    "subdistrict": "แหลมผักเบี้ย",
     "count": 3,
     "totalCOD": 399,
     "totalCost": 48
@@ -3222,6 +4142,8 @@
   {
     "zipCode": "76150",
     "province": "เพชรบุรี",
+    "district": "บ้านลาด",
+    "subdistrict": "ตำหรุ",
     "count": 3,
     "totalCOD": 688,
     "totalCost": 48
@@ -3229,6 +4151,8 @@
   {
     "zipCode": "41240",
     "province": "อุดรธานี",
+    "district": "โนนสะอาด",
+    "subdistrict": "ทมนางาม",
     "count": 3,
     "totalCOD": 398,
     "totalCost": 48
@@ -3236,6 +4160,8 @@
   {
     "zipCode": "17140",
     "province": "ชัยนาท",
+    "district": "สรรคบุรี",
+    "subdistrict": "ดงคอน",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 48
@@ -3243,6 +4169,8 @@
   {
     "zipCode": "61160",
     "province": "อุทัยธานี",
+    "district": "ลานสัก",
+    "subdistrict": "ทุ่งนางาม",
     "count": 3,
     "totalCOD": 369,
     "totalCost": 48
@@ -3250,6 +4178,8 @@
   {
     "zipCode": "25230",
     "province": "ปราจีนบุรี",
+    "district": "เมืองปราจีนบุรี",
+    "subdistrict": "บ้านพระ",
     "count": 3,
     "totalCOD": 199,
     "totalCost": 48
@@ -3257,6 +4187,8 @@
   {
     "zipCode": "81140",
     "province": "กระบี่",
+    "district": "เขาพนม",
+    "subdistrict": "พรุเตียว",
     "count": 3,
     "totalCOD": 838,
     "totalCost": 88
@@ -3264,6 +4196,8 @@
   {
     "zipCode": "96110",
     "province": "นราธิวาส",
+    "district": "ตากใบ",
+    "subdistrict": "นานาค",
     "count": 3,
     "totalCOD": 898,
     "totalCost": 109
@@ -3271,6 +4205,8 @@
   {
     "zipCode": "60160",
     "province": "นครสวรรค์",
+    "district": "ท่าตะโก",
+    "subdistrict": "ดอนคา",
     "count": 3,
     "totalCOD": 896,
     "totalCost": 108
@@ -3278,6 +4214,8 @@
   {
     "zipCode": "47110",
     "province": "สกลนคร",
+    "district": "สว่างแดนดิน",
+    "subdistrict": "คำสะอาด",
     "count": 3,
     "totalCOD": 598,
     "totalCost": 48
@@ -3285,6 +4223,8 @@
   {
     "zipCode": "84310",
     "province": "สุราษฎร์ธานี",
+    "district": "เกาะสมุย",
+    "subdistrict": "มะเร็ต",
     "count": 3,
     "totalCOD": 199,
     "totalCost": 108
@@ -3292,6 +4232,8 @@
   {
     "zipCode": "26110",
     "province": "นครนายก",
+    "district": "บ้านนา",
+    "subdistrict": "ทองหลาง",
     "count": 3,
     "totalCOD": 399,
     "totalCost": 188
@@ -3299,6 +4241,8 @@
   {
     "zipCode": "93120",
     "province": "พัทลุง",
+    "district": "ปากพะยูน",
+    "subdistrict": "ดอนทราย",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -3306,6 +4250,8 @@
   {
     "zipCode": "67120",
     "province": "เพชรบูรณ์",
+    "district": "หล่มเก่า",
+    "subdistrict": "ตาดกลอย",
     "count": 3,
     "totalCOD": 906,
     "totalCost": 88
@@ -3313,6 +4259,8 @@
   {
     "zipCode": "84230",
     "province": "สุราษฎร์ธานี",
+    "district": "บ้านตาขุน",
+    "subdistrict": "พรุไทย",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -3320,6 +4268,8 @@
   {
     "zipCode": "20130",
     "province": "ชลบุรี",
+    "district": "เมืองชลบุรี",
+    "subdistrict": "บ้านปึก",
     "count": 3,
     "totalCOD": 199,
     "totalCost": 48
@@ -3327,6 +4277,8 @@
   {
     "zipCode": "50270",
     "province": "เชียงใหม่",
+    "district": "แม่แจ่ม",
+    "subdistrict": "กองแขก",
     "count": 3,
     "totalCOD": 597,
     "totalCost": 88
@@ -3334,6 +4286,8 @@
   {
     "zipCode": "73160",
     "province": "นครปฐม",
+    "district": "สามพราน",
+    "subdistrict": "อ้อมใหญ่",
     "count": 3,
     "totalCOD": 498,
     "totalCost": 48
@@ -3341,6 +4295,8 @@
   {
     "zipCode": "13260",
     "province": "พระนครศรีอยุธยา",
+    "district": "นครหลวง",
+    "subdistrict": "คลองสะแก",
     "count": 3,
     "totalCOD": 2685,
     "totalCost": 428
@@ -3348,6 +4304,8 @@
   {
     "zipCode": "96170",
     "province": "นราธิวาส",
+    "district": "บาเจาะ",
+    "subdistrict": "กาเยาะมาตี",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 92
@@ -3355,6 +4313,8 @@
   {
     "zipCode": "95120",
     "province": "ยะลา",
+    "district": "กาบัง",
+    "subdistrict": "กาบัง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 72
@@ -3362,6 +4322,8 @@
   {
     "zipCode": "38180",
     "province": "บึงกาฬ",
+    "district": "พรเจริญ",
+    "subdistrict": "ดอนหญ้านาง",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -3369,6 +4331,8 @@
   {
     "zipCode": "53000",
     "province": "อุตรดิตถ์",
+    "district": "เมืองอุตรดิตถ์",
+    "subdistrict": "ขุนฝาง",
     "count": 2,
     "totalCOD": 399,
     "totalCost": 32
@@ -3376,6 +4340,8 @@
   {
     "zipCode": "34150",
     "province": "อุบลราชธานี",
+    "district": "เขื่องใน",
+    "subdistrict": "ก่อเอ้",
     "count": 2,
     "totalCOD": 597,
     "totalCost": 72
@@ -3383,6 +4349,8 @@
   {
     "zipCode": "27260",
     "province": "สระแก้ว",
+    "district": "คลองหาด",
+    "subdistrict": "คลองหาด",
     "count": 2,
     "totalCOD": 369,
     "totalCost": 32
@@ -3390,6 +4358,8 @@
   {
     "zipCode": "10500",
     "province": "กรุงเทพมหานคร",
+    "district": "บางรัก",
+    "subdistrict": "บางรัก",
     "count": 2,
     "totalCOD": 499,
     "totalCost": 52
@@ -3397,6 +4367,8 @@
   {
     "zipCode": "20270",
     "province": "ชลบุรี",
+    "district": "บ่อทอง",
+    "subdistrict": "ธาตุทอง",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3404,6 +4376,8 @@
   {
     "zipCode": "44140",
     "province": "มหาสารคาม",
+    "district": "โกสุมพิสัย",
+    "subdistrict": "ดอนกลาง",
     "count": 2,
     "totalCOD": 200,
     "totalCost": 32
@@ -3411,6 +4385,8 @@
   {
     "zipCode": "67240",
     "province": "เพชรบูรณ์",
+    "district": "วังโป่ง",
+    "subdistrict": "ซับเปิบ",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3418,6 +4394,8 @@
   {
     "zipCode": "33110",
     "province": "ศรีสะเกษ",
+    "district": "กันทรลักษ์",
+    "subdistrict": "กระแชง",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3425,6 +4403,8 @@
   {
     "zipCode": "50180",
     "province": "เชียงใหม่",
+    "district": "แม่ริม",
+    "subdistrict": "ขี้เหล็ก",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3432,6 +4412,8 @@
   {
     "zipCode": "14110",
     "province": "อ่างทอง",
+    "district": "วิเศษชัยชาญ",
+    "subdistrict": "คลองขนาก",
     "count": 2,
     "totalCOD": 200,
     "totalCost": 32
@@ -3439,6 +4421,8 @@
   {
     "zipCode": "34220",
     "province": "อุบลราชธานี",
+    "district": "โขงเจียม",
+    "subdistrict": "นาโพธิ์กลาง",
     "count": 2,
     "totalCOD": 300,
     "totalCost": 32
@@ -3446,6 +4430,8 @@
   {
     "zipCode": "96150",
     "province": "นราธิวาส",
+    "district": "รือเสาะ",
+    "subdistrict": "บาตง",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 72
@@ -3453,6 +4439,8 @@
   {
     "zipCode": "58130",
     "province": "เชียงใหม่",
+    "district": "กัลยาณิวัฒนา",
+    "subdistrict": "บ้านจันทร์",
     "count": 2,
     "totalCOD": 937,
     "totalCost": 152
@@ -3460,6 +4448,8 @@
   {
     "zipCode": "63180",
     "province": "ตาก",
+    "district": "วังเจ้า",
+    "subdistrict": "นาโบสถ์",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -3467,6 +4457,8 @@
   {
     "zipCode": "26130",
     "province": "นครนายก",
+    "district": "ปากพลี",
+    "subdistrict": "ท่าเรือ",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3474,6 +4466,8 @@
   {
     "zipCode": "22210",
     "province": "จันทบุรี",
+    "district": "เขาคิชฌกูฏ",
+    "subdistrict": "คลองพลู",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3481,6 +4475,8 @@
   {
     "zipCode": "14120",
     "province": "อ่างทอง",
+    "district": "โพธิ์ทอง",
+    "subdistrict": "คำหยาด",
     "count": 2,
     "totalCOD": 100,
     "totalCost": 32
@@ -3488,6 +4484,8 @@
   {
     "zipCode": "31120",
     "province": "บุรีรัมย์",
+    "district": "บ้านใหม่ไชยพจน์",
+    "subdistrict": "กู่สวนแตง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3495,6 +4493,8 @@
   {
     "zipCode": "64160",
     "province": "สุโขทัย",
+    "district": "คีรีมาศ",
+    "subdistrict": "ทุ่งยางเมือง",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3502,6 +4502,8 @@
   {
     "zipCode": "27180",
     "province": "สระแก้ว",
+    "district": "ตาพระยา",
+    "subdistrict": "ตาพระยา",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -3509,6 +4511,8 @@
   {
     "zipCode": "24150",
     "province": "ฉะเชิงเทรา",
+    "district": "บางน้ำเปรี้ยว",
+    "subdistrict": "บางขนาก",
     "count": 2,
     "totalCOD": 1194,
     "totalCost": 152
@@ -3516,6 +4520,8 @@
   {
     "zipCode": "41190",
     "province": "อุดรธานี",
+    "district": "บ้านดุง",
+    "subdistrict": "ดงเย็น",
     "count": 2,
     "totalCOD": 597,
     "totalCost": 72
@@ -3523,6 +4529,8 @@
   {
     "zipCode": "47170",
     "province": "สกลนคร",
+    "district": "อากาศอำนวย",
+    "subdistrict": "ท่าก้อน",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 72
@@ -3530,6 +4538,8 @@
   {
     "zipCode": "44170",
     "province": "มหาสารคาม",
+    "district": "นาเชือก",
+    "subdistrict": "นาเชือก",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3537,6 +4547,8 @@
   {
     "zipCode": "54130",
     "province": "แพร่",
+    "district": "สูงเม่น",
+    "subdistrict": "ดอนมูล",
     "count": 2,
     "totalCOD": 0,
     "totalCost": 92
@@ -3544,6 +4556,8 @@
   {
     "zipCode": "40310",
     "province": "ขอนแก่น",
+    "district": "น้ำพอง",
+    "subdistrict": "กุดน้ำใส",
     "count": 2,
     "totalCOD": 399,
     "totalCost": 32
@@ -3551,6 +4565,8 @@
   {
     "zipCode": "67210",
     "province": "เพชรบูรณ์",
+    "district": "เมืองเพชรบูรณ์",
+    "subdistrict": "นายม",
     "count": 2,
     "totalCOD": 597,
     "totalCost": 72
@@ -3558,6 +4574,8 @@
   {
     "zipCode": "30170",
     "province": "นครราชสีมา",
+    "district": "สูงเนิน",
+    "subdistrict": "บุ่งขี้เหล็ก",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3565,6 +4583,8 @@
   {
     "zipCode": "84280",
     "province": "สุราษฎร์ธานี",
+    "district": "เกาะพะงัน",
+    "subdistrict": "บ้านใต้",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 72
@@ -3572,6 +4592,8 @@
   {
     "zipCode": "16110",
     "province": "สิงห์บุรี",
+    "district": "อินทร์บุรี",
+    "subdistrict": "งิ้วราย",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3579,6 +4601,8 @@
   {
     "zipCode": "39180",
     "province": "หนองบัวลำภู",
+    "district": "ศรีบุญเรือง",
+    "subdistrict": "กุดสะเทียน",
     "count": 2,
     "totalCOD": 498,
     "totalCost": 72
@@ -3586,6 +4610,8 @@
   {
     "zipCode": "52140",
     "province": "ลำปาง",
+    "district": "วังเหนือ",
+    "subdistrict": "ทุ่งฮั้ว",
     "count": 2,
     "totalCOD": 400,
     "totalCost": 32
@@ -3593,6 +4619,8 @@
   {
     "zipCode": "76140",
     "province": "เพชรบุรี",
+    "district": "เขาย้อย",
+    "subdistrict": "ทับคาง",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3600,6 +4628,8 @@
   {
     "zipCode": "14130",
     "province": "อ่างทอง",
+    "district": "ป่าโมก",
+    "subdistrict": "นรสิงห์",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3607,6 +4637,8 @@
   {
     "zipCode": "72130",
     "province": "สุพรรณบุรี",
+    "district": "สามชุก",
+    "subdistrict": "กระเสียว",
     "count": 2,
     "totalCOD": 300,
     "totalCost": 32
@@ -3614,6 +4646,8 @@
   {
     "zipCode": "41210",
     "province": "อุดรธานี",
+    "district": "น้ำโสม",
+    "subdistrict": "นางัว",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3621,6 +4655,8 @@
   {
     "zipCode": "44210",
     "province": "มหาสารคาม",
+    "district": "ยางสีสุราช",
+    "subdistrict": "ขามเรียน",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3628,6 +4664,8 @@
   {
     "zipCode": "86120",
     "province": "ชุมพร",
+    "district": "เมืองชุมพร",
+    "subdistrict": "ปากน้ำ",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3635,6 +4673,8 @@
   {
     "zipCode": "90210",
     "province": "สงขลา",
+    "district": "สะบ้าย้อย",
+    "subdistrict": "คูหา",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3642,6 +4682,8 @@
   {
     "zipCode": "65190",
     "province": "พิษณุโลก",
+    "district": "เนินมะปราง",
+    "subdistrict": "ชมพู",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -3649,6 +4691,8 @@
   {
     "zipCode": "95000",
     "province": "ยะลา",
+    "district": "กรงปินัง",
+    "subdistrict": "กรงปินัง",
     "count": 2,
     "totalCOD": 100,
     "totalCost": 72
@@ -3656,6 +4700,8 @@
   {
     "zipCode": "67140",
     "province": "เพชรบูรณ์",
+    "district": "หนองไผ่",
+    "subdistrict": "กองทูล",
     "count": 2,
     "totalCOD": 537,
     "totalCost": 92
@@ -3663,6 +4709,8 @@
   {
     "zipCode": "15150",
     "province": "ลพบุรี",
+    "district": "ท่าวุ้ง",
+    "subdistrict": "ท่าวุ้ง",
     "count": 2,
     "totalCOD": 428,
     "totalCost": 32
@@ -3670,6 +4718,8 @@
   {
     "zipCode": "20220",
     "province": "ชลบุรี",
+    "district": "บ้านบึง",
+    "subdistrict": "คลองกิ่ว",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3677,6 +4727,8 @@
   {
     "zipCode": "57120",
     "province": "เชียงราย",
+    "district": "พาน",
+    "subdistrict": "ดอยงาม",
     "count": 2,
     "totalCOD": 597,
     "totalCost": 72
@@ -3684,6 +4736,8 @@
   {
     "zipCode": "13140",
     "province": "พระนครศรีอยุธยา",
+    "district": "ภาชี",
+    "subdistrict": "กระจิว",
     "count": 2,
     "totalCOD": 430,
     "totalCost": 32
@@ -3691,6 +4745,8 @@
   {
     "zipCode": "30120",
     "province": "นครราชสีมา",
+    "district": "บัวลาย",
+    "subdistrict": "บัวลาย",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3698,6 +4754,8 @@
   {
     "zipCode": "81150",
     "province": "กระบี่",
+    "district": "เกาะลันตา",
+    "subdistrict": "ศาลาด่าน",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 72
@@ -3705,6 +4763,8 @@
   {
     "zipCode": "52160",
     "province": "ลำปาง",
+    "district": "เถิน",
+    "subdistrict": "นาโป่ง",
     "count": 2,
     "totalCOD": 1097,
     "totalCost": 92
@@ -3712,6 +4772,8 @@
   {
     "zipCode": "65170",
     "province": "พิษณุโลก",
+    "district": "ชาติตระการ",
+    "subdistrict": "ชาติตระการ",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3719,6 +4781,8 @@
   {
     "zipCode": "90120",
     "province": "สงขลา",
+    "district": "สะเดา",
+    "subdistrict": "ปริก",
     "count": 2,
     "totalCOD": 220,
     "totalCost": 32
@@ -3726,6 +4790,8 @@
   {
     "zipCode": "86170",
     "province": "ชุมพร",
+    "district": "ละแม",
+    "subdistrict": "ทุ่งคาวัด",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3733,6 +4799,8 @@
   {
     "zipCode": "18180",
     "province": "สระบุรี",
+    "district": "มวกเหล็ก",
+    "subdistrict": "มวกเหล็ก",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3740,6 +4808,8 @@
   {
     "zipCode": "34360",
     "province": "อุบลราชธานี",
+    "district": "สำโรง",
+    "subdistrict": "ขามป้อม",
     "count": 2,
     "totalCOD": 200,
     "totalCost": 32
@@ -3747,6 +4817,8 @@
   {
     "zipCode": "49160",
     "province": "มุกดาหาร",
+    "district": "หนองสูง",
+    "subdistrict": "บ้านเป้า",
     "count": 2,
     "totalCOD": 399,
     "totalCost": 32
@@ -3754,6 +4826,8 @@
   {
     "zipCode": "90100",
     "province": "สงขลา",
+    "district": "เมืองสงขลา",
+    "subdistrict": "พะวง",
     "count": 2,
     "totalCOD": 200,
     "totalCost": 32
@@ -3761,6 +4835,8 @@
   {
     "zipCode": "35140",
     "province": "ยโสธร",
+    "district": "กุดชุม",
+    "subdistrict": "กำแมด",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3768,6 +4844,8 @@
   {
     "zipCode": "80330",
     "province": "นครศรีธรรมราช",
+    "district": "ปากพนัง",
+    "subdistrict": "คลองน้อย",
     "count": 2,
     "totalCOD": 438,
     "totalCost": 32
@@ -3775,6 +4853,8 @@
   {
     "zipCode": "82170",
     "province": "พังงา",
+    "district": "กะปง",
+    "subdistrict": "กะปง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3782,6 +4862,8 @@
   {
     "zipCode": "46220",
     "province": "กาฬสินธุ์",
+    "district": "หนองกุงศรี",
+    "subdistrict": "ดงมูล",
     "count": 2,
     "totalCOD": 728,
     "totalCost": 72
@@ -3789,6 +4871,8 @@
   {
     "zipCode": "52120",
     "province": "ลำปาง",
+    "district": "แจ้ห่ม",
+    "subdistrict": "ทุ่งผึ้ง",
     "count": 2,
     "totalCOD": 597,
     "totalCost": 72
@@ -3796,6 +4880,8 @@
   {
     "zipCode": "90330",
     "province": "สงขลา",
+    "district": "สิงหนคร",
+    "subdistrict": "ชะแล้",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3803,6 +4889,8 @@
   {
     "zipCode": "96000",
     "province": "นราธิวาส",
+    "district": "เมืองนราธิวาส",
+    "subdistrict": "กะลุวอ",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 72
@@ -3810,6 +4898,8 @@
   {
     "zipCode": "18260",
     "province": "สระบุรี",
+    "district": "แก่งคอย",
+    "subdistrict": "ทับกวาง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3817,6 +4907,8 @@
   {
     "zipCode": "16130",
     "province": "สิงห์บุรี",
+    "district": "บางระจัน",
+    "subdistrict": "บ้านจ่า",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3824,6 +4916,8 @@
   {
     "zipCode": "64130",
     "province": "สุโขทัย",
+    "district": "ศรีสัชนาลัย",
+    "subdistrict": "ดงคู่",
     "count": 2,
     "totalCOD": 798,
     "totalCost": 92
@@ -3831,6 +4925,8 @@
   {
     "zipCode": "25130",
     "province": "ปราจีนบุรี",
+    "district": "ประจันตคาม",
+    "subdistrict": "คำโตนด",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3838,6 +4934,8 @@
   {
     "zipCode": "64170",
     "province": "สุโขทัย",
+    "district": "กงไกรลาศ",
+    "subdistrict": "กกแรต",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3845,6 +4943,8 @@
   {
     "zipCode": "64150",
     "province": "สุโขทัย",
+    "district": "ทุ่งเสลี่ยม",
+    "subdistrict": "กลางดง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 72
@@ -3852,6 +4952,8 @@
   {
     "zipCode": "32210",
     "province": "สุรินทร์",
+    "district": "กาบเชิง",
+    "subdistrict": "กาบเชิง",
     "count": 2,
     "totalCOD": 1134,
     "totalCost": 152
@@ -3859,6 +4961,8 @@
   {
     "zipCode": "80270",
     "province": "นครศรีธรรมราช",
+    "district": "พิปูน",
+    "subdistrict": "กะทูน",
     "count": 2,
     "totalCOD": 597,
     "totalCost": 72
@@ -3866,6 +4970,8 @@
   {
     "zipCode": "44150",
     "province": "มหาสารคาม",
+    "district": "กันทรวิชัย",
+    "subdistrict": "กุดใส้จ่อ",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -3873,6 +4979,8 @@
   {
     "zipCode": "75110",
     "province": "สมุทรสงคราม",
+    "district": "อัมพวา",
+    "subdistrict": "ท่าคา",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3880,6 +4988,8 @@
   {
     "zipCode": "40320",
     "province": "ขอนแก่น",
+    "district": "พระยืน",
+    "subdistrict": "ขามป้อม",
     "count": 2,
     "totalCOD": 1240,
     "totalCost": 172
@@ -3887,6 +4997,8 @@
   {
     "zipCode": "93190",
     "province": "พัทลุง",
+    "district": "ศรีบรรพต",
+    "subdistrict": "ตะแพน",
     "count": 2,
     "totalCOD": 339,
     "totalCost": 32
@@ -3894,6 +5006,8 @@
   {
     "zipCode": "77190",
     "province": "ประจวบคีรีขันธ์",
+    "district": "บางสะพาน",
+    "subdistrict": "ชัยเกษม",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3901,6 +5015,8 @@
   {
     "zipCode": "80310",
     "province": "นครศรีธรรมราช",
+    "district": "ทุ่งสง",
+    "subdistrict": "กะปาง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -3908,6 +5024,8 @@
   {
     "zipCode": "82210",
     "province": "พังงา",
+    "district": "ท้ายเหมือง",
+    "subdistrict": "ลำแก่น",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3915,6 +5033,8 @@
   {
     "zipCode": "31180",
     "province": "บุรีรัมย์",
+    "district": "บ้านกรวด",
+    "subdistrict": "จันทบเพชร",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3922,6 +5042,8 @@
   {
     "zipCode": "18120",
     "province": "สระบุรี",
+    "district": "พระพุทธบาท",
+    "subdistrict": "ขุนโขลน",
     "count": 2,
     "totalCOD": 0,
     "totalCost": 32
@@ -3929,6 +5051,8 @@
   {
     "zipCode": "45120",
     "province": "ร้อยเอ็ด",
+    "district": "เสลภูมิ",
+    "subdistrict": "กลาง",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -3936,6 +5060,8 @@
   {
     "zipCode": "36140",
     "province": "ชัยภูมิ",
+    "district": "คอนสวรรค์",
+    "subdistrict": "คอนสวรรค์",
     "count": 2,
     "totalCOD": 597,
     "totalCost": 72
@@ -3943,6 +5069,8 @@
   {
     "zipCode": "57230",
     "province": "เชียงราย",
+    "district": "เทิง",
+    "subdistrict": "ปล้อง",
     "count": 2,
     "totalCOD": 100,
     "totalCost": 32
@@ -3950,6 +5078,8 @@
   {
     "zipCode": "96210",
     "province": "นราธิวาส",
+    "district": "ศรีสาคร",
+    "subdistrict": "กาหลง",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 72
@@ -3957,6 +5087,8 @@
   {
     "zipCode": "95110",
     "province": "ยะลา",
+    "district": "เบตง",
+    "subdistrict": "ตาเนาะแมเราะ",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 72
@@ -3964,6 +5096,8 @@
   {
     "zipCode": "18160",
     "province": "สระบุรี",
+    "district": "เสาไห้",
+    "subdistrict": "งิ้วงาม",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -3971,6 +5105,8 @@
   {
     "zipCode": "30380",
     "province": "นครราชสีมา",
+    "district": "สูงเนิน",
+    "subdistrict": "กุดจิก",
     "count": 2,
     "totalCOD": 0,
     "totalCost": 32
@@ -3978,6 +5114,8 @@
   {
     "zipCode": "36260",
     "province": "ชัยภูมิ",
+    "district": "ภักดีชุมพล",
+    "subdistrict": "บ้านเจียง",
     "count": 2,
     "totalCOD": 978,
     "totalCost": 72
@@ -3985,6 +5123,8 @@
   {
     "zipCode": "16000",
     "province": "สิงห์บุรี",
+    "district": "เมืองสิงห์บุรี",
+    "subdistrict": "จักรสีห์",
     "count": 2,
     "totalCOD": 0,
     "totalCost": 32
@@ -3992,6 +5132,8 @@
   {
     "zipCode": "52210",
     "province": "ลำปาง",
+    "district": "เสริมงาม",
+    "subdistrict": "ทุ่งงาม",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -3999,6 +5141,8 @@
   {
     "zipCode": "16140",
     "province": "สิงห์บุรี",
+    "district": "ท่าช้าง",
+    "subdistrict": "ถอนสมอ",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4006,6 +5150,8 @@
   {
     "zipCode": "25240",
     "province": "ปราจีนบุรี",
+    "district": "กบินทร์บุรี",
+    "subdistrict": "เมืองเก่า",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4013,6 +5159,8 @@
   {
     "zipCode": "42170",
     "province": "เลย",
+    "district": "นาแห้ว",
+    "subdistrict": "นาพึง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4020,27 +5168,35 @@
   {
     "zipCode": "33270",
     "province": "ศรีสะเกษ",
+    "district": "วังหิน",
+    "subdistrict": "ดวนใหญ่",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
   },
   {
-    "zipCode": "33170",
-    "province": "ศรีสะเกษ",
-    "count": 2,
-    "totalCOD": 619,
-    "totalCost": 32
-  },
-  {
     "zipCode": "31220",
     "province": "บุรีรัมย์",
+    "district": "ปะคำ",
+    "subdistrict": "ปะคำ",
     "count": 2,
     "totalCOD": 1076,
     "totalCost": 132
   },
   {
+    "zipCode": "33170",
+    "province": "ศรีสะเกษ",
+    "district": "ปรางค์กู่",
+    "subdistrict": "กู่",
+    "count": 2,
+    "totalCOD": 619,
+    "totalCost": 32
+  },
+  {
     "zipCode": "48160",
     "province": "นครพนม",
+    "district": "ปลาปาก",
+    "subdistrict": "กุตาไก้",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4048,6 +5204,8 @@
   {
     "zipCode": "51130",
     "province": "ลำพูน",
+    "district": "บ้านโฮ่ง",
+    "subdistrict": "บ้านโฮ่ง",
     "count": 2,
     "totalCOD": 438,
     "totalCost": 72
@@ -4055,6 +5213,8 @@
   {
     "zipCode": "60110",
     "province": "นครสวรรค์",
+    "district": "หนองบัว",
+    "subdistrict": "ทุ่งทอง",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -4062,6 +5222,8 @@
   {
     "zipCode": "13120",
     "province": "พระนครศรีอยุธยา",
+    "district": "ผักไห่",
+    "subdistrict": "กุฎี",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4069,6 +5231,8 @@
   {
     "zipCode": "50330",
     "province": "เชียงใหม่",
+    "district": "แม่ริม",
+    "subdistrict": "สะลวง",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -4076,6 +5240,8 @@
   {
     "zipCode": "34280",
     "province": "อุบลราชธานี",
+    "district": "นาจะหลวย",
+    "subdistrict": "นาจะหลวย",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -4083,6 +5249,8 @@
   {
     "zipCode": "92160",
     "province": "ตรัง",
+    "district": "รัษฎา",
+    "subdistrict": "คลองปาง",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -4090,6 +5258,8 @@
   {
     "zipCode": "33210",
     "province": "ศรีสะเกษ",
+    "district": "ห้วยทับทัน",
+    "subdistrict": "กล้วยกว้าง",
     "count": 2,
     "totalCOD": 498,
     "totalCost": 72
@@ -4097,6 +5267,8 @@
   {
     "zipCode": "65180",
     "province": "พิษณุโลก",
+    "district": "พรหมพิราม",
+    "subdistrict": "ดงประคำ",
     "count": 2,
     "totalCOD": 200,
     "totalCost": 32
@@ -4104,6 +5276,8 @@
   {
     "zipCode": "49110",
     "province": "มุกดาหาร",
+    "district": "คำชะอี",
+    "subdistrict": "คำชะอี",
     "count": 2,
     "totalCOD": 100,
     "totalCost": 32
@@ -4111,6 +5285,8 @@
   {
     "zipCode": "18240",
     "province": "สระบุรี",
+    "district": "เฉลิมพระเกียรติ",
+    "subdistrict": "พุแค",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4118,6 +5294,8 @@
   {
     "zipCode": "71250",
     "province": "กาญจนบุรี",
+    "district": "ศรีสวัสดิ์",
+    "subdistrict": "ด่านแม่แฉลบ",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4125,6 +5303,8 @@
   {
     "zipCode": "47180",
     "province": "สกลนคร",
+    "district": "กุดบาก",
+    "subdistrict": "กุดบาก",
     "count": 2,
     "totalCOD": 100,
     "totalCost": 32
@@ -4132,6 +5312,8 @@
   {
     "zipCode": "18210",
     "province": "สระบุรี",
+    "district": "ดอนพุด",
+    "subdistrict": "ดงตะงาว",
     "count": 2,
     "totalCOD": 537,
     "totalCost": 92
@@ -4139,6 +5321,8 @@
   {
     "zipCode": "55160",
     "province": "น่าน",
+    "district": "สองแคว",
+    "subdistrict": "ชนแดน",
     "count": 2,
     "totalCOD": 597,
     "totalCost": 72
@@ -4146,6 +5330,8 @@
   {
     "zipCode": "53210",
     "province": "อุตรดิตถ์",
+    "district": "ลับแล",
+    "subdistrict": "ด่านแม่คำมัน",
     "count": 2,
     "totalCOD": 399,
     "totalCost": 32
@@ -4153,6 +5339,8 @@
   {
     "zipCode": "72240",
     "province": "สุพรรณบุรี",
+    "district": "หนองหญ้าไซ",
+    "subdistrict": "ทัพหลวง",
     "count": 2,
     "totalCOD": 100,
     "totalCost": 32
@@ -4160,6 +5348,8 @@
   {
     "zipCode": "37110",
     "province": "อำนาจเจริญ",
+    "district": "ปทุมราชวงศา",
+    "subdistrict": "คำโพน",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -4167,6 +5357,8 @@
   {
     "zipCode": "86220",
     "province": "ชุมพร",
+    "district": "ทุ่งตะโก",
+    "subdistrict": "ช่องไม้แก้ว",
     "count": 2,
     "totalCOD": 399,
     "totalCost": 32
@@ -4174,6 +5366,8 @@
   {
     "zipCode": "93180",
     "province": "พัทลุง",
+    "district": "กงหรา",
+    "subdistrict": "กงหรา",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -4181,6 +5375,8 @@
   {
     "zipCode": "90220",
     "province": "สงขลา",
+    "district": "ควนเนียง",
+    "subdistrict": "ควนโส",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -4188,6 +5384,8 @@
   {
     "zipCode": "43160",
     "province": "หนองคาย",
+    "district": "สังคม",
+    "subdistrict": "นางิ้ว",
     "count": 2,
     "totalCOD": 369,
     "totalCost": 32
@@ -4195,6 +5393,8 @@
   {
     "zipCode": "48120",
     "province": "นครพนม",
+    "district": "ท่าอุเทน",
+    "subdistrict": "ท่าจำปา",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4202,6 +5402,8 @@
   {
     "zipCode": "81180",
     "province": "กระบี่",
+    "district": "เมืองกระบี่",
+    "subdistrict": "หนองทะเล",
     "count": 2,
     "totalCOD": 200,
     "totalCost": 32
@@ -4209,6 +5411,8 @@
   {
     "zipCode": "67220",
     "province": "เพชรบูรณ์",
+    "district": "หนองไผ่",
+    "subdistrict": "นาเฉลียง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4216,6 +5420,8 @@
   {
     "zipCode": "41310",
     "province": "อุดรธานี",
+    "district": "ทุ่งฝน",
+    "subdistrict": "ทุ่งฝน",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4223,6 +5429,8 @@
   {
     "zipCode": "90150",
     "province": "สงขลา",
+    "district": "เทพา",
+    "subdistrict": "ท่าม่วง",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4230,6 +5438,8 @@
   {
     "zipCode": "14160",
     "province": "อ่างทอง",
+    "district": "สามโก้",
+    "subdistrict": "มงคลธรรมนิมิต",
     "count": 2,
     "totalCOD": 369,
     "totalCost": 32
@@ -4237,6 +5447,8 @@
   {
     "zipCode": "80350",
     "province": "นครศรีธรรมราช",
+    "district": "ร่อนพิบูลย์",
+    "subdistrict": "หินตก",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4244,6 +5456,8 @@
   {
     "zipCode": "30110",
     "province": "นครราชสีมา",
+    "district": "พิมาย",
+    "subdistrict": "กระชอน",
     "count": 2,
     "totalCOD": 199,
     "totalCost": 32
@@ -4251,6 +5465,8 @@
   {
     "zipCode": "70190",
     "province": "กาญจนบุรี",
+    "district": "ท่ามะกา",
+    "subdistrict": "สนามแย้",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -4258,6 +5474,8 @@
   {
     "zipCode": "61170",
     "province": "อุทัยธานี",
+    "district": "หนองฉาง",
+    "subdistrict": "เขาบางแกรก",
     "count": 2,
     "totalCOD": 428,
     "totalCost": 32
@@ -4265,6 +5483,8 @@
   {
     "zipCode": "65150",
     "province": "พิษณุโลก",
+    "district": "พรหมพิราม",
+    "subdistrict": "ทับยายเชียง",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 32
@@ -4272,6 +5492,8 @@
   {
     "zipCode": "62170",
     "province": "กำแพงเพชร",
+    "district": "ลานกระบือ",
+    "subdistrict": "จันทิมา",
     "count": 2,
     "totalCOD": 935,
     "totalCost": 132
@@ -4279,6 +5501,8 @@
   {
     "zipCode": "21190",
     "province": "ระยอง",
+    "district": "แกลง",
+    "subdistrict": "กร่ำ",
     "count": 2,
     "totalCOD": 398,
     "totalCost": 32
@@ -4286,6 +5510,8 @@
   {
     "zipCode": "52130",
     "province": "ลำปาง",
+    "district": "เกาะคา",
+    "subdistrict": "ท่าผา",
     "count": 2,
     "totalCOD": 358,
     "totalCost": 32
@@ -4293,6 +5519,8 @@
   {
     "zipCode": "31210",
     "province": "บุรีรัมย์",
+    "district": "หนองกี่",
+    "subdistrict": "ดอนอะราง",
     "count": 2,
     "totalCOD": 220,
     "totalCost": 32
@@ -4300,6 +5528,8 @@
   {
     "zipCode": "66130",
     "province": "พิจิตร",
+    "district": "บึงนาราง",
+    "subdistrict": "บางลาย",
     "count": 2,
     "totalCOD": 300,
     "totalCost": 32
@@ -4307,6 +5537,8 @@
   {
     "zipCode": "94140",
     "province": "ปัตตานี",
+    "district": "ทุ่งยางแดง",
+    "subdistrict": "ตะโละแมะนา",
     "count": 2,
     "totalCOD": 299,
     "totalCost": 72
@@ -4314,6 +5546,8 @@
   {
     "zipCode": "39140",
     "province": "หนองบัวลำภู",
+    "district": "โนนสัง",
+    "subdistrict": "กุดดู่",
     "count": 2,
     "totalCOD": 419,
     "totalCost": 32
@@ -4321,6 +5555,8 @@
   {
     "zipCode": "25150",
     "province": "ปราจีนบุรี",
+    "district": "บ้านสร้าง",
+    "subdistrict": "กระทุ่มแพ้ว",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4328,6 +5564,8 @@
   {
     "zipCode": "40150",
     "province": "ขอนแก่น",
+    "district": "ภูเวียง",
+    "subdistrict": "กุดขอนแก่น",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4335,6 +5573,8 @@
   {
     "zipCode": "47250",
     "province": "สกลนคร",
+    "district": "คำตากล้า",
+    "subdistrict": "คำตากล้า",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4342,6 +5582,8 @@
   {
     "zipCode": "10550",
     "province": "สมุทรปราการ",
+    "district": "บางบ่อ",
+    "subdistrict": "คลองด่าน",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4349,6 +5591,8 @@
   {
     "zipCode": "42140",
     "province": "เลย",
+    "district": "ท่าลี่",
+    "subdistrict": "ท่าลี่",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4356,6 +5600,8 @@
   {
     "zipCode": "95150",
     "province": "ยะลา",
+    "district": "ธารโต",
+    "subdistrict": "คีรีเขต",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -4363,6 +5609,8 @@
   {
     "zipCode": "47260",
     "province": "สกลนคร",
+    "district": "เต่างอย",
+    "subdistrict": "จันทร์เพ็ญ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4370,6 +5618,8 @@
   {
     "zipCode": "38220",
     "province": "บึงกาฬ",
+    "district": "บึงโขงหลง",
+    "subdistrict": "ดงบัง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4377,6 +5627,8 @@
   {
     "zipCode": "90320",
     "province": "สงขลา",
+    "district": "สะเดา",
+    "subdistrict": "สำนักขาม",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -4384,6 +5636,8 @@
   {
     "zipCode": "41340",
     "province": "อุดรธานี",
+    "district": "หนองแสง",
+    "subdistrict": "ทับกุง",
     "count": 1,
     "totalCOD": 239,
     "totalCost": 16
@@ -4391,6 +5645,8 @@
   {
     "zipCode": "85120",
     "province": "ระนอง",
+    "district": "กะเปอร์",
+    "subdistrict": "กะเปอร์",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4398,6 +5654,8 @@
   {
     "zipCode": "81170",
     "province": "กระบี่",
+    "district": "คลองท่อม",
+    "subdistrict": "คลองพน",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4405,6 +5663,8 @@
   {
     "zipCode": "37210",
     "province": "อำนาจเจริญ",
+    "district": "ชานุมาน",
+    "subdistrict": "คำเขื่อนแก้ว",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4412,6 +5672,8 @@
   {
     "zipCode": "60250",
     "province": "นครสวรรค์",
+    "district": "ชุมแสง",
+    "subdistrict": "ทับกฤช",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4419,6 +5681,8 @@
   {
     "zipCode": "40340",
     "province": "ขอนแก่น",
+    "district": "เปือยน้อย",
+    "subdistrict": "ขามป้อม",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4426,6 +5690,8 @@
   {
     "zipCode": "80170",
     "province": "นครศรีธรรมราช",
+    "district": "หัวไทร",
+    "subdistrict": "ควนชะลิก",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4433,6 +5699,8 @@
   {
     "zipCode": "39170",
     "province": "หนองบัวลำภู",
+    "district": "นากลาง",
+    "subdistrict": "กุดแห่",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -4440,6 +5708,8 @@
   {
     "zipCode": "77150",
     "province": "ประจวบคีรีขันธ์",
+    "district": "กุยบุรี",
+    "subdistrict": "กุยบุรี",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4447,6 +5717,8 @@
   {
     "zipCode": "16120",
     "province": "สิงห์บุรี",
+    "district": "พรหมบุรี",
+    "subdistrict": "บางน้ำเชี่ยว",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4454,6 +5726,8 @@
   {
     "zipCode": "48190",
     "province": "นครพนม",
+    "district": "โพนสวรรค์",
+    "subdistrict": "นาขมิ้น",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4461,6 +5735,8 @@
   {
     "zipCode": "22150",
     "province": "จันทบุรี",
+    "district": "ขลุง",
+    "subdistrict": "บ่อเวฬุ",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4468,6 +5744,8 @@
   {
     "zipCode": "37180",
     "province": "อำนาจเจริญ",
+    "district": "พนา",
+    "subdistrict": "จานลาน",
     "count": 1,
     "totalCOD": 200,
     "totalCost": 16
@@ -4475,6 +5753,8 @@
   {
     "zipCode": "42240",
     "province": "เลย",
+    "district": "ผาขาว",
+    "subdistrict": "ท่าช้างคล้อง",
     "count": 1,
     "totalCOD": 200,
     "totalCost": 16
@@ -4482,6 +5762,8 @@
   {
     "zipCode": "42150",
     "province": "เลย",
+    "district": "ปากชม",
+    "subdistrict": "ชมเจริญ",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4489,6 +5771,8 @@
   {
     "zipCode": "61120",
     "province": "อุทัยธานี",
+    "district": "ทัพทัน",
+    "subdistrict": "ตลุกดู่",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4496,6 +5780,8 @@
   {
     "zipCode": "66210",
     "province": "พิจิตร",
+    "district": "ดงเจริญ",
+    "subdistrict": "วังงิ้ว",
     "count": 1,
     "totalCOD": 200,
     "totalCost": 16
@@ -4503,6 +5789,8 @@
   {
     "zipCode": "56140",
     "province": "พะเยา",
+    "district": "ปง",
+    "subdistrict": "ขุนควร",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4510,6 +5798,8 @@
   {
     "zipCode": "77210",
     "province": "ประจวบคีรีขันธ์",
+    "district": "เมืองประจวบคีรีขันธ์",
+    "subdistrict": "บ่อนอก",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4517,6 +5807,8 @@
   {
     "zipCode": "18270",
     "province": "พระนครศรีอยุธยา",
+    "district": "ท่าเรือ",
+    "subdistrict": "ท่าหลวง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4524,6 +5816,8 @@
   {
     "zipCode": "53190",
     "province": "อุตรดิตถ์",
+    "district": "ท่าปลา",
+    "subdistrict": "ผาเลือด",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4531,6 +5825,8 @@
   {
     "zipCode": "30320",
     "province": "นครราชสีมา",
+    "district": "ปากช่อง",
+    "subdistrict": "กลางดง",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4538,6 +5834,8 @@
   {
     "zipCode": "33240",
     "province": "ศรีสะเกษ",
+    "district": "ศรีรัตนะ",
+    "subdistrict": "ตูม",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4545,6 +5843,8 @@
   {
     "zipCode": "67250",
     "province": "เพชรบูรณ์",
+    "district": "เมืองเพชรบูรณ์",
+    "subdistrict": "ท่าพล",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4552,6 +5852,8 @@
   {
     "zipCode": "57190",
     "province": "เชียงราย",
+    "district": "ป่าแดด",
+    "subdistrict": "ป่าแงะ",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -4559,6 +5861,8 @@
   {
     "zipCode": "41320",
     "province": "อุดรธานี",
+    "district": "หนองหาน",
+    "subdistrict": "บ้านยา",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4566,6 +5870,8 @@
   {
     "zipCode": "40220",
     "province": "ขอนแก่น",
+    "district": "สีชมพู",
+    "subdistrict": "ซำยาง",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4573,6 +5879,8 @@
   {
     "zipCode": "37290",
     "province": "อำนาจเจริญ",
+    "district": "เสนางคนิคม",
+    "subdistrict": "นาเวียง",
     "count": 1,
     "totalCOD": 550,
     "totalCost": 76
@@ -4580,6 +5888,8 @@
   {
     "zipCode": "44160",
     "province": "มหาสารคาม",
+    "district": "ชื่นชม",
+    "subdistrict": "กุดปลาดุก",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -4587,6 +5897,8 @@
   {
     "zipCode": "91140",
     "province": "สตูล",
+    "district": "เมืองสตูล",
+    "subdistrict": "ควนโพธิ์",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4594,6 +5906,8 @@
   {
     "zipCode": "80290",
     "province": "นครศรีธรรมราช",
+    "district": "เฉลิมพระเกียรติ",
+    "subdistrict": "ดอนตรอ",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4601,6 +5915,8 @@
   {
     "zipCode": "34130",
     "province": "อุบลราชธานี",
+    "district": "ตระการพืชผล",
+    "subdistrict": "กระเดียน",
     "count": 1,
     "totalCOD": 537,
     "totalCost": 56
@@ -4608,6 +5924,8 @@
   {
     "zipCode": "52220",
     "province": "ลำปาง",
+    "district": "แม่เมาะ",
+    "subdistrict": "จางเหนือ",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4615,6 +5933,8 @@
   {
     "zipCode": "34190",
     "province": "อุบลราชธานี",
+    "district": "วารินชำราบ",
+    "subdistrict": "คำขวาง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4622,6 +5942,8 @@
   {
     "zipCode": "64120",
     "province": "สุโขทัย",
+    "district": "ศรีสำโรง",
+    "subdistrict": "คลองตาล",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4629,6 +5951,8 @@
   {
     "zipCode": "60240",
     "province": "นครสวรรค์",
+    "district": "เมืองนครสวรรค์",
+    "subdistrict": "หนองกรด",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4636,6 +5960,8 @@
   {
     "zipCode": "18150",
     "province": "สระบุรี",
+    "district": "วิหารแดง",
+    "subdistrict": "คลองเรือ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4643,6 +5969,8 @@
   {
     "zipCode": "30260",
     "province": "นครราชสีมา",
+    "district": "คง",
+    "subdistrict": "ขามสมบูรณ์",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4650,6 +5978,8 @@
   {
     "zipCode": "22190",
     "province": "จันทบุรี",
+    "district": "แหลมสิงห์",
+    "subdistrict": "คลองน้ำเค็ม",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4657,6 +5987,8 @@
   {
     "zipCode": "50190",
     "province": "เชียงใหม่",
+    "district": "พร้าว",
+    "subdistrict": "ทุ่งหลวง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4664,6 +5996,8 @@
   {
     "zipCode": "65110",
     "province": "พิษณุโลก",
+    "district": "บางกระทุ่ม",
+    "subdistrict": "ท่าตาล",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -4671,6 +6005,8 @@
   {
     "zipCode": "32120",
     "province": "สุรินทร์",
+    "district": "ท่าตูม",
+    "subdistrict": "กระโพ",
     "count": 1,
     "totalCOD": 160,
     "totalCost": 16
@@ -4678,6 +6014,8 @@
   {
     "zipCode": "77140",
     "province": "ประจวบคีรีขันธ์",
+    "district": "บางสะพาน",
+    "subdistrict": "กำเนิดนพคุณ",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4685,6 +6023,8 @@
   {
     "zipCode": "92220",
     "province": "ตรัง",
+    "district": "วังวิเศษ",
+    "subdistrict": "วังมะปราง",
     "count": 1,
     "totalCOD": 200,
     "totalCost": 16
@@ -4692,6 +6032,8 @@
   {
     "zipCode": "42120",
     "province": "เลย",
+    "district": "ด่านซ้าย",
+    "subdistrict": "กกสะทอน",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4699,6 +6041,8 @@
   {
     "zipCode": "53130",
     "province": "อุตรดิตถ์",
+    "district": "ลับแล",
+    "subdistrict": "ชัยจุมพล",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4706,6 +6050,8 @@
   {
     "zipCode": "35180",
     "province": "ยโสธร",
+    "district": "คำเขื่อนแก้ว",
+    "subdistrict": "ดงแคนใหญ่",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -4713,6 +6059,8 @@
   {
     "zipCode": "66120",
     "province": "พิจิตร",
+    "district": "บางมูลนาก",
+    "subdistrict": "บางมูลนาก",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 56
@@ -4720,6 +6068,8 @@
   {
     "zipCode": "46140",
     "province": "กาฬสินธุ์",
+    "district": "สหัสขันธ์",
+    "subdistrict": "นามะเขือ",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4727,6 +6077,8 @@
   {
     "zipCode": "73190",
     "province": "นครปฐม",
+    "district": "บางเลน",
+    "subdistrict": "บางหลวง",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -4734,6 +6086,8 @@
   {
     "zipCode": "62130",
     "province": "กำแพงเพชร",
+    "district": "ขาณุวรลักษบุรี",
+    "subdistrict": "ป่าพุทรา",
     "count": 1,
     "totalCOD": 120,
     "totalCost": 16
@@ -4741,6 +6095,8 @@
   {
     "zipCode": "33180",
     "province": "ศรีสะเกษ",
+    "district": "ไพรบึง",
+    "subdistrict": "ดินแดง",
     "count": 1,
     "totalCOD": 420,
     "totalCost": 16
@@ -4748,6 +6104,8 @@
   {
     "zipCode": "48150",
     "province": "นครพนม",
+    "district": "ศรีสงคราม",
+    "subdistrict": "ท่าบ่อสงคราม",
     "count": 1,
     "totalCOD": 597,
     "totalCost": 76
@@ -4755,6 +6113,8 @@
   {
     "zipCode": "43130",
     "province": "หนองคาย",
+    "district": "ศรีเชียงใหม่",
+    "subdistrict": "บ้านหม้อ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4762,6 +6122,8 @@
   {
     "zipCode": "65120",
     "province": "พิษณุโลก",
+    "district": "นครไทย",
+    "subdistrict": "นครชุม",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4769,6 +6131,8 @@
   {
     "zipCode": "81160",
     "province": "กระบี่",
+    "district": "ปลายพระยา",
+    "subdistrict": "คีรีวง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4776,6 +6140,8 @@
   {
     "zipCode": "70160",
     "province": "ราชบุรี",
+    "district": "บางแพ",
+    "subdistrict": "ดอนคา",
     "count": 1,
     "totalCOD": 995,
     "totalCost": 156
@@ -4783,6 +6149,8 @@
   {
     "zipCode": "84330",
     "province": "สุราษฎร์ธานี",
+    "district": "เกาะสมุย",
+    "subdistrict": "แม่น้ำ",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 76
@@ -4790,6 +6158,8 @@
   {
     "zipCode": "34330",
     "province": "อุบลราชธานี",
+    "district": "ตาลสุม",
+    "subdistrict": "คำหว้า",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4797,6 +6167,8 @@
   {
     "zipCode": "72120",
     "province": "สุพรรณบุรี",
+    "district": "เดิมบางนางบวช",
+    "subdistrict": "ทุ่งคลี",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4804,6 +6176,8 @@
   {
     "zipCode": "51180",
     "province": "ลำพูน",
+    "district": "บ้านธิ",
+    "subdistrict": "บ้านธิ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4811,6 +6185,8 @@
   {
     "zipCode": "80150",
     "province": "นครศรีธรรมราช",
+    "district": "ฉวาง",
+    "subdistrict": "ฉวาง",
     "count": 1,
     "totalCOD": 330,
     "totalCost": 16
@@ -4818,6 +6194,8 @@
   {
     "zipCode": "40270",
     "province": "ขอนแก่น",
+    "district": "บ้านฝาง",
+    "subdistrict": "บ้านฝาง",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4825,6 +6203,8 @@
   {
     "zipCode": "32180",
     "province": "สุรินทร์",
+    "district": "จอมพระ",
+    "subdistrict": "กระหาด",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4832,6 +6212,8 @@
   {
     "zipCode": "46240",
     "province": "กาฬสินธุ์",
+    "district": "ห้วยผึ้ง",
+    "subdistrict": "คำบง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4839,6 +6221,8 @@
   {
     "zipCode": "66140",
     "province": "พิจิตร",
+    "district": "วชิรบารมี",
+    "subdistrict": "บึงบัว",
     "count": 1,
     "totalCOD": 998,
     "totalCost": 96
@@ -4846,6 +6230,8 @@
   {
     "zipCode": "80280",
     "province": "นครศรีธรรมราช",
+    "district": "เมืองนครศรีธรรมราช",
+    "subdistrict": "กำแพงเซา",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4853,6 +6239,8 @@
   {
     "zipCode": "66170",
     "province": "พิจิตร",
+    "district": "เมืองพิจิตร",
+    "subdistrict": "ดงกลาง",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -4860,6 +6248,8 @@
   {
     "zipCode": "23120",
     "province": "ตราด",
+    "district": "แหลมงอบ",
+    "subdistrict": "คลองใหญ่",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4867,6 +6257,8 @@
   {
     "zipCode": "75120",
     "province": "สมุทรสงคราม",
+    "district": "บางคนที",
+    "subdistrict": "กระดังงา",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4874,6 +6266,8 @@
   {
     "zipCode": "50340",
     "province": "เชียงใหม่",
+    "district": "หางดง",
+    "subdistrict": "หนองตอง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4881,6 +6275,8 @@
   {
     "zipCode": "16150",
     "province": "สิงห์บุรี",
+    "district": "ค่ายบางระจัน",
+    "subdistrict": "คอทราย",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4888,6 +6284,8 @@
   {
     "zipCode": "36180",
     "province": "ชัยภูมิ",
+    "district": "คอนสาร",
+    "subdistrict": "คอนสาร",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4895,6 +6293,8 @@
   {
     "zipCode": "80190",
     "province": "นครศรีธรรมราช",
+    "district": "เฉลิมพระเกียรติ",
+    "subdistrict": "สวนหลวง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4902,6 +6302,8 @@
   {
     "zipCode": "15210",
     "province": "ลพบุรี",
+    "district": "เมืองลพบุรี",
+    "subdistrict": "โคกตูม",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4909,6 +6311,8 @@
   {
     "zipCode": "35130",
     "province": "ยโสธร",
+    "district": "มหาชนะชัย",
+    "subdistrict": "คูเมือง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4916,6 +6320,8 @@
   {
     "zipCode": "17150",
     "province": "ชัยนาท",
+    "district": "สรรพยา",
+    "subdistrict": "ตลุก",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4923,6 +6329,8 @@
   {
     "zipCode": "80320",
     "province": "นครศรีธรรมราช",
+    "district": "พรหมคีรี",
+    "subdistrict": "ทอนหงส์",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4930,6 +6338,8 @@
   {
     "zipCode": "94120",
     "province": "ปัตตานี",
+    "district": "โคกโพธิ์",
+    "subdistrict": "ช้างให้ตก",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -4937,6 +6347,8 @@
   {
     "zipCode": "53110",
     "province": "อุตรดิตถ์",
+    "district": "ท่าปลา",
+    "subdistrict": "ท่าแฝก",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4944,6 +6356,8 @@
   {
     "zipCode": "23170",
     "province": "ตราด",
+    "district": "เกาะช้าง",
+    "subdistrict": "เกาะช้าง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -4951,6 +6365,8 @@
   {
     "zipCode": "95130",
     "province": "ยะลา",
+    "district": "บันนังสตา",
+    "subdistrict": "ตลิ่งชัน",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -4958,6 +6374,8 @@
   {
     "zipCode": "67260",
     "province": "เพชรบูรณ์",
+    "district": "น้ำหนาว",
+    "subdistrict": "น้ำหนาว",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4965,6 +6383,8 @@
   {
     "zipCode": "90270",
     "province": "สงขลา",
+    "district": "กระแสสินธุ์",
+    "subdistrict": "กระแสสินธุ์",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4972,6 +6392,8 @@
   {
     "zipCode": "61110",
     "province": "อุทัยธานี",
+    "district": "หนองฉาง",
+    "subdistrict": "ทุ่งพง",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -4979,6 +6401,8 @@
   {
     "zipCode": "67270",
     "province": "เพชรบูรณ์",
+    "district": "เขาค้อ",
+    "subdistrict": "ทุ่งสมอ",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -4986,6 +6410,8 @@
   {
     "zipCode": "30410",
     "province": "นครราชสีมา",
+    "district": "หนองบุญมาก",
+    "subdistrict": "บ้านใหม่",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -4993,6 +6419,8 @@
   {
     "zipCode": "46160",
     "province": "กาฬสินธุ์",
+    "district": "นาคู",
+    "subdistrict": "นาคู",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 56
@@ -5000,6 +6428,8 @@
   {
     "zipCode": "52110",
     "province": "ลำปาง",
+    "district": "งาว",
+    "subdistrict": "นาแก",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5007,6 +6437,8 @@
   {
     "zipCode": "34310",
     "province": "อุบลราชธานี",
+    "district": "วารินชำราบ",
+    "subdistrict": "ท่าลาด",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -5014,6 +6446,8 @@
   {
     "zipCode": "80370",
     "province": "นครศรีธรรมราช",
+    "district": "ปากพนัง",
+    "subdistrict": "คลองกระบือ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5021,6 +6455,8 @@
   {
     "zipCode": "13240",
     "province": "พระนครศรีอยุธยา",
+    "district": "บ้านแพรก",
+    "subdistrict": "คลองน้อย",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5028,6 +6464,8 @@
   {
     "zipCode": "67170",
     "province": "เพชรบูรณ์",
+    "district": "ศรีเทพ",
+    "subdistrict": "คลองกระจัง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5035,6 +6473,8 @@
   {
     "zipCode": "96160",
     "province": "นราธิวาส",
+    "district": "แว้ง",
+    "subdistrict": "กายูคละ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -5042,6 +6482,8 @@
   {
     "zipCode": "95140",
     "province": "ยะลา",
+    "district": "รามัน",
+    "subdistrict": "กอตอตือร๊ะ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -5049,6 +6491,8 @@
   {
     "zipCode": "72140",
     "province": "สุพรรณบุรี",
+    "district": "ศรีประจันต์",
+    "subdistrict": "ดอนปรู",
     "count": 1,
     "totalCOD": 390,
     "totalCost": 16
@@ -5056,6 +6500,8 @@
   {
     "zipCode": "53170",
     "province": "อุตรดิตถ์",
+    "district": "เมืองอุตรดิตถ์",
+    "subdistrict": "วังกะพี้",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5063,6 +6509,8 @@
   {
     "zipCode": "72220",
     "province": "สุพรรณบุรี",
+    "district": "อู่ทอง",
+    "subdistrict": "ดอนมะเกลือ",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -5070,6 +6518,8 @@
   {
     "zipCode": "34140",
     "province": "อุบลราชธานี",
+    "district": "ม่วงสามสิบ",
+    "subdistrict": "ดุมใหญ่",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5077,6 +6527,8 @@
   {
     "zipCode": "56120",
     "province": "พะเยา",
+    "district": "ดอกคำใต้",
+    "subdistrict": "คือเวียง",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5084,6 +6536,8 @@
   {
     "zipCode": "82180",
     "province": "พังงา",
+    "district": "ทับปุด",
+    "subdistrict": "ถ้ำทองหลาง",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5091,6 +6545,8 @@
   {
     "zipCode": "72180",
     "province": "สุพรรณบุรี",
+    "district": "ด่านช้าง",
+    "subdistrict": "ด่านช้าง",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5098,6 +6554,8 @@
   {
     "zipCode": "57260",
     "province": "เชียงราย",
+    "district": "เวียงป่าเป้า",
+    "subdistrict": "เวียงกาหลง",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 36
@@ -5105,6 +6563,8 @@
   {
     "zipCode": "47220",
     "province": "สกลนคร",
+    "district": "พรรณานิคม",
+    "subdistrict": "นาหัวบ่อ",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5112,6 +6572,8 @@
   {
     "zipCode": "82150",
     "province": "พังงา",
+    "district": "คุระบุรี",
+    "subdistrict": "คุระ",
     "count": 1,
     "totalCOD": 170,
     "totalCost": 16
@@ -5119,6 +6581,8 @@
   {
     "zipCode": "57140",
     "province": "เชียงราย",
+    "district": "เชียงของ",
+    "subdistrict": "ครึ่ง",
     "count": 1,
     "totalCOD": 995,
     "totalCost": 156
@@ -5126,6 +6590,8 @@
   {
     "zipCode": "57210",
     "province": "เชียงราย",
+    "district": "เวียงชัย",
+    "subdistrict": "ดอนศิลา",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5133,6 +6599,8 @@
   {
     "zipCode": "84270",
     "province": "สุราษฎร์ธานี",
+    "district": "บ้านนาสาร",
+    "subdistrict": "ควนศรี",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -5140,6 +6608,8 @@
   {
     "zipCode": "21170",
     "province": "ระยอง",
+    "district": "แกลง",
+    "subdistrict": "คลองปูน",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5147,6 +6617,8 @@
   {
     "zipCode": "64220",
     "province": "สุโขทัย",
+    "district": "เมืองสุโขทัย",
+    "subdistrict": "ตาลเตี้ย",
     "count": 1,
     "totalCOD": 170,
     "totalCost": 16
@@ -5154,6 +6626,8 @@
   {
     "zipCode": "30420",
     "province": "นครราชสีมา",
+    "district": "โนนสูง",
+    "subdistrict": "ธารปราสาท",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5161,6 +6635,8 @@
   {
     "zipCode": "40250",
     "province": "ขอนแก่น",
+    "district": "อุบลรัตน์",
+    "subdistrict": "ทุ่งโป่ง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5168,6 +6644,8 @@
   {
     "zipCode": "30290",
     "province": "นครราชสีมา",
+    "district": "ขามสะแกแสง",
+    "subdistrict": "ขามสะแกแสง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5175,6 +6653,8 @@
   {
     "zipCode": "49150",
     "province": "มุกดาหาร",
+    "district": "หว้านใหญ่",
+    "subdistrict": "ชะโนด",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5182,6 +6662,8 @@
   {
     "zipCode": "85130",
     "province": "ระนอง",
+    "district": "ละอุ่น",
+    "subdistrict": "บางพระเหนือ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5189,6 +6671,8 @@
   {
     "zipCode": "45150",
     "province": "ร้อยเอ็ด",
+    "district": "เกษตรวิสัย",
+    "subdistrict": "กำแพง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5196,6 +6680,8 @@
   {
     "zipCode": "95160",
     "province": "ยะลา",
+    "district": "เมืองยะลา",
+    "subdistrict": "พร่อน",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -5203,6 +6689,8 @@
   {
     "zipCode": "54120",
     "province": "แพร่",
+    "district": "สอง",
+    "subdistrict": "ทุ่งน้าว",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5210,6 +6698,8 @@
   {
     "zipCode": "33190",
     "province": "ศรีสะเกษ",
+    "district": "ยางชุมน้อย",
+    "subdistrict": "กุดเมืองฮาม",
     "count": 1,
     "totalCOD": 170,
     "totalCost": 16
@@ -5217,6 +6707,8 @@
   {
     "zipCode": "72230",
     "province": "สุพรรณบุรี",
+    "district": "เมืองสุพรรณบุรี",
+    "subdistrict": "ตลิ่งชัน",
     "count": 1,
     "totalCOD": 290,
     "totalCost": 16
@@ -5224,6 +6716,8 @@
   {
     "zipCode": "45230",
     "province": "ร้อยเอ็ด",
+    "district": "โพธิ์ชัย",
+    "subdistrict": "ขามเปี้ย",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5231,6 +6725,8 @@
   {
     "zipCode": "50110",
     "province": "เชียงใหม่",
+    "district": "ฝาง",
+    "subdistrict": "ม่อนปิ่น",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5238,6 +6734,8 @@
   {
     "zipCode": "23130",
     "province": "ตราด",
+    "district": "เขาสมิง",
+    "subdistrict": "ทุ่งนนทรี",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5245,6 +6743,8 @@
   {
     "zipCode": "50260",
     "province": "เชียงใหม่",
+    "district": "ดอยเต่า",
+    "subdistrict": "ดอยเต่า",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5252,6 +6752,8 @@
   {
     "zipCode": "71120",
     "province": "กาญจนบุรี",
+    "district": "ท่ามะกา",
+    "subdistrict": "ดอนขมิ้น",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -5259,6 +6761,8 @@
   {
     "zipCode": "50320",
     "province": "เชียงใหม่",
+    "district": "ฝาง",
+    "subdistrict": "แม่ข่า",
     "count": 1,
     "totalCOD": 597,
     "totalCost": 56
@@ -5266,6 +6770,8 @@
   {
     "zipCode": "40290",
     "province": "ขอนแก่น",
+    "district": "ชุมแพ",
+    "subdistrict": "นาหนองทุ่ม",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5273,6 +6779,8 @@
   {
     "zipCode": "51160",
     "province": "ลำพูน",
+    "district": "ทุ่งหัวช้าง",
+    "subdistrict": "ตะเคียนปม",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 56
@@ -5280,6 +6788,8 @@
   {
     "zipCode": "46230",
     "province": "กาฬสินธุ์",
+    "district": "นามน",
+    "subdistrict": "นามน",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5287,6 +6797,8 @@
   {
     "zipCode": "39350",
     "province": "หนองบัวลำภู",
+    "district": "นากลาง",
+    "subdistrict": "กุดดินจี่",
     "count": 1,
     "totalCOD": 599,
     "totalCost": 96
@@ -5294,6 +6806,8 @@
   {
     "zipCode": "58150",
     "province": "แม่ฮ่องสอน",
+    "district": "ปางมะผ้า",
+    "subdistrict": "ถ้ำลอด",
     "count": 1,
     "totalCOD": 229,
     "totalCost": 36
@@ -5301,6 +6815,8 @@
   {
     "zipCode": "55210",
     "province": "น่าน",
+    "district": "สันติสุข",
+    "subdistrict": "ดู่พงษ์",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5308,6 +6824,8 @@
   {
     "zipCode": "53160",
     "province": "อุตรดิตถ์",
+    "district": "ฟากท่า",
+    "subdistrict": "บ้านเสี้ยว",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5315,6 +6833,8 @@
   {
     "zipCode": "51150",
     "province": "ลำพูน",
+    "district": "เมืองลำพูน",
+    "subdistrict": "หนองช้างคืน",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5322,6 +6842,8 @@
   {
     "zipCode": "36160",
     "province": "ชัยภูมิ",
+    "district": "บำเหน็จณรงค์",
+    "subdistrict": "บ้านชวน",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5329,6 +6851,8 @@
   {
     "zipCode": "24140",
     "province": "ฉะเชิงเทรา",
+    "district": "บ้านโพธิ์",
+    "subdistrict": "คลองขุด",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5336,6 +6860,8 @@
   {
     "zipCode": "91160",
     "province": "สตูล",
+    "district": "ควนโดน",
+    "subdistrict": "ควนสตอ",
     "count": 1,
     "totalCOD": 330,
     "totalCost": 16
@@ -5343,6 +6869,8 @@
   {
     "zipCode": "50350",
     "province": "เชียงใหม่",
+    "district": "เวียงแหง",
+    "subdistrict": "เปียงหลวง",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 56
@@ -5350,6 +6878,8 @@
   {
     "zipCode": "35150",
     "province": "ยโสธร",
+    "district": "ป่าติ้ว",
+    "subdistrict": "กระจาย",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5357,6 +6887,8 @@
   {
     "zipCode": "15190",
     "province": "ลพบุรี",
+    "district": "ชัยบาดาล",
+    "subdistrict": "นาโสม",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5364,6 +6896,8 @@
   {
     "zipCode": "48140",
     "province": "นครพนม",
+    "district": "นาทม",
+    "subdistrict": "ดอนเตย",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5371,6 +6905,8 @@
   {
     "zipCode": "41360",
     "province": "อุดรธานี",
+    "district": "หนองวัวซอ",
+    "subdistrict": "น้ำพ่น",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5378,6 +6914,8 @@
   {
     "zipCode": "15250",
     "province": "ลพบุรี",
+    "district": "โคกเจริญ",
+    "subdistrict": "ยางราก",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5385,6 +6923,8 @@
   {
     "zipCode": "31230",
     "province": "บุรีรัมย์",
+    "district": "นาโพธิ์",
+    "subdistrict": "ดอนกอก",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 56
@@ -5392,6 +6932,8 @@
   {
     "zipCode": "81190",
     "province": "กระบี่",
+    "district": "ลำทับ",
+    "subdistrict": "ดินอุดม",
     "count": 1,
     "totalCOD": 597,
     "totalCost": 76
@@ -5399,6 +6941,8 @@
   {
     "zipCode": "38170",
     "province": "บึงกาฬ",
+    "district": "โซ่พิสัย",
+    "subdistrict": "คำแก้ว",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5406,6 +6950,8 @@
   {
     "zipCode": "20190",
     "province": "ชลบุรี",
+    "district": "หนองใหญ่",
+    "subdistrict": "คลองพลู",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5413,6 +6959,8 @@
   {
     "zipCode": "41280",
     "province": "อุดรธานี",
+    "district": "วังสามหมอ",
+    "subdistrict": "คำโคกสูง",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -5420,6 +6968,8 @@
   {
     "zipCode": "40180",
     "province": "ขอนแก่น",
+    "district": "ชนบท",
+    "subdistrict": "กุดเพียขอม",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5427,6 +6977,8 @@
   {
     "zipCode": "84340",
     "province": "สุราษฎร์ธานี",
+    "district": "ดอนสัก",
+    "subdistrict": "ปากแพรก",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5434,6 +6986,8 @@
   {
     "zipCode": "40230",
     "province": "ขอนแก่น",
+    "district": "แวงน้อย",
+    "subdistrict": "ก้านเหลือง",
     "count": 1,
     "totalCOD": 160,
     "totalCost": 16
@@ -5441,6 +6995,8 @@
   {
     "zipCode": "32230",
     "province": "สุรินทร์",
+    "district": "บัวเชด",
+    "subdistrict": "จรัส",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 36
@@ -5448,6 +7004,8 @@
   {
     "zipCode": "60190",
     "province": "นครสวรรค์",
+    "district": "ตากฟ้า",
+    "subdistrict": "ตากฟ้า",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5455,6 +7013,8 @@
   {
     "zipCode": "23140",
     "province": "ตราด",
+    "district": "บ่อไร่",
+    "subdistrict": "ช้างทูน",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5462,6 +7022,8 @@
   {
     "zipCode": "30440",
     "province": "นครราชสีมา",
+    "district": "แก้งสนามนาง",
+    "subdistrict": "บึงพะไล",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5469,6 +7031,8 @@
   {
     "zipCode": "45190",
     "province": "ร้อยเอ็ด",
+    "district": "ปทุมรัตต์",
+    "subdistrict": "ขี้เหล็ก",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5476,6 +7040,8 @@
   {
     "zipCode": "36240",
     "province": "ชัยภูมิ",
+    "district": "เมืองชัยภูมิ",
+    "subdistrict": "บ้านค่าย",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5483,6 +7049,8 @@
   {
     "zipCode": "33230",
     "province": "ศรีสะเกษ",
+    "district": "พยุห์",
+    "subdistrict": "ตำแย",
     "count": 1,
     "totalCOD": 537,
     "totalCost": 76
@@ -5490,6 +7058,8 @@
   {
     "zipCode": "36150",
     "province": "ชัยภูมิ",
+    "district": "แก้งคร้อ",
+    "subdistrict": "ช่องสามหมอ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5497,6 +7067,8 @@
   {
     "zipCode": "32220",
     "province": "สุรินทร์",
+    "district": "ลำดวน",
+    "subdistrict": "ตระเปียงเตีย",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5504,6 +7076,8 @@
   {
     "zipCode": "52180",
     "province": "ลำปาง",
+    "district": "แม่พริก",
+    "subdistrict": "ผาปัง",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 56
@@ -5511,6 +7085,8 @@
   {
     "zipCode": "45280",
     "province": "ร้อยเอ็ด",
+    "district": "ศรีสมเด็จ",
+    "subdistrict": "สวนจิก",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5518,6 +7094,8 @@
   {
     "zipCode": "44110",
     "province": "มหาสารคาม",
+    "district": "พยัคฆภูมิพิสัย",
+    "subdistrict": "ก้ามปู",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5525,6 +7103,8 @@
   {
     "zipCode": "45240",
     "province": "ร้อยเอ็ด",
+    "district": "โพนทราย",
+    "subdistrict": "ท่าหาดยาว",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5532,6 +7112,8 @@
   {
     "zipCode": "86230",
     "province": "ชุมพร",
+    "district": "ปะทิว",
+    "subdistrict": "สะพลี",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5539,6 +7121,8 @@
   {
     "zipCode": "41290",
     "province": "อุดรธานี",
+    "district": "ไชยวาน",
+    "subdistrict": "คำเลาะ",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5546,6 +7130,8 @@
   {
     "zipCode": "17120",
     "province": "ชัยนาท",
+    "district": "วัดสิงห์",
+    "subdistrict": "บ่อแร่",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5553,6 +7139,8 @@
   {
     "zipCode": "49120",
     "province": "มุกดาหาร",
+    "district": "ดอนตาล",
+    "subdistrict": "ดอนตาล",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5560,6 +7148,8 @@
   {
     "zipCode": "56160",
     "province": "พะเยา",
+    "district": "เชียงม่วน",
+    "subdistrict": "บ้านมาง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5567,6 +7157,8 @@
   {
     "zipCode": "65160",
     "province": "พิษณุโลก",
+    "district": "วัดโบสถ์",
+    "subdistrict": "คันโช้ง",
     "count": 1,
     "totalCOD": 398,
     "totalCost": 56
@@ -5574,6 +7166,8 @@
   {
     "zipCode": "47160",
     "province": "สกลนคร",
+    "district": "พังโคน",
+    "subdistrict": "ต้นผึ้ง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5581,6 +7175,8 @@
   {
     "zipCode": "47230",
     "province": "สกลนคร",
+    "district": "กุสุมาลย์",
+    "subdistrict": "นาเพียง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5588,6 +7184,8 @@
   {
     "zipCode": "94170",
     "province": "ปัตตานี",
+    "district": "หนองจิก",
+    "subdistrict": "คอลอตันหยง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -5595,6 +7193,8 @@
   {
     "zipCode": "41230",
     "province": "อุดรธานี",
+    "district": "ศรีธาตุ",
+    "subdistrict": "จำปี",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5602,6 +7202,8 @@
   {
     "zipCode": "54160",
     "province": "แพร่",
+    "district": "วังชิ้น",
+    "subdistrict": "นาพูน",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5609,6 +7211,8 @@
   {
     "zipCode": "77160",
     "province": "ประจวบคีรีขันธ์",
+    "district": "ปราณบุรี",
+    "subdistrict": "ปราณบุรี",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -5616,6 +7220,8 @@
   {
     "zipCode": "37120",
     "province": "อำนาจเจริญ",
+    "district": "ลืออำนาจ",
+    "subdistrict": "ดงบัง",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5623,6 +7229,8 @@
   {
     "zipCode": "56130",
     "province": "พะเยา",
+    "district": "แม่ใจ",
+    "subdistrict": "บ้านเหล่า",
     "count": 1,
     "totalCOD": 200,
     "totalCost": 16
@@ -5630,6 +7238,8 @@
   {
     "zipCode": "94230",
     "province": "ปัตตานี",
+    "district": "กะพ้อ",
+    "subdistrict": "กะรุบี",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 36
@@ -5637,6 +7247,8 @@
   {
     "zipCode": "62180",
     "province": "กำแพงเพชร",
+    "district": "คลองลาน",
+    "subdistrict": "คลองน้ำไหล",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5644,6 +7256,8 @@
   {
     "zipCode": "91120",
     "province": "สตูล",
+    "district": "ทุ่งหว้า",
+    "subdistrict": "ขอนคลาน",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5651,6 +7265,8 @@
   {
     "zipCode": "96220",
     "province": "นราธิวาส",
+    "district": "จะแนะ",
+    "subdistrict": "จะแนะ",
     "count": 1,
     "totalCOD": 120,
     "totalCost": 36
@@ -5658,6 +7274,8 @@
   {
     "zipCode": "55150",
     "province": "น่าน",
+    "district": "นาน้อย",
+    "subdistrict": "นาน้อย",
     "count": 1,
     "totalCOD": 400,
     "totalCost": 16
@@ -5665,6 +7283,8 @@
   {
     "zipCode": "70210",
     "province": "ราชบุรี",
+    "district": "ดำเนินสะดวก",
+    "subdistrict": "บัวงาม",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5672,6 +7292,8 @@
   {
     "zipCode": "77230",
     "province": "ประจวบคีรีขันธ์",
+    "district": "บางสะพาน",
+    "subdistrict": "ทองมงคล",
     "count": 1,
     "totalCOD": 200,
     "totalCost": 16
@@ -5679,6 +7301,8 @@
   {
     "zipCode": "53220",
     "province": "อุตรดิตถ์",
+    "district": "พิชัย",
+    "subdistrict": "ท่าสัก",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5686,6 +7310,8 @@
   {
     "zipCode": "84220",
     "province": "สุราษฎร์ธานี",
+    "district": "ดอนสัก",
+    "subdistrict": "ดอนสัก",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5693,6 +7319,8 @@
   {
     "zipCode": "40330",
     "province": "ขอนแก่น",
+    "district": "แวงใหญ่",
+    "subdistrict": "คอนฉิม",
     "count": 1,
     "totalCOD": 200,
     "totalCost": 16
@@ -5700,6 +7328,8 @@
   {
     "zipCode": "13290",
     "province": "พระนครศรีอยุธยา",
+    "district": "บางไทร",
+    "subdistrict": "ช้างใหญ่",
     "count": 1,
     "totalCOD": 100,
     "totalCost": 16
@@ -5707,6 +7337,8 @@
   {
     "zipCode": "80250",
     "province": "นครศรีธรรมราช",
+    "district": "ฉวาง",
+    "subdistrict": "จันดี",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5714,6 +7346,8 @@
   {
     "zipCode": "94110",
     "province": "ปัตตานี",
+    "district": "สายบุรี",
+    "subdistrict": "กะดุนง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 36
@@ -5721,6 +7355,8 @@
   {
     "zipCode": "42230",
     "province": "เลย",
+    "district": "ภูหลวง",
+    "subdistrict": "ภูหอ",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5728,6 +7364,8 @@
   {
     "zipCode": "62210",
     "province": "กำแพงเพชร",
+    "district": "บึงสามัคคี",
+    "subdistrict": "บึงสามัคคี",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5735,6 +7373,8 @@
   {
     "zipCode": "30240",
     "province": "นครราชสีมา",
+    "district": "ห้วยแถลง",
+    "subdistrict": "กงรถ",
     "count": 1,
     "totalCOD": 537,
     "totalCost": 76
@@ -5742,6 +7382,8 @@
   {
     "zipCode": "57250",
     "province": "เชียงราย",
+    "district": "พาน",
+    "subdistrict": "ธารทอง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5749,6 +7391,8 @@
   {
     "zipCode": "49140",
     "province": "มุกดาหาร",
+    "district": "ดงหลวง",
+    "subdistrict": "กกตูม",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5756,6 +7400,8 @@
   {
     "zipCode": "39270",
     "province": "หนองบัวลำภู",
+    "district": "สุวรรณคูหา",
+    "subdistrict": "กุดผึ้ง",
     "count": 1,
     "totalCOD": 0,
     "totalCost": 16
@@ -5763,6 +7409,8 @@
   {
     "zipCode": "71220",
     "province": "กาญจนบุรี",
+    "district": "บ่อพลอย",
+    "subdistrict": "หนองกร่าง",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16
@@ -5770,6 +7418,8 @@
   {
     "zipCode": "66180",
     "province": "พิจิตร",
+    "district": "วังทรายพูน",
+    "subdistrict": "วังทรายพูน",
     "count": 1,
     "totalCOD": 199,
     "totalCost": 16

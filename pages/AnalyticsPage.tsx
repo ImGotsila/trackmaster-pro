@@ -313,7 +313,7 @@ const AnalyticsPage: React.FC = () => {
                     <MapIcon className="w-8 h-8 text-indigo-600" />
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                            วิเคราะห์พิกัดรายย่อย <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-mono animate-bounce">v3.0 (FIXED)</span>
+                            วิเคราะห์พิกัดรายย่อย <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-mono animate-bounce">v4.0 (FIXED)</span>
                         </h1>
                         <p className="text-sm text-slate-500">
                             แก้ไขตำแหน่งหมุดในแต่ละจังหวัด (กด "อัปเดตข้อมูลใหม่" เพื่อล้างข้อมูลเก่า)

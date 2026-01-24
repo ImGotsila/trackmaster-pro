@@ -253,10 +253,10 @@ const CostAnalyticsPage: React.FC = () => {
                     {/* Cost Legend */}
                     <div className="absolute bottom-4 left-4 z-[400] bg-white/90 p-3 rounded-xl border border-slate-200 shadow-lg space-y-2">
                         <p className="text-[10px] font-bold text-slate-500 uppercase">ระดับค่าจัดส่ง</p>
-                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#7c3aed]"></div><span className="text-[10px] font-bold tracking-tight">สูงมาก (>฿80)</span></div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#7c3aed]"></div><span className="text-[10px] font-bold tracking-tight">สูงมาก ({'>'}฿80)</span></div>
                         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div><span className="text-[10px] font-bold tracking-tight">สูง (฿50-80)</span></div>
                         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#f97316]"></div><span className="text-[10px] font-bold tracking-tight">ปกติ (฿40-50)</span></div>
-                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div><span className="text-[10px] font-bold tracking-tight">ต่ำ (<฿40)</span></div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div><span className="text-[10px] font-bold tracking-tight">ต่ำ ({'<'}฿40)</span></div>
                     </div>
                 </div>
 
