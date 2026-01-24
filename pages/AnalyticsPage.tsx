@@ -68,6 +68,25 @@ const AnalyticsPage: React.FC = () => {
         return Array.from(stats.values()).sort((a, b) => b.count - a.count);
     };
 
+    // Generate unique coordinates for each zip code (deterministic offset)
+    const getUniqueCoordinates = (zipCode: string, baseProvince: string) => {
+        const provinceInfo = thaiProvinces.find(p => p.province === baseProvince);
+        const baseLat = provinceInfo?.lat || 13.7563;
+        const baseLng = provinceInfo?.lng || 100.5018;
+
+        // Use zipCode as seed for deterministic random offset
+        const seed = zipCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+        // Create pseudo-random offset based on seed (-0.15 to +0.15 degrees, ~16km radius)
+        const offsetLat = ((seed * 17) % 100) / 100 * 0.3 - 0.15;
+        const offsetLng = ((seed * 31) % 100) / 100 * 0.3 - 0.15;
+
+        return {
+            lat: baseLat + offsetLat,
+            lng: baseLng + offsetLng
+        };
+    };
+
     // Fetch Analytics from Server (JSON file) - SEQUENTIAL WORKFLOW
     const fetchAnalytics = async () => {
         setIsLoading(true);
@@ -82,15 +101,14 @@ const AnalyticsPage: React.FC = () => {
 
             const data = await res.json();
 
-            setProgress({ current: 50, total: 100, status: 'กำลังประมวลผลพิกัด...' });
+            setProgress({ current: 50, total: 100, status: 'กำลังสร้างพิกัดสำหรับแต่ละรหัส...' });
 
-            // Map data to coordinates
+            // Map data to UNIQUE coordinates per zip code
             const mappedData = data.map((item: any) => {
-                const provinceInfo = thaiProvinces.find(p => p.province === item.province);
+                const coords = getUniqueCoordinates(item.zipCode, item.province);
                 return {
                     ...item,
-                    lat: provinceInfo?.lat || 13.7563,
-                    lng: provinceInfo?.lng || 100.5018
+                    ...coords
                 };
             });
 
@@ -111,11 +129,10 @@ const AnalyticsPage: React.FC = () => {
             try {
                 const computed = await computeAnalytics();
                 const mappedData = computed.map((item: any) => {
-                    const provinceInfo = thaiProvinces.find(p => p.province === item.province);
+                    const coords = getUniqueCoordinates(item.zipCode, item.province);
                     return {
                         ...item,
-                        lat: provinceInfo?.lat || 13.7563,
-                        lng: provinceInfo?.lng || 100.5018
+                        ...coords
                     };
                 });
                 setProvinceData(mappedData.filter((p: any) => p.count > 0));
