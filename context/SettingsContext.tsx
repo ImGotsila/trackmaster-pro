@@ -17,8 +17,13 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [settings, setSettings] = useState<Settings>({ cod_fee: 3 });
     const [isLoading, setIsLoading] = useState(true);
+    const isDemoMode = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
 
     const fetchSettings = async () => {
+        if (isDemoMode) {
+            setIsLoading(false);
+            return;
+        }
         setIsLoading(true);
         try {
             const res = await fetch('/api/settings');

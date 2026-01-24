@@ -35,10 +35,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = async (username: string, password: string) => {
         // demo mode bypass
-        if (isDemoMode && username === 'guest') {
-            const guestUser: User = { id: 'guest', username: 'guest', role: 'user' };
-            setUser(guestUser);
-            localStorage.setItem('trackmaster_user', JSON.stringify(guestUser));
+        if (isDemoMode) {
+            const demoUser: User = {
+                id: username === 'admin' ? 'demo-admin' : 'guest',
+                username: username || 'guest',
+                role: username === 'admin' ? 'admin' : 'user'
+            };
+            setUser(demoUser);
+            localStorage.setItem('trackmaster_user', JSON.stringify(demoUser));
             return;
         }
 

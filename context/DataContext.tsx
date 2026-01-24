@@ -26,12 +26,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [historyLogs, setHistoryLogs] = useState<ActionLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const isDemoMode = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+
   // 1. Load Server Data
   const loadServerData = async () => {
     setIsLoading(true);
-    const data = await GoogleSheetsService.fetchShipments();
-    setServerShipments(data);
-    setIsLoading(false);
+    try {
+      const data = await GoogleSheetsService.fetchShipments();
+      setServerShipments(data);
+    } catch (e) {
+      console.error("Failed to load server data", e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -52,14 +59,21 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // Load History from API
-    fetch('/api/history')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setHistoryLogs(data);
-        }
-      })
-      .catch(err => console.error("Failed to load history logs", err));
+    if (!isDemoMode) {
+      fetch('/api/history')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            setHistoryLogs(data);
+          }
+        })
+        .catch(err => console.error("Failed to load history logs", err));
+    } else {
+      // Mock history for demo
+      setHistoryLogs([
+        { id: 'demo1', timestamp: Date.now(), action: 'import', details: 'Demo: โหลดข้อมูลตัวอย่างสำเร็จ', status: 'success' }
+      ]);
+    }
   }, []);
 
   // 3. Save Local Batches
@@ -85,14 +99,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setHistoryLogs(prev => [newLog, ...prev].slice(0, 100));
 
     // Send to API
-    try {
-      await fetch('/api/history', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newLog)
-      });
-    } catch (err) {
-      console.error("Failed to save log to DB", err);
+    if (!isDemoMode) {
+      try {
+        await fetch('/api/history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newLog)
+        });
+      } catch (err) {
+        console.error("Failed to save log to DB", err);
+      }
     }
   };
 
