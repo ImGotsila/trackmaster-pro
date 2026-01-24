@@ -1,7 +1,7 @@
-import React from 'react';
 import { LayoutDashboard, Search, FileInput, Package, Database, TrendingUp, Map, DollarSign, BarChart3, Shield, LogOut, RotateCcw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { isDemoMode } from '../utils/environment';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const Sidebar: React.FC = () => {
           );
         })}
 
-        {isAdmin && (
+        {(isAdmin || isDemoMode()) && (
           <>
             <div className="pt-6 pb-2 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Administrator</div>
             <button

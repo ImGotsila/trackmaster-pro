@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { createContext, useContext, useState, useEffect } from 'react';
+import { isDemoMode } from '../utils/environment';
 
 interface User {
     id: string;
@@ -31,15 +32,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
-    const isDemoMode = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
 
     const login = async (username: string, password: string) => {
         // demo mode bypass
-        if (isDemoMode) {
+        if (isDemoMode()) {
             const demoUser: User = {
-                id: username === 'admin' ? 'demo-admin' : 'guest',
-                username: username || 'guest',
-                role: username === 'admin' ? 'admin' : 'user'
+                id: 'demo-admin',
+                username: username || 'Demo Admin',
+                role: 'admin' // Force admin for demo
             };
             setUser(demoUser);
             localStorage.setItem('trackmaster_user', JSON.stringify(demoUser));
@@ -72,8 +72,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             user,
             login,
             logout,
-            isAuthenticated: !!user || (isDemoMode && !!localStorage.getItem('trackmaster_user')),
-            isAdmin: user?.role === 'admin'
+            isAuthenticated: !!user || (isDemoMode() && !!localStorage.getItem('trackmaster_user')),
+            isAdmin: user?.role === 'admin' || isDemoMode()
         }}>
             {children}
         </AuthContext.Provider>

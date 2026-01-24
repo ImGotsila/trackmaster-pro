@@ -38,7 +38,7 @@ const ACTION_OPTIONS = [
 const RTSManagementPage: React.FC = () => {
     const { shipments } = useData();
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState<'scan' | 'search' | 'history'>('scan');
+    const [activeTab, setActiveTab] = useState<'scan' | 'search' | 'history'>('search');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedShipment, setSelectedShipment] = useState<any>(null);
     const [reports, setReports] = useState<RTSReport[]>([]);
