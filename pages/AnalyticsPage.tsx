@@ -16,7 +16,15 @@ const AnalyticsPage: React.FC = () => {
 
     // Compute analytics client-side (ASYNC with chunks for better performance)
     const computeAnalytics = async () => {
-        const stats = new Map<string, { zipCode: string; province: string; count: number; totalCOD: number; totalCost: number }>();
+        const stats = new Map<string, {
+            zipCode: string;
+            province: string;
+            district: string;
+            subdistrict: string;
+            count: number;
+            totalCOD: number;
+            totalCost: number
+        }>();
         const total = shipments.length;
         const CHUNK_SIZE = 100; // Process 100 items at a time
 
@@ -35,7 +43,7 @@ const AnalyticsPage: React.FC = () => {
                 const addresses = getAddressByZipCode(s.zipCode);
                 if (addresses.length === 0) return;
 
-                const provinceName = addresses[0].province;
+                const addressInfo = addresses[0];
                 const zipKey = s.zipCode;
 
                 const existing = stats.get(zipKey);
@@ -46,7 +54,9 @@ const AnalyticsPage: React.FC = () => {
                 } else {
                     stats.set(zipKey, {
                         zipCode: s.zipCode,
-                        province: provinceName,
+                        province: addressInfo.province,
+                        district: addressInfo.amphoe || addressInfo.district || 'ไม่ระบุ',
+                        subdistrict: addressInfo.district || addressInfo.tambon || 'ไม่ระบุ',
                         count: 1,
                         totalCOD: (s.codAmount || 0),
                         totalCost: (s.shippingCost || 0)
@@ -323,6 +333,7 @@ const AnalyticsPage: React.FC = () => {
                                 <Tooltip direction="top" offset={[0, -10]} opacity={1}>
                                     <div className="text-center">
                                         <b className="text-base text-indigo-700">{data.zipCode || data.province}</b><br />
+                                        <span className="text-xs font-semibold text-slate-700">อ.{data.district}</span><br />
                                         <span className="text-xs text-slate-500">{data.province}</span><br />
                                         <span className="text-slate-600 font-semibold">{data.count} Orders</span>
                                     </div>
@@ -367,7 +378,8 @@ const AnalyticsPage: React.FC = () => {
                                         </span>
                                         <div>
                                             <span className="font-bold text-slate-700 text-sm block">{data.zipCode}</span>
-                                            <span className="text-xs text-slate-400">{data.province}</span>
+                                            <span className="text-xs text-indigo-600 font-medium">อ.{data.district}</span>
+                                            <span className="text-xs text-slate-400 ml-1">{data.province}</span>
                                         </div>
                                     </div>
                                     <div className="text-xs text-emerald-600 font-semibold mt-1 ml-7">
