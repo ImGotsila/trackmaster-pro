@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { Calendar, RefreshCw, Search, Package, ExternalLink, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Trash2 } from 'lucide-react';
+import AddressDetailModal from '../components/AddressDetailModal';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -9,6 +10,16 @@ const Dashboard: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Address Lookup State
+  const [selectedZipCode, setSelectedZipCode] = useState<string>('');
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+
+  const handleZipClick = (zip: string) => {
+    if (!zip) return;
+    setSelectedZipCode(zip);
+    setIsAddressModalOpen(true);
+  };
 
   // Get unique dates
   const uniqueDates = useMemo(() => {
@@ -315,9 +326,16 @@ const Dashboard: React.FC = () => {
                     )}
                   </td>
                   <td className="px-3 py-3 text-center">
-                    <span className="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-sm font-bold font-mono">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleZipClick(item.zipCode);
+                      }}
+                      className="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-sm font-bold font-mono hover:bg-indigo-100 hover:scale-105 transition-all cursor-pointer"
+                      title="คลิกเพื่อดูรายละเอียดพื้นที่"
+                    >
                       {item.zipCode}
-                    </span>
+                    </button>
                   </td>
                   <td className="px-3 py-3 text-center">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] md:text-xs font-bold border ${item.status === 'รับฝาก'
@@ -404,6 +422,12 @@ const Dashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      <AddressDetailModal
+        isOpen={isAddressModalOpen}
+        onClose={() => setIsAddressModalOpen(false)}
+        zipCode={selectedZipCode}
+      />
     </div>
   );
 };

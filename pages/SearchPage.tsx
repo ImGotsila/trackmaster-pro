@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { Search, Package, User, Phone, MapPin, Copy, ExternalLink, X, ShieldCheck, Lock, Eye, AlertCircle, CheckCircle2, History, Trash2, ChevronRight, ArrowLeft, Banknote, Calendar } from 'lucide-react';
+import AddressDetailModal from '../components/AddressDetailModal';
 import { Shipment } from '../types';
 
 const SearchPage: React.FC = () => {
@@ -16,6 +17,16 @@ const SearchPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [verifyInput, setVerifyInput] = useState('');
   const [verifyError, setVerifyError] = useState('');
+
+  // Address Lookup State
+  const [selectedZipCode, setSelectedZipCode] = useState<string>('');
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+
+  const handleZipClick = (zip: string) => {
+    if (!zip) return;
+    setSelectedZipCode(zip);
+    setIsAddressModalOpen(true);
+  };
 
   // History State
   const [historyIds, setHistoryIds] = useState<string[]>([]);
@@ -315,7 +326,13 @@ const SearchPage: React.FC = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-xs text-slate-400 font-bold uppercase mb-1">รหัสไปรษณีย์</p>
-                  <p className="text-2xl font-mono font-black text-slate-800 tracking-wider">{selectedShipment.zipCode}</p>
+                  <button
+                    onClick={() => handleZipClick(selectedShipment.zipCode)}
+                    className="text-2xl font-mono font-black text-slate-800 tracking-wider hover:text-indigo-600 transition-colors cursor-pointer text-left"
+                    title="คลิกเพื่อดูรายละเอียดพื้นที่"
+                  >
+                    {selectedShipment.zipCode}
+                  </button>
                 </div>
               </div>
 
@@ -597,6 +614,12 @@ const SearchPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      <AddressDetailModal
+        isOpen={isAddressModalOpen}
+        onClose={() => setIsAddressModalOpen(false)}
+        zipCode={selectedZipCode}
+      />
 
     </div>
   );
