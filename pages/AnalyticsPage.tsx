@@ -107,9 +107,9 @@ const AnalyticsPage: React.FC = () => {
         // Use zipCode string to generate a deterministic "seed"
         const seed = zipCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-        // Drastic Spread: ~80-150km (0.8 - 1.5 degrees)
+        // Drastic Spread: ~80-180km (0.8 - 1.8 degrees)
         const angle = (seed * 137.5) % 360;
-        const radius = 0.25 + ((seed * 53) % 100) / 100 * 1.2;
+        const radius = 0.3 + ((seed * 71) % 100) / 100 * 1.5;
 
         const offsetLat = Math.cos(angle * (Math.PI / 180)) * radius;
         const offsetLng = Math.sin(angle * (Math.PI / 180)) * radius;
@@ -266,9 +266,11 @@ const AnalyticsPage: React.FC = () => {
                 <div className="flex items-center space-x-3">
                     <MapIcon className="w-8 h-8 text-indigo-600" />
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">วิเคราะห์พื้นที่ (Geo Analytics)</h1>
+                        <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                            วิเคราะห์พิกัดรหัสไปรษณีย์ <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-mono">v2.1</span>
+                        </h1>
                         <p className="text-sm text-slate-500">
-                            ข้อมูลจาก Server (บันทึกเป็น JSON)
+                            แสดงพิกัดที่กระจายตัว (กด "อัปเดตข้อมูล" เพื่อประมวลผลใหม่)
                         </p>
                     </div>
                 </div>
@@ -287,8 +289,8 @@ const AnalyticsPage: React.FC = () => {
                         onClick={fetchAnalytics}
                         disabled={isLoading}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all border-2 ${isLoading
-                                ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
-                                : 'bg-white border-emerald-500 text-emerald-600 hover:bg-emerald-50 shadow-sm'
+                            ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+                            : 'bg-white border-emerald-500 text-emerald-600 hover:bg-emerald-50 shadow-sm'
                             }`}
                     >
                         <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -297,11 +299,11 @@ const AnalyticsPage: React.FC = () => {
                     <button
                         onClick={handleSave}
                         disabled={isSyncing || shipments.length === 0}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isSyncing || shipments.length === 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isSyncing || shipments.length === 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-md hover:shadow-lg scale-105'
                             }`}
                     >
                         <TrendingUp className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                        {isSyncing ? 'ประมวลผลใหม่...' : 'คำนวณ & บันทึก'}
+                        {isSyncing ? 'กำลังประมวลผล...' : 'อัปเดตข้อมูลใหม่'}
                     </button>
                     <div className="flex gap-4 text-sm font-semibold text-slate-600 border-l pl-4 border-slate-300">
                         <div className="flex items-center gap-2">
