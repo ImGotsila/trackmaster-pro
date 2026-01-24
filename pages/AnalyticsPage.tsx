@@ -103,10 +103,10 @@ const AnalyticsPage: React.FC = () => {
         // Use zipCode string to generate a deterministic "seed"
         const seed = zipCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-        // Spread radius: ~40-50km (0.4 degrees)
+        // Spread radius: Drastically increased to ~80-120km (0.8 - 1.2 degrees)
         const angle = (seed * 137.5) % 360;
-        // Minimum radius of 0.1 to avoid overlapping with province center
-        const radius = 0.1 + ((seed * 31) % 100) / 100 * 0.3;
+        // Minimum radius of 0.2 to clearly separate from center
+        const radius = 0.2 + ((seed * 47) % 100) / 100 * 0.8;
 
         const offsetLat = Math.cos(angle * (Math.PI / 180)) * radius;
         const offsetLng = Math.sin(angle * (Math.PI / 180)) * radius;
@@ -370,12 +370,12 @@ const AnalyticsPage: React.FC = () => {
                                 key={idx}
                                 center={[data.lat, data.lng]}
                                 pathOptions={{
-                                    color: '#4f46e5',
-                                    fillColor: '#6366f1',
-                                    fillOpacity: 0.6,
-                                    weight: 1
+                                    color: '#4338ca', // indigo-700
+                                    fillColor: '#6366f1', // indigo-500
+                                    fillOpacity: 0.5,
+                                    weight: 2
                                 }}
-                                radius={5 + (data.count / maxCount) * 40} // Dynamic radius: 5px to 45px
+                                radius={4 + (data.count / maxCount) * 25} // Smaller markers to avoid overlap: 4px to 29px
                                 eventHandlers={{
                                     click: () => setSelectedProvince(data.zipCode || data.province)
                                 }}
