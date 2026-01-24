@@ -60,6 +60,7 @@ db.serialize(() => {
         actionType TEXT, -- resend_original, new_production, cancelled
         notes TEXT,
         photoUrl TEXT,
+        newTrackingNumber TEXT,
         timestamp INTEGER NOT NULL,
         reportedBy TEXT
     )`);

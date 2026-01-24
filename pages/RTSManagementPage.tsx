@@ -50,6 +50,9 @@ const RTSManagementPage: React.FC = () => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [scanResult, setScanResult] = useState<string | null>(null);
+    const [trackHistory, setTrackHistory] = useState<RTSReport[]>([]);
+    const [newTrackingNumber, setNewTrackingNumber] = useState('');
+    const formRef = useRef<HTMLDivElement>(null);
 
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
@@ -101,11 +104,27 @@ const RTSManagementPage: React.FC = () => {
         // Quiet failure
     }
 
-    const handleFindShipment = (tracking: string) => {
+    const handleFindShipment = async (tracking: string) => {
         const found = shipments.find(s => s.trackingNumber === tracking || s.id === tracking);
         if (found) {
             setSelectedShipment(found);
-            // Auto scroll to form or switch to search if in scan
+            // Fetch history for this specific tracking
+            try {
+                const res = await fetch(`/api/rts/${found.trackingNumber}`);
+                if (res.ok) {
+                    const historyData = await res.json();
+                    setTrackHistory(historyData);
+                }
+            } catch (e) {
+                console.error("Failed to load track history", e);
+            }
+
+            // Scroll to form on mobile
+            if (window.innerWidth < 1024) {
+                formRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else {
+            alert(`ไม่พบข้อมูลพัสดุเลขที่: ${tracking}`);
         }
     };
 
@@ -130,6 +149,9 @@ const RTSManagementPage: React.FC = () => {
         formData.append('actionType', actionType);
         formData.append('notes', notes);
         formData.append('reportedBy', user?.username || 'unknown');
+        if (newTrackingNumber) {
+            formData.append('newTrackingNumber', newTrackingNumber);
+        }
         if (photo) {
             formData.append('photo', photo);
         }
@@ -148,6 +170,8 @@ const RTSManagementPage: React.FC = () => {
                 setPhoto(null);
                 setPreviewUrl(null);
                 setScanResult(null);
+                setNewTrackingNumber('');
+                setTrackHistory([]);
                 fetchHistory();
                 setActiveTab('history');
             } else {
@@ -340,6 +364,28 @@ const RTSManagementPage: React.FC = () => {
                                 </div>
                             </div>
 
+                            {/* Track History Mini View */}
+                            {trackHistory.length > 0 && (
+                                <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden">
+                                    <div className="bg-slate-100 px-4 py-2 text-[10px] font-black text-slate-500 uppercase flex items-center gap-2">
+                                        <History className="w-3 h-3" />
+                                        ประวัติการดำเนินการของแทร็กนี้
+                                    </div>
+                                    <div className="p-3 space-y-2 max-h-40 overflow-y-auto">
+                                        {trackHistory.map((h) => (
+                                            <div key={h.id} className="text-xs flex gap-2 border-b border-slate-100 last:border-0 pb-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1 shrink-0"></div>
+                                                <div>
+                                                    <p className="font-bold text-slate-700">{STATUS_OPTIONS.find(so => so.value === h.status)?.label || h.status} ({ACTION_OPTIONS.find(ao => ao.value === h.actionType)?.label || h.actionType})</p>
+                                                    <p className="text-[10px] text-slate-400">{new Date(h.timestamp).toLocaleString('th-TH')}</p>
+                                                    {h.notes && <p className="italic text-slate-500 mt-0.5 opacity-80">{h.notes}</p>}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Status Selection */}
                             <div className="space-y-3">
                                 <label className="text-xs font-black text-slate-500 uppercase tracking-widest">สถานะปัจจุบัน</label>
@@ -376,6 +422,26 @@ const RTSManagementPage: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
+
+                            {/* New Tracking Field (Conditionally shown) */}
+                            {(actionType === 'resend_original' || actionType === 'new_production') && (
+                                <div className="space-y-3 animate-slide-up">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center justify-between">
+                                        เลขพัสดุใหม่ (ถ้ามี)
+                                        <span className="text-[10px] text-indigo-500">ใส่กรณีมีการเปลี่ยน Tracking</span>
+                                    </label>
+                                    <div className="relative">
+                                        <Package className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                        <input
+                                            type="text"
+                                            value={newTrackingNumber}
+                                            onChange={(e) => setNewTrackingNumber(e.target.value)}
+                                            placeholder="กรอกเลขพัสดุใหม่..."
+                                            className="w-full pl-12 pr-4 py-3 bg-indigo-50/50 border border-indigo-100 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none font-mono font-bold"
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Photo Reporting */}
                             <div className="space-y-3">
@@ -433,7 +499,7 @@ const RTSManagementPage: React.FC = () => {
                             </button>
                         </form>
                     ) : (
-                        <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[400px]">
+                        <div ref={formRef} className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[400px]">
                             <div className="bg-white p-4 rounded-full shadow-sm mb-4">
                                 <Package className="w-12 h-12 text-slate-300" />
                             </div>

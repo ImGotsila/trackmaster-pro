@@ -63,9 +63,14 @@ app.post('/api/history', (req, res) => {
 const GS_URL = process.env.VITE_GOOGLE_SHEETS_SCRIPT_URL;
 
 app.get('/api/gsheets/get', async (req, res) => {
-    if (!GS_URL) return res.status(500).json({ error: 'GAS URL not configured on server' });
+    if (!GS_URL) {
+        console.error('Proxy Error: VITE_GOOGLE_SHEETS_SCRIPT_URL is not defined in server environment');
+        return res.status(500).json({ error: 'GAS URL not configured on server' });
+    }
     try {
+        console.log('Proxying GET to GAS:', GS_URL);
         const response = await fetch(`${GS_URL}?action=get`);
+        console.log('GAS response status:', response.status);
         const data = await response.json();
         res.json(data);
     } catch (err) {
@@ -201,22 +206,23 @@ app.post('/api/rts', upload.single('photo'), (req, res) => {
         customerName,
         actionType,
         notes,
-        reportedBy
+        reportedBy,
+        newTrackingNumber
     } = req.body;
 
     const photoUrl = req.file ? `/uploads/${req.file.filename}` : null;
     const id = uuidv4();
     const timestamp = Date.now();
 
-    const stmt = db.prepare(`INSERT INTO rts_reports (id, trackingNumber, status, customerName, actionType, notes, photoUrl, timestamp, reportedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    const stmt = db.prepare(`INSERT INTO rts_reports (id, trackingNumber, status, customerName, actionType, notes, photoUrl, newTrackingNumber, timestamp, reportedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
 
-    stmt.run(id, trackingNumber, status, customerName, actionType, notes, photoUrl, timestamp, reportedBy, function (err) {
+    stmt.run(id, trackingNumber, status, customerName, actionType, notes, photoUrl, newTrackingNumber, timestamp, reportedBy, function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ success: true, id: this.lastID, photoUrl });
 
         // Also log to history
         db.run(`INSERT INTO history_logs (id, action, timestamp, details, status) VALUES (?, ?, ?, ?, ?)`,
-            [uuidv4(), 'rts_report', timestamp, `Reported RTS for ${trackingNumber}: ${status}`, 'success']);
+            [uuidv4(), 'rts_report', timestamp, `Reported RTS for ${trackingNumber}: ${status}${newTrackingNumber ? ' (New Track: ' + newTrackingNumber + ')' : ''}`, 'success']);
     });
     stmt.finalize();
 });
