@@ -16,7 +16,7 @@ RUN cd server && npm install --production
 
 COPY server ./server
 # Copy env file
-COPY .env ./
+COPY .env.production .env
 
 # Copy Frontend Build
 COPY --from=build /app/dist ./dist
