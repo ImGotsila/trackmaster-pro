@@ -55,15 +55,26 @@ db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS rts_reports (
         id TEXT PRIMARY KEY,
         trackingNumber TEXT NOT NULL,
-        status TEXT NOT NULL,
+        status TEXT,
         customerName TEXT,
-        actionType TEXT, -- resend_original, new_production, cancelled
+        actionType TEXT,
         notes TEXT,
         photoUrl TEXT,
         newTrackingNumber TEXT,
         timestamp INTEGER NOT NULL,
         reportedBy TEXT
-    )`);
+    )`, (err) => {
+        if (!err) {
+            // Migration: Ensure newTrackingNumber column exists
+            db.run("ALTER TABLE rts_reports ADD COLUMN newTrackingNumber TEXT", (alterErr) => {
+                if (alterErr) {
+                    // Column likely already exists, ignore
+                } else {
+                    console.log("Migration: Added newTrackingNumber to rts_reports");
+                }
+            });
+        }
+    });
 
     // Seed Initial Data
     db.get(`SELECT COUNT(*) as count FROM users`, (err, row) => {

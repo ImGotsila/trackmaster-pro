@@ -54,6 +54,7 @@ const RTSManagementPage: React.FC = () => {
     const [newTrackingNumber, setNewTrackingNumber] = useState('');
     const formRef = useRef<HTMLDivElement>(null);
 
+    const [isScanning, setIsScanning] = useState(false);
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
     // Load History
@@ -73,31 +74,48 @@ const RTSManagementPage: React.FC = () => {
         fetchHistory();
     }, []);
 
-    // Setup Scanner
-    useEffect(() => {
-        if (activeTab === 'scan' && !scannerRef.current) {
-            scannerRef.current = new Html5QrcodeScanner(
+    const startScanner = () => {
+        if (!scannerRef.current) {
+            const scanner = new Html5QrcodeScanner(
                 "reader",
-                { fps: 10, qrbox: { width: 250, height: 250 } },
+                { fps: 15, qrbox: { width: 250, height: 250 } },
                 false
             );
-            scannerRef.current.render(onScanSuccess, onScanFailure);
+            scanner.render(onScanSuccess, onScanFailure);
+            scannerRef.current = scanner;
+            setIsScanning(true);
         }
+    };
 
-        return () => {
-            if (scannerRef.current) {
-                scannerRef.current.clear().catch(error => {
-                    console.error("Failed to clear scanner", error);
-                });
+    const stopScanner = async () => {
+        if (scannerRef.current) {
+            try {
+                await scannerRef.current.clear();
                 scannerRef.current = null;
+                setIsScanning(false);
+            } catch (e) {
+                console.error("Failed to clear scanner", e);
             }
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            stopScanner();
         };
+    }, []);
+
+    // Also stop if tab changes
+    useEffect(() => {
+        if (activeTab !== 'scan') {
+            stopScanner();
+        }
     }, [activeTab]);
 
     function onScanSuccess(decodedText: string) {
         setScanResult(decodedText);
         handleFindShipment(decodedText);
-        // Maybe play a sound?
+        stopScanner(); // Auto stop once found to clear UI
     }
 
     function onScanFailure(error: any) {
@@ -235,20 +253,59 @@ const RTSManagementPage: React.FC = () => {
                 {/* Left Side: Scanning or Search */}
                 <div className="space-y-6">
                     {activeTab === 'scan' && (
-                        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="font-black text-slate-800 flex items-center gap-2">
-                                    <Camera className="w-5 h-5 text-indigo-500" />
-                                    กล้องสแกนพัสดุ
-                                </h3>
-                                {scanResult && (
-                                    <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">
-                                        สแกนแล้ว: {scanResult}
-                                    </span>
-                                )}
-                            </div>
-                            <div id="reader" className="overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50"></div>
-                            <p className="text-xs text-slate-400 mt-4 text-center">ส่องกล้องไปที่บาร์โค้ดบนกล่องพัสดุ</p>
+                        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl overflow-hidden text-center">
+                            {!isScanning ? (
+                                <div className="py-12 space-y-6">
+                                    <div className="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                                        <Camera className="w-10 h-10" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-slate-800">พร้อมสแกนพัสดุ</h3>
+                                        <p className="text-slate-400 font-medium max-w-[250px] mx-auto mt-2">กดปุ่มด้านล่างเพื่อเริ่มเปิดกล้องสแกนบาร์โค้ดหน้ากล่อง</p>
+                                    </div>
+                                    <button
+                                        onClick={startScanner}
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-3xl font-black text-xl shadow-xl shadow-indigo-100 transition-all active:scale-95 flex items-center gap-3 mx-auto"
+                                    >
+                                        <QrCode className="w-6 h-6" />
+                                        เปิดกล้องสแกน
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="font-black text-slate-800 flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+                                            กำลังเปิดกล้อง...
+                                        </h3>
+                                        <button
+                                            onClick={stopScanner}
+                                            className="text-rose-500 text-sm font-bold hover:underline"
+                                        >
+                                            ปิดกล้อง
+                                        </button>
+                                    </div>
+                                    <div id="reader" className="overflow-hidden rounded-2xl border-4 border-slate-900 bg-slate-50 aspect-square"></div>
+                                </div>
+                            )}
+
+                            {scanResult && (
+                                <div className="mt-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                        <div className="text-left">
+                                            <p className="text-[10px] uppercase font-black text-emerald-600 tracking-widest">SCANNED RESULT</p>
+                                            <p className="font-mono font-bold text-slate-700">{scanResult}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setScanResult(null)}
+                                        className="p-1 hover:bg-emerald-100 rounded-lg"
+                                    >
+                                        <X className="w-4 h-4 text-emerald-400" />
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 

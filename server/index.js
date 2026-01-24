@@ -111,31 +111,30 @@ app.post('/api/gsheets/delete', async (req, res) => {
     }
 });
 
-// API: Save Analytics (JSON File)
-const analyticsPath = path.join(process.env.DB_PATH ? path.dirname(process.env.DB_PATH) : __dirname, 'analytics.json');
+// --- ANALYTICS DATABASE STORAGE ---
+app.post('/api/analytics', (req, res) => {
+    const data = JSON.stringify(req.body);
+    const timestamp = Date.now();
 
-app.post('/api/analytics/save', (req, res) => {
-    const data = req.body;
-    try {
-        fs.writeFileSync(analyticsPath, JSON.stringify(data, null, 2));
-        res.json({ success: true, path: analyticsPath });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    db.run(`INSERT INTO analytics_data (id, type, data, timestamp) 
+            VALUES (?, ?, ?, ?)`,
+        [uuidv4(), 'daily_summary', data, timestamp],
+        function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ success: true });
+        });
 });
 
-// API: Get Analytics (JSON File)
-app.get('/api/analytics/geo', (req, res) => {
-    try {
-        if (fs.existsSync(analyticsPath)) {
-            const data = JSON.parse(fs.readFileSync(analyticsPath, 'utf8'));
-            res.json(data);
-        } else {
-            res.json([]);
+app.get('/api/analytics', (req, res) => {
+    db.get(`SELECT data FROM analytics_data ORDER BY timestamp DESC LIMIT 1`, (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!row) return res.json(null);
+        try {
+            res.json(JSON.parse(row.data));
+        } catch (e) {
+            res.status(500).json({ error: 'Data corruption' });
         }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    });
 });
 
 // --- ADMIN & AUTH API ---

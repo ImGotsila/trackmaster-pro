@@ -1,7 +1,18 @@
 import { Shipment } from '../types';
 
 const SEARCH_ENDPOINT = import.meta.env.VITE_GOOGLE_SHEETS_SCRIPT_URL;
-const isDemoMode = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+const isDemoMode = typeof window !== 'undefined' && (
+    window.location.hostname.includes('github.io') ||
+    window.location.hostname.includes('localhost') && !SEARCH_ENDPOINT
+);
+
+// Helper to determine if we should use local NAS proxy or direct GAS
+const getServiceUrl = (action: string) => {
+    if (isDemoMode) {
+        return `${SEARCH_ENDPOINT}?action=${action}`;
+    }
+    return `/api/gsheets/${action}`;
+};
 
 export const GoogleSheetsService = {
     /**
@@ -9,7 +20,7 @@ export const GoogleSheetsService = {
      */
     async fetchShipments(): Promise<Shipment[]> {
         // Use backend proxy on NAS, direct fetch on Demo/Dev if needed
-        const url = isDemoMode ? `${SEARCH_ENDPOINT}?action=get` : '/api/gsheets/get';
+        const url = getServiceUrl('get');
 
         console.log('Fetching shipments from:', url);
 
@@ -38,7 +49,7 @@ export const GoogleSheetsService = {
      * Save (Append/Update) shipments to the Google Sheet
      */
     async saveShipments(shipments: Shipment[]): Promise<{ added: number; updated: number }> {
-        const url = isDemoMode ? `${SEARCH_ENDPOINT}?action=save` : '/api/gsheets/save';
+        const url = getServiceUrl('save');
 
         try {
             const response = await fetch(url, {
@@ -67,7 +78,7 @@ export const GoogleSheetsService = {
      * Delete a shipment by Tracking Number
      */
     async deleteShipment(trackingNumber: string): Promise<boolean> {
-        const url = isDemoMode ? `${SEARCH_ENDPOINT}?action=delete` : '/api/gsheets/delete';
+        const url = getServiceUrl('delete');
 
         try {
             // Send delete action
