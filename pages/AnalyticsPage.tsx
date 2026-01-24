@@ -98,18 +98,20 @@ const AnalyticsPage: React.FC = () => {
         return Array.from(stats.values()).sort((a, b) => b.count - a.count);
     };
 
-    // Generate unique coordinates for each zip code (Refined Spread v2.2)
+    // Generate unique coordinates for each zip code (Robust Spread v2.3)
     const getUniqueCoordinates = (zipCode: string, baseProvince: string) => {
-        const provinceInfo = thaiProvinces.find(p => p.province === baseProvince);
+        const cleanedProvince = baseProvince?.trim();
+        const provinceInfo = thaiProvinces.find(p => p.province.trim() === cleanedProvince);
         const baseLat = provinceInfo?.lat || 13.7563;
         const baseLng = provinceInfo?.lng || 100.5018;
 
         // Use zipCode as deterministic seed
         const seed = parseInt(zipCode) || zipCode.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
 
-        // Spread radius: 0.05 - 0.35 degrees (~5-40km)
+        // Spread radius: 0.1 - 0.5 degrees (~10-55km)
+        // Increased for better separation v2.3
         const angle = (seed * 137.5) % 360;
-        const radius = 0.05 + ((seed * 17) % 100) / 100 * 0.3;
+        const radius = 0.1 + ((seed * 23) % 100) / 100 * 0.4;
 
         const offsetLat = Math.cos(angle * (Math.PI / 180)) * radius;
         const offsetLng = Math.sin(angle * (Math.PI / 180)) * radius;
@@ -267,10 +269,10 @@ const AnalyticsPage: React.FC = () => {
                     <MapIcon className="w-8 h-8 text-indigo-600" />
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                            วิเคราะห์พิกัดรหัสไปรษณีย์ <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-mono">v2.2 (ล่าสุด)</span>
+                            วิเคราะห์พิกัดรหัสไปรษณีย์ <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-mono">v2.3 (Robust)</span>
                         </h1>
                         <p className="text-sm text-slate-500">
-                            ตำแหน่งหมุดกระจายตัว (กด "อัปเดตข้อมูลใหม่" เพื่อคำนวณ)
+                            ตำแหน่งหมุดกระจายตัว (กด "อัปเดตข้อมูลใหม่" หากข้อมูลไม่กระจาย)
                         </p>
                     </div>
                 </div>
@@ -299,7 +301,9 @@ const AnalyticsPage: React.FC = () => {
                     <button
                         onClick={handleSave}
                         disabled={isSyncing || shipments.length === 0}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-white transition-all ${isSyncing || shipments.length === 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-md hover:shadow-lg scale-105'
+                        className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-white transition-all shadow-lg hover:shadow-xl active:scale-95 ${isSyncing || shipments.length === 0
+                            ? 'bg-slate-400 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 animate-pulse-subtle'
                             }`}
                     >
                         <TrendingUp className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
