@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:18-alpine as build
+FROM node:18-slim as build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # Production Stage
-FROM node:18-alpine
+FROM node:18-slim
 WORKDIR /app
 
 # Copy Backend

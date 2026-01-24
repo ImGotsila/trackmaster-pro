@@ -59,7 +59,7 @@ Write-Host "input password for Step 4 (deploy):"
 # We use the absolute path /usr/local/bin/docker-compose because it's not in the sudo secure_path on Synology
 # We also FORCE remove the old container just in case it was created without compose (orphaned)
 # NOTE: We must also use the absolute path for 'docker' itself: /usr/local/bin/docker
-ssh ${User}@${HostIP} "cd ${RemotePath} && tar -xzf project.tar.gz && echo '${SudoPass}' | sudo -S /usr/local/bin/docker rm -f trackmaster-pro || true && echo '${SudoPass}' | sudo -S /usr/local/bin/docker-compose up -d --build"
+ssh ${User}@${HostIP} "cd ${RemotePath} && tar -xzf project.tar.gz && echo '${SudoPass}' | sudo -S /usr/local/bin/docker stop trackmaster-pro || true && echo '${SudoPass}' | sudo -S /usr/local/bin/docker rm trackmaster-pro || true && echo '${SudoPass}' | sudo -S /usr/local/bin/docker build --no-cache -t trackmaster-pro . && echo '${SudoPass}' | sudo -S /usr/local/bin/docker run -d --name trackmaster-pro -p 3000:3000 --restart unless-stopped -v ${RemotePath}/data:/app/data trackmaster-pro"
 if ($LASTEXITCODE -ne 0) { 
     Write-Error "Failed to deploy. Check logs above."
     exit 1 
