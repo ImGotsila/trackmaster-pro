@@ -1,10 +1,26 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
-import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { thaiProvinces } from '../data/thaiProvinces';
 import { getAddressByZipCode } from '../services/AddressService';
-import { Map as MapIcon, Info, TrendingUp, DollarSign } from 'lucide-react';
+import { Map as MapIcon, Info, TrendingUp, DollarSign, Search } from 'lucide-react';
+
+// Helper component to control map zoom/pan
+const MapController: React.FC<{ selectedZip: string | null, data: any[] }> = ({ selectedZip, data }) => {
+    const map = useMap();
+
+    useEffect(() => {
+        if (selectedZip && data.length > 0) {
+            const point = data.find(p => p.zipCode === selectedZip);
+            if (point) {
+                map.setView([point.lat, point.lng], 12, { animate: true });
+            }
+        }
+    }, [selectedZip, data, map]);
+
+    return null;
+};
 
 const AnalyticsPage: React.FC = () => {
     const { shipments } = useData();
@@ -87,10 +103,10 @@ const AnalyticsPage: React.FC = () => {
         // Use zipCode string to generate a deterministic "seed"
         const seed = zipCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-        // Spread radius: ~15-20km (0.15 degrees)
-        // Use golden angle or similar to avoid overlaps/patterns
+        // Spread radius: ~40-50km (0.4 degrees)
         const angle = (seed * 137.5) % 360;
-        const radius = ((seed * 31) % 100) / 100 * 0.2; // 0 to 0.2 degrees spread
+        // Minimum radius of 0.1 to avoid overlapping with province center
+        const radius = 0.1 + ((seed * 31) % 100) / 100 * 0.3;
 
         const offsetLat = Math.cos(angle * (Math.PI / 180)) * radius;
         const offsetLng = Math.sin(angle * (Math.PI / 180)) * radius;
@@ -107,7 +123,8 @@ const AnalyticsPage: React.FC = () => {
         setProgress({ current: 0, total: 100, status: 'กำลังโหลดข้อมูลจาก Server...' });
 
         try {
-            const res = await fetch('/api/analytics/geo');
+            // Add cache buster to ensure fresh data
+            const res = await fetch(`/api/analytics/geo?t=${Date.now()}`);
 
             if (!res.ok) {
                 throw new Error(`Server responded with ${res.status}`);
@@ -330,6 +347,9 @@ const AnalyticsPage: React.FC = () => {
                         style={{ height: '100%', width: '100%' }}
                         scrollWheelZoom={true}
                     >
+                        {/* Auto-zoom helper component */}
+                        <MapController selectedZip={selectedProvince} data={provinceData} />
+
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
