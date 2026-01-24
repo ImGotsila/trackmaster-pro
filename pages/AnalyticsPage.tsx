@@ -98,18 +98,18 @@ const AnalyticsPage: React.FC = () => {
         return Array.from(stats.values()).sort((a, b) => b.count - a.count);
     };
 
-    // Generate unique coordinates for each zip code (Deterministic spread)
+    // Generate unique coordinates for each zip code (Refined Spread v2.2)
     const getUniqueCoordinates = (zipCode: string, baseProvince: string) => {
         const provinceInfo = thaiProvinces.find(p => p.province === baseProvince);
         const baseLat = provinceInfo?.lat || 13.7563;
         const baseLng = provinceInfo?.lng || 100.5018;
 
-        // Use zipCode string to generate a deterministic "seed"
-        const seed = zipCode.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        // Use zipCode as deterministic seed
+        const seed = parseInt(zipCode) || zipCode.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
 
-        // Drastic Spread: ~80-180km (0.8 - 1.8 degrees)
+        // Spread radius: 0.05 - 0.35 degrees (~5-40km)
         const angle = (seed * 137.5) % 360;
-        const radius = 0.3 + ((seed * 71) % 100) / 100 * 1.5;
+        const radius = 0.05 + ((seed * 17) % 100) / 100 * 0.3;
 
         const offsetLat = Math.cos(angle * (Math.PI / 180)) * radius;
         const offsetLng = Math.sin(angle * (Math.PI / 180)) * radius;
@@ -267,10 +267,10 @@ const AnalyticsPage: React.FC = () => {
                     <MapIcon className="w-8 h-8 text-indigo-600" />
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                            วิเคราะห์พิกัดรหัสไปรษณีย์ <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-mono">v2.1</span>
+                            วิเคราะห์พิกัดรหัสไปรษณีย์ <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-mono">v2.2 (ล่าสุด)</span>
                         </h1>
                         <p className="text-sm text-slate-500">
-                            แสดงพิกัดที่กระจายตัว (กด "อัปเดตข้อมูล" เพื่อประมวลผลใหม่)
+                            ตำแหน่งหมุดกระจายตัว (กด "อัปเดตข้อมูลใหม่" เพื่อคำนวณ)
                         </p>
                     </div>
                 </div>
@@ -381,9 +381,9 @@ const AnalyticsPage: React.FC = () => {
                                         color: selectedProvince === data.zipCode ? '#ef4444' : '#4338ca',
                                         fillColor: selectedProvince === data.zipCode ? '#f87171' : '#6366f1',
                                         fillOpacity: 0.5,
-                                        weight: selectedProvince === data.zipCode ? 3 : 2
+                                        weight: selectedProvince === data.zipCode ? 3 : 1
                                     }}
-                                    radius={4 + (data.count / maxCount) * 20}
+                                    radius={5 + Math.sqrt(data.count) * 3} // Better scaling using sqrt: 5px to ~25px
                                     eventHandlers={{
                                         click: () => {
                                             setSelectedProvince(data.zipCode);
