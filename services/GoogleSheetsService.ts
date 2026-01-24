@@ -7,6 +7,7 @@ export const GoogleSheetsService = {
      * Fetch all shipments from the Google Sheet
      */
     async fetchShipments(): Promise<Shipment[]> {
+        console.log('Fetching shipments from:', SEARCH_ENDPOINT);
         if (!SEARCH_ENDPOINT) {
             console.warn('Google Sheets URL is not configured.');
             return [];

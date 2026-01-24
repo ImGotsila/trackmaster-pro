@@ -3,5 +3,5 @@ server/node_modules
 .git
 dist
 project.tar.gz
-.env
+# .env (Uncommented so build can see .env.production)
 .DS_Store
