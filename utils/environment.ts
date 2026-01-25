@@ -10,6 +10,16 @@ export const isDemoMode = (): boolean => {
 };
 
 export const getApiUrl = (endpoint: string): string => {
+    // 1. Check if a custom API base is defined (e.g. from Vite env or runtime config)
+    const customApiBase = import.meta.env.VITE_API_BASE_URL;
+
+    if (customApiBase) {
+        // If we have a custom base (e.g. "https://my-nas.com"), prepend it
+        const cleanBase = customApiBase.replace(/\/$/, '');
+        const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+        return `${cleanBase}${cleanEndpoint}`;
+    }
+
     if (isDemoMode()) {
         // In demo mode, some endpoints might point to mock data or specialized handlers
         // For Google Sheets, we might go direct if allowed, or fail gracefully

@@ -11,7 +11,7 @@ import { TrendingUp, BarChart3, PieChart as PieChartIcon, Activity, DollarSign, 
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 
 const VisualMetricsPage: React.FC = () => {
-    const { shipments } = useData();
+    const { filteredShipments } = useData();
     const { settings } = useSettings();
     const codFeePercent = settings.cod_fee || 0;
 
@@ -20,7 +20,7 @@ const VisualMetricsPage: React.FC = () => {
         const map = new Map<string, { date: string, count: number, cod: number }>();
 
         // Get last 15 days of activity
-        shipments.forEach(s => {
+        filteredShipments.forEach(s => {
             const date = s.importDate;
             const existing = map.get(date);
             if (existing) {
@@ -34,35 +34,35 @@ const VisualMetricsPage: React.FC = () => {
         return Array.from(map.values())
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .slice(-15);
-    }, [shipments]);
+    }, [filteredShipments]);
 
     // 2. Courier Distribution (Pie Chart)
     const courierData = useMemo(() => {
         const map = new Map<string, number>();
-        shipments.forEach(s => {
+        filteredShipments.forEach(s => {
             map.set(s.courier, (map.get(s.courier) || 0) + 1);
         });
         return Array.from(map.entries())
             .map(([name, value]) => ({ name, value }))
             .sort((a, b) => b.value - a.value);
-    }, [shipments]);
+    }, [filteredShipments]);
 
     // 3. Top 10 Areas by Volume (Bar Chart)
     const areaData = useMemo(() => {
         const map = new Map<string, number>();
-        shipments.forEach(s => {
+        filteredShipments.forEach(s => {
             if (s.zipCode) map.set(s.zipCode, (map.get(s.zipCode) || 0) + 1);
         });
         return Array.from(map.entries())
             .sort((a, b) => b[1] - a[1])
             .slice(0, 10)
             .map(([zip, count]) => ({ zip, count }));
-    }, [shipments]);
+    }, [filteredShipments]);
 
     // 4. Performance Metrics (Line Chart - Avg COD vs Avg Cost)
     const performanceData = useMemo(() => {
         const map = new Map<string, { date: string, totalCOD: number, totalCost: number, count: number }>();
-        shipments.forEach(s => {
+        filteredShipments.forEach(s => {
             const date = s.importDate;
             const existing = map.get(date);
             if (existing) {
@@ -88,11 +88,11 @@ const VisualMetricsPage: React.FC = () => {
                     avgCost: Math.round(avgCost + avgFee)
                 };
             });
-    }, [shipments, codFeePercent]);
+    }, [filteredShipments, codFeePercent]);
 
-    const totalCOD = shipments.reduce((sum, s) => sum + (s.codAmount || 0), 0);
-    const totalCost = shipments.reduce((sum, s) => sum + (s.shippingCost || 0), 0);
-    const avgCOD = shipments.length > 0 ? totalCOD / shipments.length : 0;
+    const totalCOD = filteredShipments.reduce((sum, s) => sum + (s.codAmount || 0), 0);
+    const totalCost = filteredShipments.reduce((sum, s) => sum + (s.shippingCost || 0), 0);
+    const avgCOD = filteredShipments.length > 0 ? totalCOD / filteredShipments.length : 0;
 
     return (
         <div className="space-y-6 animate-fade-in pb-10">
@@ -116,7 +116,7 @@ const VisualMetricsPage: React.FC = () => {
                         <Package className="w-20 h-20 text-indigo-600" />
                     </div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">จำนวนส่งทั้งหมด</p>
-                    <h3 className="text-3xl font-black text-slate-800 tracking-tighter">{shipments.length.toLocaleString()}</h3>
+                    <h3 className="text-3xl font-black text-slate-800 tracking-tighter">{filteredShipments.length.toLocaleString()}</h3>
                     <div className="flex items-center gap-1 mt-2 text-indigo-600 font-bold text-xs bg-indigo-50 w-fit px-2 py-0.5 rounded-full">
                         <Activity className="w-3 h-3" />
                         <span>Active Units</span>
@@ -152,7 +152,7 @@ const VisualMetricsPage: React.FC = () => {
                         <MapPin className="w-20 h-20 text-amber-600" />
                     </div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">พื้นที่ครอบคลุม</p>
-                    <h3 className="text-3xl font-black text-amber-600 tracking-tighter">{new Set(shipments.map(s => s.zipCode)).size}</h3>
+                    <h3 className="text-3xl font-black text-amber-600 tracking-tighter">{new Set(filteredShipments.map(s => s.zipCode)).size}</h3>
                     <div className="flex items-center gap-1 mt-2 text-amber-600 font-bold text-xs bg-amber-50 w-fit px-2 py-0.5 rounded-full">
                         <TrendingUp className="w-3 h-3" />
                         <span>Zip Codes</span>

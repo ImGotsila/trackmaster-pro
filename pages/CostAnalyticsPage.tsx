@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import { thaiProvinces } from '../data/thaiProvinces';
 import { getAddressByZipCode } from '../services/AddressService';
 import { Map as MapIcon, Info, TrendingUp, DollarSign, Search, RefreshCw, MapPin, Filter, ArrowUpRight, Target, Wallet } from 'lucide-react';
+import Pagination from '../components/Pagination';
 
 // Helper component to control map zoom/pan AND track zoom level
 const MapController: React.FC<{
@@ -31,7 +32,7 @@ const MapController: React.FC<{
 };
 
 const CostAnalyticsPage: React.FC = () => {
-    const { shipments } = useData();
+    const { filteredShipments } = useData();
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
     const [provinceData, setProvinceData] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -40,6 +41,8 @@ const CostAnalyticsPage: React.FC = () => {
     const [progress, setProgress] = useState({ current: 0, total: 0, status: '' });
     const [currentZoom, setCurrentZoom] = useState(6);
     const [costFilter, setCostFilter] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 20;
 
     // Track chosen coordinate for auto-zoom
     const [focusPoint, setFocusPoint] = useState<{ lat: number, lng: number } | null>(null);
@@ -54,13 +57,13 @@ const CostAnalyticsPage: React.FC = () => {
             totalCost: number;
             avgCost: number;
         }>();
-        const total = shipments.length;
+        const total = filteredShipments.length;
         const CHUNK_SIZE = 150;
 
         setProgress({ current: 0, total, status: 'วิเคราะห์ข้อมูลค่าจัดส่ง...' });
 
         for (let i = 0; i < total; i += CHUNK_SIZE) {
-            const chunk = shipments.slice(i, Math.min(i + CHUNK_SIZE, total));
+            const chunk = filteredShipments.slice(i, Math.min(i + CHUNK_SIZE, total));
             await new Promise(resolve => setTimeout(resolve, 0));
 
             chunk.forEach(s => {
@@ -152,14 +155,39 @@ const CostAnalyticsPage: React.FC = () => {
         }
     };
 
-    useEffect(() => { fetchAnalyticsData(); }, []);
+    useEffect(() => {
+        if (filteredShipments.length > 0) {
+            const runAnalysis = async () => {
+                setIsLoading(true);
+                try {
+                    // Always compute live to match Dashboard data
+                    const data = await computeAnalytics();
+                    const mappedData = data.map((item: any) => {
+                        const coords = getUniqueCoordinates(item.zipCode, item.province);
+                        const avgCost = item.totalCost / Math.max(1, item.count);
+                        return { ...item, ...coords, avgCost };
+                    });
+                    setProvinceData(mappedData.filter((p: any) => p.count > 0));
+                    setCurrentPage(1);
+                } catch (e) {
+                    console.error(e);
+                } finally {
+                    setIsLoading(false);
+                    setProgress({ current: 0, total: 0, status: '' });
+                }
+            };
+            runAnalysis();
+        } else {
+            setProvinceData([]);
+        }
+    }, [filteredShipments]);
 
     const maxAvgCost = Math.max(...provinceData.map(p => p.avgCost), 1);
 
     return (
         <div className="space-y-6 animate-fade-in h-[calc(100vh-100px)] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200 shrink-0">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-2 border-b border-slate-200 shrink-0 gap-4">
                 <div className="flex items-center space-x-3">
                     <div className="bg-indigo-600 p-2 rounded-lg text-white">
                         <DollarSign className="w-6 h-6" />
@@ -168,15 +196,15 @@ const CostAnalyticsPage: React.FC = () => {
                         <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
                             วิเคราะห์ค่าจัดส่งตามพื้นที่ <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-mono">Heatmap</span>
                         </h1>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-slate-500 hidden md:block">
                             วิเคราะห์ความคุ้มค่าและต้นทุนค่าขนส่งรายรหัสไปรษณีย์
                         </p>
                     </div>
                 </div>
-                <div className="flex gap-4 items-center">
+                <div className="flex gap-2 md:gap-4 items-center flex-wrap w-full md:w-auto">
                     <div className="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-lg border border-slate-200">
                         <Filter className="w-4 h-4 text-slate-500" />
-                        <span className="text-xs font-bold text-slate-600">ค่าส่งเฉลี่ย {'>'}</span>
+                        <span className="text-xs font-bold text-slate-600 hidden md:inline">ค่าส่งเฉลี่ย {'>'}</span>
                         <select
                             value={costFilter}
                             onChange={(e) => setCostFilter(Number(e.target.value))}
@@ -188,29 +216,52 @@ const CostAnalyticsPage: React.FC = () => {
                             <option value={80}>฿80+</option>
                         </select>
                     </div>
-                    <div className="relative">
+                    <div className="relative flex-1 md:flex-none">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <input
                             type="text"
-                            placeholder="ค้นหารหัสไปรษณีย์..."
+                            placeholder="ค้นหารหัส..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-56 shadow-sm"
+                            className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-56 shadow-sm"
                         />
                     </div>
                     <button
-                        onClick={fetchAnalyticsData}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold bg-white border-2 border-indigo-500 text-indigo-600 hover:bg-indigo-50 shadow-sm transition-all"
+                        onClick={() => {
+                            // Manual Refresh
+                            if (filteredShipments.length > 0) {
+                                const runAnalysis = async () => {
+                                    setIsLoading(true);
+                                    try {
+                                        const data = await computeAnalytics();
+                                        const mappedData = data.map((item: any) => {
+                                            const coords = getUniqueCoordinates(item.zipCode, item.province);
+                                            const avgCost = item.totalCost / Math.max(1, item.count);
+                                            return { ...item, ...coords, avgCost };
+                                        });
+                                        setProvinceData(mappedData.filter((p: any) => p.count > 0));
+                                        setCurrentPage(1);
+                                    } catch (e) {
+                                        console.error(e);
+                                    } finally {
+                                        setIsLoading(false);
+                                        setProgress({ current: 0, total: 0, status: '' });
+                                    }
+                                };
+                                runAnalysis();
+                            }
+                        }}
+                        className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg font-bold bg-white border-2 border-indigo-500 text-indigo-600 hover:bg-indigo-50 shadow-sm transition-all"
                     >
                         <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-                        {isLoading ? '...' : 'รีเฟรช'}
+                        <span className="hidden md:inline">{isLoading ? '...' : 'รีเฟรช'}</span>
                     </button>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0">
-                <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden relative">
+            <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0 overflow-hidden lg:overflow-visible">
+                <div className="w-full lg:flex-1 h-[400px] lg:h-auto bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden relative z-0 shrink-0">
                     <MapContainer center={[13.7563, 100.5018]} zoom={6} style={{ height: '100%', width: '100%' }}>
                         <MapController selectedZip={selectedProvince} data={provinceData} onZoomChange={setCurrentZoom} />
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -279,7 +330,8 @@ const CostAnalyticsPage: React.FC = () => {
                         </div>
 
                         {provinceData
-                            .filter(p => !searchTerm || p.zipCode.includes(searchTerm))
+                            .filter(p => (!searchTerm || p.zipCode.includes(searchTerm)) && p.avgCost >= costFilter)
+                            .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
                             .map((data, idx) => (
                                 <div
                                     key={idx}
@@ -298,7 +350,22 @@ const CostAnalyticsPage: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
+
+                        {provinceData.filter(p => (!searchTerm || p.zipCode.includes(searchTerm)) && p.avgCost >= costFilter).length === 0 && (
+                            <div className="text-center py-10 text-slate-400">
+                                <p className="text-sm font-bold">ไม่พบข้อมูลพื้นที่</p>
+                            </div>
+                        )}
                     </div>
+
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={Math.ceil(provinceData.filter(p => (!searchTerm || p.zipCode.includes(searchTerm)) && p.avgCost >= costFilter).length / ITEMS_PER_PAGE)}
+                        onPageChange={setCurrentPage}
+                        totalItems={provinceData.filter(p => (!searchTerm || p.zipCode.includes(searchTerm)) && p.avgCost >= costFilter).length}
+                        itemsPerPage={ITEMS_PER_PAGE}
+                        compact={true}
+                    />
                 </div>
             </div>
         </div>

@@ -14,6 +14,12 @@ interface DataContextType {
   deleteShipment: (id: string) => Promise<void>;
   addLog: (action: ActionLog['action'], details: string, status?: 'success' | 'error') => void;
   isLoading: boolean;
+  addRTSReport: (report: any) => Promise<void>;
+  refreshData: () => Promise<void>;
+  startDate: string | null;
+  endDate: string | null;
+  setDateRange: (start: string | null, end: string | null) => void;
+  filteredShipments: Shipment[];
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -25,6 +31,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [syncProgress, setSyncProgress] = useState<Record<string, number>>({});
   const [historyLogs, setHistoryLogs] = useState<ActionLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
+
+  const setDateRange = (start: string | null, end: string | null) => {
+    setStartDate(start);
+    setEndDate(end);
+  };
 
   const isDemoMode = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
 
@@ -126,6 +139,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return [...localItems, ...serverItemsFiltered].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   }, [serverShipments, localBatches]);
+
+  const filteredShipments = useMemo(() => {
+    if (!startDate && !endDate) return shipments;
+
+    return shipments.filter(s => {
+      const shipDate = s.importDate;
+      if (!shipDate) return false;
+
+      if (startDate && shipDate < startDate) return false;
+      if (endDate && shipDate > endDate) return false;
+
+      return true;
+    });
+  }, [shipments, startDate, endDate]);
 
   const addShipments = (newShipments: Shipment[]) => {
     importShipments(newShipments, 'skip');
@@ -361,8 +388,63 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // RTS API Support
+  const addRTSReport = async (report: any) => {
+    if (!isDemoMode) {
+      const formData = new FormData();
+      formData.append('trackingNumber', report.trackingNumber);
+      formData.append('status', report.status);
+      formData.append('customerName', report.customerName || '');
+      formData.append('actionType', report.actionType);
+      formData.append('notes', report.notes);
+      formData.append('reportedBy', report.reportedBy);
+
+      if (report.productCode) {
+        formData.append('productCode', report.productCode);
+      }
+      if (report.newTrackingNumber) {
+        formData.append('newTrackingNumber', report.newTrackingNumber);
+      }
+      if (report.photo) {
+        formData.append('photo', report.photo);
+      }
+
+      const res = await fetch('/api/rts', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) throw new Error('Failed to save RTS report');
+
+      // Log action
+      addLog('sync', `Reported issue for ${report.trackingNumber}: ${report.actionType}`, 'success');
+    } else {
+      // Demo mode simulation
+      await new Promise(resolve => setTimeout(resolve, 800));
+      addLog('sync', `Demo: Reported issue for ${report.trackingNumber}`, 'success');
+    }
+  };
+
   return (
-    <DataContext.Provider value={{ shipments, localBatches, syncingBatches, historyLogs, syncProgress, addShipments, importShipments, syncBatch, deleteShipment, addLog, isLoading }}>
+    <DataContext.Provider value={{
+      shipments,
+      filteredShipments,
+      localBatches,
+      syncingBatches,
+      historyLogs,
+      syncProgress,
+      addShipments,
+      importShipments,
+      syncBatch,
+      deleteShipment,
+      addLog,
+      isLoading,
+      addRTSReport,
+      refreshData: loadServerData,
+      startDate,
+      endDate,
+      setDateRange
+    }}>
       {children}
     </DataContext.Provider>
   );

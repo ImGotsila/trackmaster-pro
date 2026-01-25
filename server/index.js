@@ -8,14 +8,25 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('./database');
 
 const app = express();
-// Load .env from root (two levels up because we are in /app/server in docker, but logic below handles it)
-// In Docker, .env will be at /app/.env. server is at /app/server.
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+// Load .env from root
+const envPath = path.join(__dirname, '../.env');
+const envResult = require('dotenv').config({ path: envPath });
 
-const PORT = process.env.PORT || 3000;
+if (envResult.error) {
+    console.warn('Warning: Could not load .env file from', envPath);
+} else {
+    console.log('.env file loaded successfully from', envPath);
+}
+
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
+
+// Root API Info
+app.get('/api', (req, res) => {
+    res.json({ status: 'ok', message: 'TrackMaster Pro API', version: '1.0.0' });
+});
 
 const uploadBaseDir = process.env.DB_PATH ? path.dirname(process.env.DB_PATH) : __dirname;
 const uploadDir = path.join(uploadBaseDir, 'uploads');
@@ -73,13 +84,30 @@ app.get('/api/gsheets/get', async (req, res) => {
     }
     try {
         console.log('Proxying GET to GAS:', GS_URL);
-        const response = await fetch(`${GS_URL}?action=get`);
+
+        // Add 60s timeout for large datasets
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 60000);
+
+        const response = await fetch(`${GS_URL}?action=get`, { signal: controller.signal });
+        clearTimeout(timeout);
+
         console.log('GAS response status:', response.status);
+
+        if (!response.ok) {
+            throw new Error(`GAS responded with ${response.status} ${response.statusText}`);
+        }
+
         const data = await response.json();
+        console.log(`[Proxy] Received ${data?.data?.length || 0} items from GAS`);
         res.json(data);
     } catch (err) {
         console.error('Proxy GET error:', err);
-        res.status(502).json({ error: 'Failed to fetch from Google Sheets', details: err.message });
+        if (err.name === 'AbortError') {
+            res.status(504).json({ error: 'Timeout fetching from Google Sheets (60s limit)' });
+        } else {
+            res.status(502).json({ error: 'Failed to fetch from Google Sheets', details: err.message });
+        }
     }
 });
 
@@ -130,6 +158,19 @@ app.post('/api/analytics', (req, res) => {
 });
 
 app.get('/api/analytics', (req, res) => {
+    db.get(`SELECT data FROM analytics_data ORDER BY timestamp DESC LIMIT 1`, (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!row) return res.json(null);
+        try {
+            res.json(JSON.parse(row.data));
+        } catch (e) {
+            res.status(500).json({ error: 'Data corruption' });
+        }
+    });
+});
+
+// Alias for Cost Analytics Page
+app.get('/api/analytics/geo', (req, res) => {
     db.get(`SELECT data FROM analytics_data ORDER BY timestamp DESC LIMIT 1`, (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!row) return res.json(null);
@@ -199,6 +240,53 @@ app.delete('/api/users/:id', (req, res) => {
     });
 });
 
+// --- PRODUCTS API --- (NEW)
+app.get('/api/products', (req, res) => {
+    db.all(`SELECT * FROM products ORDER BY updated_at DESC`, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+app.post('/api/products', (req, res) => {
+    const { sku, name, type, size_code, width_cm, height_cm, width_inch, height_inch, conditions } = req.body;
+    const id = uuidv4();
+    const now = Date.now();
+
+    const stmt = db.prepare(`INSERT INTO products (id, sku, name, type, size_code, width_cm, height_cm, width_inch, height_inch, conditions, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    stmt.run(id, sku, name, type, size_code, width_cm, height_cm, width_inch, height_inch, conditions, now, function (err) {
+        if (err) {
+            // Check for unique constraint violation (SKU)
+            if (err.message.includes('UNIQUE constraint failed')) {
+                return res.status(400).json({ error: 'SKU already exists' });
+            }
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ success: true, id });
+    });
+    stmt.finalize();
+});
+
+app.put('/api/products/:id', (req, res) => {
+    const { sku, name, type, size_code, width_cm, height_cm, width_inch, height_inch, conditions } = req.body;
+    const now = Date.now();
+    const id = req.params.id;
+
+    const stmt = db.prepare(`UPDATE products SET sku=?, name=?, type=?, size_code=?, width_cm=?, height_cm=?, width_inch=?, height_inch=?, conditions=?, updated_at=? WHERE id=?`);
+    stmt.run(sku, name, type, size_code, width_cm, height_cm, width_inch, height_inch, conditions, now, id, function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+    });
+    stmt.finalize();
+});
+
+app.delete('/api/products/:id', (req, res) => {
+    db.run(`DELETE FROM products WHERE id = ?`, [req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+    });
+});
+
 // --- RTS & QUALITY CHECK API ---
 
 // API: Save RTS Report
@@ -208,6 +296,7 @@ app.post('/api/rts', upload.single('photo'), (req, res) => {
         status,
         customerName,
         actionType,
+        productCode,
         notes,
         reportedBy,
         newTrackingNumber
@@ -217,15 +306,15 @@ app.post('/api/rts', upload.single('photo'), (req, res) => {
     const id = uuidv4();
     const timestamp = Date.now();
 
-    const stmt = db.prepare(`INSERT INTO rts_reports (id, trackingNumber, status, customerName, actionType, notes, photoUrl, newTrackingNumber, timestamp, reportedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    const stmt = db.prepare(`INSERT INTO rts_reports (id, trackingNumber, status, customerName, actionType, productCode, notes, photoUrl, newTrackingNumber, timestamp, reportedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
 
-    stmt.run(id, trackingNumber, status, customerName, actionType, notes, photoUrl, newTrackingNumber, timestamp, reportedBy, function (err) {
+    stmt.run(id, trackingNumber, status, customerName, actionType, productCode, notes, photoUrl, newTrackingNumber, timestamp, reportedBy, function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ success: true, id: this.lastID, photoUrl });
 
         // Also log to history
         db.run(`INSERT INTO history_logs (id, action, timestamp, details, status) VALUES (?, ?, ?, ?, ?)`,
-            [uuidv4(), 'rts_report', timestamp, `Reported RTS for ${trackingNumber}: ${status}${newTrackingNumber ? ' (New Track: ' + newTrackingNumber + ')' : ''}`, 'success']);
+            [uuidv4(), 'rts_report', timestamp, `Reported RTS for ${trackingNumber} (${actionType}): ${status}`, 'success']);
     });
     stmt.finalize();
 });
@@ -246,6 +335,283 @@ app.get('/api/rts/:trackingNumber', (req, res) => {
     });
 });
 
+// --- RTS MASTER API (Spreadsheet Style) ---
+
+// API: Get RTS Master Records (Filtered by Month)
+app.get('/api/rts/master', (req, res) => {
+    const { month } = req.query;
+    let sql = "SELECT * FROM rts_master";
+    let params = [];
+
+    if (month && month !== 'all') {
+        sql += " WHERE monthYear = ?";
+        params.push(month);
+    }
+
+    sql += " ORDER BY updatedAt DESC, id ASC";
+
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.error('[RTS] Fetch Error:', err);
+            return res.status(500).json({ error: err.message });
+        }
+        console.log(`[RTS] Found ${rows.length} records`);
+        res.json(rows);
+    });
+});
+
+// API: Import/Upsert RTS Master Records
+app.post('/api/rts/import', (req, res) => {
+    const { records, monthYear } = req.body;
+    if (!records || !Array.isArray(records)) {
+        return res.status(400).json({ error: 'Invalid records format' });
+    }
+
+    const timestamp = Date.now();
+    let successCount = 0;
+
+    db.serialize(() => {
+        db.run("BEGIN TRANSACTION");
+
+        const stmt = db.prepare(`INSERT INTO rts_master (
+            id, shipmentId, dateCode, facebookName, customerName, customerAddress, customerPhone, 
+            pageCode, originalCod, originalTt, resendCod, resendTt, totalAmount, 
+            followUpStatus, finalStatus, monthYear, notes, product, isMatched, updatedAt
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET 
+            shipmentId=excluded.shipmentId,
+            facebookName=excluded.facebookName,
+            customerAddress=excluded.customerAddress,
+            customerPhone=excluded.customerPhone,
+            pageCode=excluded.pageCode,
+            originalCod=excluded.originalCod,
+            originalTt=excluded.originalTt,
+            resendCod=excluded.resendCod,
+            resendTt=excluded.resendTt,
+            totalAmount=excluded.totalAmount,
+            followUpStatus=excluded.followUpStatus,
+            finalStatus=excluded.finalStatus,
+            monthYear=excluded.monthYear,
+            notes=excluded.notes,
+            product=excluded.product,
+            updatedAt=excluded.updatedAt,
+            isMatched=excluded.isMatched
+        `);
+
+        records.forEach(r => {
+            stmt.run(
+                r.id, r.shipmentId || null, r.dateCode, r.facebookName, r.customerName, r.customerAddress, r.customerPhone,
+                r.pageCode, r.originalCod || 0, r.originalTt || 0, r.resendCod || 0, r.resendTt || 0, r.totalAmount || 0,
+                r.followUpStatus, r.finalStatus, monthYear, r.notes, r.product || '', r.isMatched ? 1 : 0, timestamp
+            );
+            successCount++;
+        });
+
+        stmt.finalize((err) => {
+            if (err) {
+                console.error("Import Error:", err);
+                db.run("ROLLBACK");
+                return res.status(500).json({ error: err.message });
+            }
+            db.run("COMMIT");
+            res.json({ success: true, count: successCount });
+        });
+    });
+});
+
+// API: Manual Add RTS Record
+app.post('/api/rts/manual', (req, res) => {
+    const { id, facebookName, customerPhone, product, notes, monthYear } = req.body;
+
+    if (!id || !facebookName) {
+        return res.status(400).json({ error: 'ID and Name are required' });
+    }
+
+    const timestamp = Date.now();
+    // Simple insert, defaulting other fields
+    const sql = `INSERT INTO rts_master (
+        id, facebookName, customerPhone, product, notes, monthYear, 
+        finalStatus, followUpStatus, updatedAt, isMatched
+    ) VALUES (?, ?, ?, ?, ?, ?, 'รอการแก้ไข', '-', ?, 0)`;
+
+    db.run(sql, [id, facebookName, customerPhone || '', product || '', notes || '', monthYear || '', timestamp], function (err) {
+        if (err) {
+            console.error("Manual Add Error:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ success: true, id: id });
+    });
+});
+
+// API: Update RTS Master Record (Inline Edit)
+app.patch('/api/rts/master/:id', (req, res) => {
+    const { id } = req.params;
+    const updates = req.body;
+    const allowed = ['followUpStatus', 'finalStatus', 'resendCod', 'resendTt', 'notes', 'isMatched', 'customerName', 'product'];
+
+    const fields = Object.keys(updates).filter(k => allowed.includes(k));
+    if (fields.length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+
+    const setClause = fields.map(k => `${k} = ?`).join(', ');
+    const values = fields.map(k => updates[k]);
+    values.push(Date.now(), id);
+
+    db.run(`UPDATE rts_master SET ${setClause}, updatedAt = ? WHERE id = ?`, values, function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true, changes: this.changes });
+    });
+});
+
+// API: Delete RTS Record
+app.delete('/api/rts/master/:id', (req, res) => {
+    db.run(`DELETE FROM rts_master WHERE id = ?`, [req.params.id], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+    });
+});
+
+// API: Upload & Check RTS Import File (Server-Side Processing)
+const xlsx = require('xlsx');
+app.post('/api/rts/upload-check', upload.single('file'), (req, res) => {
+    console.log('[RTS] Upload check requested');
+    if (!req.file) {
+        console.error('[RTS] No file uploaded');
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    try {
+        console.log(`[RTS] File uploaded: ${req.file.path} (${req.file.size} bytes)`);
+
+        let wb;
+        try {
+            // Force Codepage 874 (Thai/Windows-874) for legacy CSVs
+            wb = xlsx.readFile(req.file.path, { type: 'file', codepage: 874 });
+        } catch (readErr) {
+            console.error('[RTS] XLSX Read Error:', readErr);
+            throw new Error(`Failed to read Excel file: ${readErr.message}`);
+        }
+
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const jsonData = xlsx.utils.sheet_to_json(ws, { header: 1 });
+        console.log(`[RTS] Sheet parsed, rows: ${jsonData.length}`);
+
+        // Clean up uploaded file
+        try { fs.unlinkSync(req.file.path); } catch (e) { console.warn('Failed to delete temp file', e); }
+
+        const parsed = [];
+        // Header detection
+        let headerRowIndex = jsonData.findIndex(row => row && row.some(cell => typeof cell === 'string' && cell.includes('วันที่')));
+        if (headerRowIndex === -1) headerRowIndex = 0; // Fallback to 0 if not found
+
+        // Fetch all shipments for matching
+        console.log('[RTS] Fetching shipments for matching...');
+        db.all("SELECT id, phoneNumber, customerName FROM shipments", (err, shipments) => {
+            if (err) {
+                console.error('[RTS] DB Error:', err);
+                return res.status(500).json({ error: "DB Error: " + err.message });
+            }
+            console.log(`[RTS] Found ${shipments.length} shipments to match against`);
+
+            // Build lookup map for speed
+            const phoneMap = new Map();
+            shipments.forEach(s => {
+                if (s.phoneNumber) {
+                    const clean = s.phoneNumber.replace(/\D/g, '');
+                    if (clean.length > 6) {
+                        const suffix = clean.slice(-7);
+                        if (!phoneMap.has(suffix)) phoneMap.set(suffix, []);
+                        phoneMap.get(suffix).push(s);
+                    }
+                }
+            });
+
+            for (let i = headerRowIndex + 1; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                if (!row || row.length === 0) continue;
+
+                const rawId = row[0];
+                const rawName = row[1];
+                const idWithDate = rawId ? rawId.toString() : `UNKNOWN-${i}`;
+                const rawPhone = row[3] ? row[3].toString() : '';
+
+                // --- FILTER: Strict Data Quality ---
+                // 1. Skip if ID is missing
+                if (!rawId || rawId.toString().trim() === '') continue;
+                // 2. Skip if Name (Facebook) is missing
+                if (!rawName || rawName.toString().trim() === '') continue;
+                // 3. Skip if header or no phone
+                if (rawPhone.includes('เบอร์โทร') || rawPhone.includes('telephone')) continue;
+                if (!rawPhone || rawPhone.trim() === '' || rawPhone.replace(/\D/g, '').length < 8) {
+                    continue; // Skip invalid row
+                }
+
+                // --- ROBUST PHONE LOGIC (BACKEND) ---
+                const cleanDigits = rawPhone.replace(/\D/g, ' ');
+                let candidates = cleanDigits.split(' ').filter(s => s.length >= 9 && s.length <= 10);
+
+                // Regex Fallback
+                const regex = /0\d{8,9}/g;
+                const regexMatches = rawPhone.replace(/\D/g, '').match(regex);
+                if (regexMatches) candidates = [...new Set([...candidates, ...regexMatches])];
+
+                // Check for missing leading 0
+                candidates = candidates.map(c => {
+                    if (c.length === 9 && !c.startsWith('0')) return '0' + c;
+                    return c;
+                });
+                const tightStr = rawPhone.replace(/\D/g, '');
+                if (tightStr.length === 9 && !tightStr.startsWith('0')) {
+                    candidates.push('0' + tightStr);
+                }
+
+                let matchedShipment = null;
+                let finalPhone = candidates[0] || rawPhone;
+
+                // Match against DB
+                for (const cand of candidates) {
+                    const suffix = cand.slice(-7);
+                    if (phoneMap.has(suffix)) {
+                        const potential = phoneMap.get(suffix);
+                        const exact = potential.find(s => s.phoneNumber.replace(/\D/g, '').includes(cand) || ('0' + s.phoneNumber.replace(/\D/g, '')).includes(cand));
+                        matchedShipment = exact || potential[0];
+                        finalPhone = cand;
+                        if (matchedShipment) break;
+                    }
+                }
+
+                parsed.push({
+                    id: idWithDate,
+                    shipmentId: matchedShipment ? matchedShipment.id : null,
+                    dateCode: idWithDate.split('-')[0] || '01',
+                    facebookName: row[1]?.toString() || '',
+                    customerName: matchedShipment ? matchedShipment.customerName : 'Unknown', // Use DB name if matched
+                    customerAddress: row[2]?.toString() || '',
+                    customerPhone: finalPhone,
+                    resendCod: parseFloat(row[4]) || 0,
+                    resendTt: parseFloat(row[5]) || 0,
+                    originalCod: parseFloat(row[6]) || 0,
+                    originalTt: parseFloat(row[7]) || 0,
+                    totalAmount: 0,
+                    followUpStatus: row[9]?.toString() || '-',
+                    finalStatus: row[10]?.toString() || 'รอการแก้ไข',
+                    pageCode: row[11]?.toString() || '-',
+                    monthYear: '',
+                    notes: row[12]?.toString() || '',
+                    isMatched: !!matchedShipment
+                });
+            }
+
+            console.log(`[RTS] Processed ${parsed.length} records. Sending response...`);
+            res.json({ success: true, records: parsed });
+        });
+
+    } catch (e) {
+        if (req.file) try { fs.unlinkSync(req.file.path); } catch (ex) { }
+        console.error("[RTS] Parse Critical Error:", e);
+        res.status(500).json({ error: "File Parse Critical Error: " + e.message });
+    }
+});
+
 // Serve Frontend (Production)
 // In Docker, we will copy 'dist' to 'public' or similar
 const staticPath = path.join(__dirname, '../dist');
@@ -259,6 +625,38 @@ app.get('/health', (req, res) => {
 // 404 handler for API routes
 app.use('/api/*', (req, res) => {
     res.status(404).json({ error: 'API endpoint not found' });
+});
+
+// --- SYNC & BACKUP SERVICES ---
+const syncService = require('./services/SyncService');
+const backupService = require('./services/BackupService');
+
+// API: Trigger Sync from Google Sheets
+app.post('/api/sync/sheets', async (req, res) => {
+    try {
+        const result = await syncService.syncFromSheets();
+        res.json({ success: true, ...result });
+    } catch (err) {
+        console.error('Sync Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// API: Trigger Database Backup
+app.post('/api/backup', async (req, res) => {
+    try {
+        const result = await backupService.createBackup();
+        res.json(result);
+    } catch (err) {
+        console.error('Backup Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// API: List Backups
+app.get('/api/backups', (req, res) => {
+    const backups = backupService.getBackups();
+    res.json(backups);
 });
 
 // Fallback for SPA routing (if serving frontend locally)

@@ -8,10 +8,9 @@ import { getAddressByZipCode } from '../services/AddressService';
 type TimeFilter = 'all' | 'today' | 'week' | 'month' | 'custom';
 
 const SummaryPage: React.FC = () => {
-    const { shipments } = useData();
+    const { filteredShipments } = useData();
     const { settings } = useSettings();
     const codFeePercent = settings.cod_fee || 0;
-    const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
 
     // Address Lookup State
     const [selectedZipCode, setSelectedZipCode] = useState<string>('');
@@ -23,34 +22,7 @@ const SummaryPage: React.FC = () => {
         setIsAddressModalOpen(true);
     };
 
-    const filteredShipments = useMemo(() => {
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-        switch (timeFilter) {
-            case 'today':
-                return shipments.filter(s => {
-                    const shipDate = new Date(s.importDate);
-                    return shipDate >= today;
-                });
-            case 'week':
-                const weekAgo = new Date(today);
-                weekAgo.setDate(weekAgo.getDate() - 7);
-                return shipments.filter(s => {
-                    const shipDate = new Date(s.importDate);
-                    return shipDate >= weekAgo;
-                });
-            case 'month':
-                const monthAgo = new Date(today);
-                monthAgo.setMonth(monthAgo.getMonth() - 1);
-                return shipments.filter(s => {
-                    const shipDate = new Date(s.importDate);
-                    return shipDate >= monthAgo;
-                });
-            default:
-                return shipments;
-        }
-    }, [shipments, timeFilter]);
 
     const stats = useMemo(() => {
         // 1. Total Shipping Cost & COD & Fees
@@ -225,34 +197,11 @@ const SummaryPage: React.FC = () => {
                 </button>
             </div>
 
-            {/* Time Filter */}
-            <div className="glass p-4 rounded-xl">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <Calendar className="w-5 h-5 text-indigo-600" />
-                    <span className="font-semibold text-slate-700">ช่วงเวลา:</span>
-                    <div className="flex gap-2">
-                        {[
-                            { value: 'all', label: 'ทั้งหมด' },
-                            { value: 'today', label: 'วันนี้' },
-                            { value: 'week', label: '7 วันที่แล้ว' },
-                            { value: 'month', label: '30 วันที่แล้ว' }
-                        ].map(filter => (
-                            <button
-                                key={filter.value}
-                                onClick={() => setTimeFilter(filter.value as TimeFilter)}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${timeFilter === filter.value
-                                    ? 'bg-indigo-600 text-white shadow-md'
-                                    : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
-                                    }`}
-                            >
-                                {filter.label}
-                            </button>
-                        ))}
-                    </div>
-                    <span className="text-sm text-slate-500 ml-auto">
-                        {stats.totalOrders.toLocaleString()} รายการ
-                    </span>
-                </div>
+            {/* Data Count Indicator */}
+            <div className="flex justify-end">
+                <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                    ข้อมูล {stats.totalOrders.toLocaleString()} รายการในช่วงที่เลือก
+                </span>
             </div>
 
             {/* Main Stats Cards - Row 1 */}

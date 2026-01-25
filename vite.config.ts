@@ -9,12 +9,21 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      proxy: {
+        '/api': {
+          target: process.env.VITE_API_URL || 'http://127.0.0.1:3001',
+          changeOrigin: true,
+          secure: false,
+          timeout: 60000,
+          proxyTimeout: 60000
+        }
+      }
     },
     plugins: [react()],
     define: {
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.API_URL': JSON.stringify(env.VITE_API_URL || 'http://192.168.1.139:3000')
+      'process.env.API_URL': JSON.stringify(env.VITE_API_URL || '')
     },
     resolve: {
       alias: {

@@ -28,3 +28,17 @@ export interface ActionLog {
   details: string;
   status: 'success' | 'error';
 }
+
+export interface RTSReport {
+  id: string;
+  trackingNumber: string;
+  status: string;
+  customerName: string;
+  actionType: string;
+  productCode?: string;
+  notes: string;
+  photoUrl?: string;
+  timestamp: number;
+  reportedBy: string;
+  newTrackingNumber?: string;
+}

@@ -2,11 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { Search, Package, User, Phone, MapPin, Copy, ExternalLink, X, ShieldCheck, Lock, Eye, AlertCircle, CheckCircle2, History, Trash2, ChevronRight, ArrowLeft, Banknote, Calendar } from 'lucide-react';
 import AddressDetailModal from '../components/AddressDetailModal';
+import Pagination from '../components/Pagination';
 import { Shipment } from '../types';
 
 const SearchPage: React.FC = () => {
-  const { shipments } = useData();
+  const { filteredShipments } = useData();
   const [query, setQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
 
   // Search State
   const [searchResults, setSearchResults] = useState<Shipment[]>([]);
@@ -64,16 +67,17 @@ const SearchPage: React.FC = () => {
       setIsDetailsRevealed(false);
     }
 
-    const found = shipments
+    const found = filteredShipments
       .filter(s =>
         s.trackingNumber.toLowerCase().includes(cleanQuery.toLowerCase()) ||
         s.phoneNumber.includes(cleanQuery) ||
         s.customerName.toLowerCase().includes(cleanQuery.toLowerCase())
       )
-      .sort((a, b) => b.timestamp - a.timestamp);
+      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
     setSearchResults(found);
-  }, [query, shipments]);
+    setCurrentPage(1);
+  }, [query, filteredShipments]);
 
   // Grouping Logic for Search Results
   const groupedResults = useMemo(() => {
@@ -93,6 +97,13 @@ const SearchPage: React.FC = () => {
     return Object.values(groups);
   }, [searchResults]);
 
+  const totalPages = Math.ceil(groupedResults.length / ITEMS_PER_PAGE);
+
+  const paginatedGroups = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return groupedResults.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [groupedResults, currentPage]);
+
   // Derive Customer Shipments for Detail View
   const customerShipments = useMemo(() => {
     if (!selectedShipment) return [];
@@ -100,11 +111,11 @@ const SearchPage: React.FC = () => {
     const targetPhone = clean(selectedShipment.phoneNumber);
     const targetName = selectedShipment.customerName.trim();
 
-    return shipments.filter(s =>
+    return filteredShipments.filter(s =>
       clean(s.phoneNumber) === targetPhone &&
       s.customerName.trim() === targetName
-    ).sort((a, b) => b.timestamp - a.timestamp);
-  }, [selectedShipment, shipments]);
+    ).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  }, [selectedShipment, filteredShipments]);
 
   const totalCOD = useMemo(() => customerShipments.reduce((sum, s) => sum + s.codAmount, 0), [customerShipments]);
 
@@ -208,7 +219,7 @@ const SearchPage: React.FC = () => {
 
   // Get recent shipments objects
   const recentShipments = historyIds
-    .map(id => shipments.find(s => s.id === id))
+    .map(id => filteredShipments.find(s => s.id === id))
     .filter((s): s is Shipment => !!s);
 
   return (
@@ -444,7 +455,7 @@ const SearchPage: React.FC = () => {
 
           {groupedResults.length > 0 ? (
             <div className="space-y-4">
-              {groupedResults.map((group, index) => (
+              {paginatedGroups.map((group, index) => (
                 <div key={index} className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
                   {/* Group Header */}
                   <div className="p-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-3">
@@ -502,6 +513,13 @@ const SearchPage: React.FC = () => {
                   </div>
                 </div>
               ))}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={groupedResults.length}
+                itemsPerPage={ITEMS_PER_PAGE}
+              />
             </div>
           ) : (
             <div className="w-full p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 border-dashed">

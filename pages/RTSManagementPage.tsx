@@ -1,621 +1,719 @@
-import * as React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useData } from '../context/DataContext';
-import { useAuth } from '../context/AuthContext';
 import {
-    QrCode, Search, Camera, Package, User, AlertCircle, CheckCircle2,
-    RotateCcw, Trash2, Save, History, RefreshCw, ChevronRight, X
+    Table, Upload, Search, Download, Save, RefreshCw,
+    FileSpreadsheet, AlertTriangle, CheckCircle2, Phone,
+    MapPin, Smartphone, Facebook, LayoutGrid, Filter,
+    ChevronDown, ChevronRight, X, Calendar, Edit3, Trash2,
+    PieChart, BarChart3, ArrowRight, User, QrCode, Camera,
+    Loader2, UploadCloud, CloudUpload, FileText, PlayCircle, Eye, Info, Plus
 } from 'lucide-react';
 import { Html5QrcodeScanner, Html5Qrcode } from 'html5-qrcode';
-import { isDemoMode } from '../utils/environment';
+import ReportIssueModal from '../components/ReportIssueModal';
 
-interface RTSReport {
-    id: string;
-    trackingNumber: string;
-    status: string;
+// Types for RTS Master
+interface RTSMasterRecord {
+    id: string; // "1-001"
+    shipmentId: string | null;
+    dateCode: string; // "01" (Day)
+    facebookName: string;
     customerName: string;
-    actionType: string;
+    customerAddress: string;
+    customerPhone: string;
+    pageCode: string; // "A2B2"
+    originalCod: number;
+    originalTt: number;
+    resendCod: number;
+    resendTt: number;
+    totalAmount: number;
+    followUpStatus: string; // "โทรครั้งที่ 1", "โทรครั้งที่ 2"
+    finalStatus: string; // "จัดส่งแล้ว", "แกะทิ้ง", "ยกเลิก"
+    monthYear: string; // "09-2568"
     notes: string;
-    photoUrl: string;
-    timestamp: number;
-    reportedBy: string;
+    product?: string;
+    isMatched: boolean; // True if matched with system shipment
+    updatedAt?: number;
 }
 
-const STATUS_OPTIONS = [
-    { value: 'checked', label: 'เช็คพัสดุแล้ว (OK)', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    { value: 'rts_received', label: 'รับสินค้าตีกลับ (RTS)', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-    { value: 'damaged', label: 'สินค้าเสียหาย', color: 'bg-rose-50 text-rose-700 border-rose-200' },
-    { value: 'cancelled', label: 'ยกเลิกรายการ', color: 'bg-slate-100 text-slate-700 border-slate-300' },
+interface StagedRTSFile {
+    id: string;
+    file: File;
+    name: string;
+    status: 'pending' | 'processing' | 'checked' | 'saving' | 'saved' | 'error';
+    records: RTSMasterRecord[];
+    matchCount: number;
+    message?: string;
+}
+
+const MONTH_OPTIONS = [
+    { value: 'all', label: '--- แสดงทั้งหมด (All) ---' },
+    { value: '09-2568', label: 'กันยายน 2568' },
+    { value: '10-2568', label: 'ตุลาคม 2568' },
+    { value: '11-2568', label: 'พฤศจิกายน 2568' },
+    { value: '12-2568', label: 'ธันวาคม 2568' },
+    { value: '01-2569', label: 'มกราคม 2569' },
+    { value: '02-2569', label: 'กุมภาพันธ์ 2569' },
 ];
 
-const ACTION_OPTIONS = [
-    { value: 'resend_original', label: 'ส่งสินค้าเดิมกลับไป', icon: RotateCcw },
-    { value: 'new_production', label: 'ขอผลิตสินค้าใหม่ (เคลม)', icon: RefreshCw },
-    { value: 'restock', label: 'เก็บเข้าสต็อกเพื่อขายใหม่', icon: Package },
-    { value: 'refund', label: 'คืนเงินลูกค้า', icon: Save },
-];
+const FOLLOW_UP_OPTIONS = ['-', 'โทรครั้งที่ 1', 'โทรครั้งที่ 2', 'โทรครั้งที่ 3', 'ปิดเครื่อง', 'ไม่รับสาย'];
+const STATUS_OPTIONS = ['-', 'รอการแก้ไข', 'จัดส่งแล้ว', 'แกะทิ้ง', 'ยกเลิก', 'สินค้าเสียหาย', 'สูญหาย'];
 
 const RTSManagementPage: React.FC = () => {
-    const { shipments } = useData();
-    const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState<'scan' | 'search' | 'history'>('search');
+    const { filteredShipments } = useData();
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'import' | 'scan'>('dashboard');
+    // Modals
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+    const [isManualAddModalOpen, setIsManualAddModalOpen] = useState(false);
+    // Manual Form
+    const [newRecord, setNewRecord] = useState({ id: '', facebookName: '', customerPhone: '', product: '', notes: '' });
+
+    const [selectedMonth, setSelectedMonth] = useState<string>('all');
+    const [records, setRecords] = useState<RTSMasterRecord[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedShipment, setSelectedShipment] = useState<any>(null);
-    const [reports, setReports] = useState<RTSReport[]>([]);
 
-    // Form State
-    const [status, setStatus] = useState('checked');
-    const [actionType, setActionType] = useState('resend_original');
-    const [notes, setNotes] = useState('');
-    const [photo, setPhoto] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [scanResult, setScanResult] = useState<string | null>(null);
-    const [trackHistory, setTrackHistory] = useState<RTSReport[]>([]);
-    const [newTrackingNumber, setNewTrackingNumber] = useState('');
-    const formRef = useRef<HTMLDivElement>(null);
+    // Queue State
+    const [stagedFiles, setStagedFiles] = useState<StagedRTSFile[]>([]);
+    const [isProcessingQueue, setIsProcessingQueue] = useState(false);
+    const [previewFileId, setPreviewFileId] = useState<string | null>(null);
 
+    // Scan State
     const [isScanning, setIsScanning] = useState(false);
+    const [scanResult, setScanResult] = useState<string | null>(null);
+    const [selectedShipment, setSelectedShipment] = useState<any>(null);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const isSecureContext = window.isSecureContext;
 
-    // Determine connection status text
-    const getConnectionStatus = () => {
-        if (isDemoMode()) return { text: 'Demo Mode', color: 'bg-amber-100 text-amber-700' };
-        if (isSecureContext) return { text: 'Secure Connection', color: 'bg-emerald-100 text-emerald-700' };
-        return { text: 'Insecure (Camera Restricted)', color: 'bg-rose-100 text-rose-700' };
-    };
+    // Stats
+    const stats = useMemo(() => {
+        const total = records.length;
+        const reshipped = records.filter(r => r.finalStatus === 'จัดส่งแล้ว').length;
+        const discarded = records.filter(r => r.finalStatus === 'แกะทิ้ง').length;
+        const pending = total - reshipped - discarded;
+        const successRate = total > 0 ? (reshipped / total) * 100 : 0;
 
-    // Load History
-    const fetchHistory = async () => {
+        const totalCod = records.reduce((sum, r) => sum + (r.resendCod || 0), 0);
+        const originalLoss = records.reduce((sum, r) => sum + (r.originalCod || 0) + (r.originalTt || 0), 0);
+
+        return { total, reshipped, discarded, pending, successRate, totalCod, originalLoss };
+    }, [records]);
+
+    useEffect(() => {
+        fetchRecords();
+    }, [selectedMonth]);
+
+    const fetchRecords = async () => {
+        setIsLoading(true);
         try {
-            const res = await fetch('/api/rts');
+            const res = await fetch(`/api/rts/master?month=${selectedMonth}`);
             if (res.ok) {
                 const data = await res.json();
-                setReports(data || []);
+                setRecords(data);
             }
         } catch (e) {
-            console.error('Failed to fetch RTS history', e);
+            console.error("Fetch Error", e);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchHistory();
-    }, []);
-
-    const startScanner = () => {
-        if (!isSecureContext && !isDemoMode()) {
-            // Fallback for HTTP NAS: Click hidden file input
-            fileInputRef.current?.click();
-            return;
-        }
-
-        if (!scannerRef.current) {
-            const scanner = new Html5QrcodeScanner(
-                "reader",
-                { fps: 15, qrbox: { width: 250, height: 250 } },
-                false
-            );
-            scanner.render(onScanSuccess, onScanFailure);
-            scannerRef.current = scanner;
-            setIsScanning(true);
-        }
-    };
-
-    // Handle file scan result
-    const handleFileScan = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.scanFile(file, true)
-            .then(decodedText => {
-                onScanSuccess(decodedText);
-            })
-            .catch(err => {
-                alert("ไม่สามารถอ่านบาร์โค้ดจากรูปภาพได้");
-                console.error("File scan error", err);
-            });
-    };
-
-    const stopScanner = async () => {
-        if (scannerRef.current) {
-            try {
-                await scannerRef.current.clear();
-                scannerRef.current = null;
-                setIsScanning(false);
-            } catch (e) {
-                console.error("Failed to clear scanner", e);
-            }
-        }
-    };
-
-    useEffect(() => {
-        return () => {
-            stopScanner();
-        };
-    }, []);
-
-    // Also stop if tab changes
-    useEffect(() => {
-        if (activeTab !== 'scan') {
-            stopScanner();
-        }
-    }, [activeTab]);
-
-    function onScanSuccess(decodedText: string) {
-        setScanResult(decodedText);
-        handleFindShipment(decodedText);
-        stopScanner(); // Auto stop once found to clear UI
-    }
-
-    function onScanFailure(error: any) {
-        // Quiet failure
-    }
-
-    const handleFindShipment = async (tracking: string) => {
-        const found = shipments.find(s => s.trackingNumber === tracking || s.id === tracking);
-        if (found) {
-            setSelectedShipment(found);
-            // Fetch history for this specific tracking
-            try {
-                const res = await fetch(`/api/rts/${found.trackingNumber}`);
-                if (res.ok) {
-                    const historyData = await res.json();
-                    setTrackHistory(historyData);
-                }
-            } catch (e) {
-                console.error("Failed to load track history", e);
-            }
-
-            // Scroll to form on mobile
-            if (window.innerWidth < 1024) {
-                formRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }
-        } else {
-            alert(`ไม่พบข้อมูลพัสดุเลขที่: ${tracking}`);
-        }
-    };
-
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setPhoto(file);
-            const url = URL.createObjectURL(file);
-            setPreviewUrl(url);
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!selectedShipment) return;
-
-        setIsSubmitting(true);
-        const formData = new FormData();
-        formData.append('trackingNumber', selectedShipment.trackingNumber);
-        formData.append('status', status);
-        formData.append('customerName', selectedShipment.customerName || '');
-        formData.append('actionType', actionType);
-        formData.append('notes', notes);
-        formData.append('reportedBy', user?.username || 'unknown');
-        if (newTrackingNumber) {
-            formData.append('newTrackingNumber', newTrackingNumber);
-        }
-        if (photo) {
-            formData.append('photo', photo);
-        }
+    const handleManualAdd = async () => {
+        if (!newRecord.id || !newRecord.facebookName) return alert('กรุณาระบุ ID และ ชื่อลูกค้า');
 
         try {
-            if (isDemoMode()) {
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+            const res = await fetch('/api/rts/manual', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...newRecord,
+                    monthYear: selectedMonth === 'all' ? '01-2569' : selectedMonth // Default if All
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('บันทึกสำเร็จ');
+                setIsManualAddModalOpen(false);
+                setNewRecord({ id: '', facebookName: '', customerPhone: '', product: '', notes: '' });
+                fetchRecords();
             } else {
-                const res = await fetch('/api/rts', {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Failed to save');
+        }
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        const newStaged: StagedRTSFile[] = Array.from(files).map(file => ({
+            id: Math.random().toString(36).substring(7),
+            file: file,
+            name: file.name,
+            status: 'pending',
+            records: [],
+            matchCount: 0
+        }));
+
+        setStagedFiles(prev => [...prev, ...newStaged]);
+        e.target.value = ''; // Reset input
+    };
+
+    const removeStagedFile = (id: string) => {
+        setStagedFiles(prev => prev.filter(f => f.id !== id));
+    };
+
+    const processQueue = async () => {
+        setIsProcessingQueue(true);
+
+        // 1. Check/Verify Files
+        const pendingFiles = stagedFiles.filter(f => f.status === 'pending');
+
+        for (const fileItem of pendingFiles) {
+            setStagedFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: 'processing' } : f));
+
+            const formData = new FormData();
+            formData.append('file', fileItem.file);
+
+            try {
+                // Determine month from filename or use selectedMonth?
+                // Ideally we should use selectedMonth for now or parse from file
+
+                const res = await fetch('/api/rts/upload-check', {
                     method: 'POST',
                     body: formData
                 });
-                if (!res.ok) throw new Error('Failed to save');
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.records)) {
+                        const matchedCount = data.records.filter((r: any) => r.isMatched).length;
+
+                        // Tag with selected Month
+                        const recordsWithMonth = data.records.map((r: any) => ({
+                            ...r,
+                            monthYear: selectedMonth
+                        }));
+
+                        setStagedFiles(prev => prev.map(f => f.id === fileItem.id ? {
+                            ...f,
+                            status: 'checked',
+                            records: recordsWithMonth,
+                            matchCount: matchedCount
+                        } : f));
+
+                        // Auto-preview logic
+                        setPreviewFileId(fileItem.id);
+                    } else {
+                        throw new Error('No records returned');
+                    }
+                } else {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Server Error');
+                }
+            } catch (e: any) {
+                console.error("Process Error", e);
+                setStagedFiles(prev => prev.map(f => f.id === fileItem.id ? {
+                    ...f,
+                    status: 'error',
+                    message: e.message
+                } : f));
             }
 
-            alert('บันทึกข้อมูลสำเร็จ!' + (isDemoMode() ? ' (Demo Mode)' : ''));
-            // Reset form
-            setSelectedShipment(null);
-            setNotes('');
-            setPhoto(null);
-            setPreviewUrl(null);
-            setScanResult(null);
-            setNewTrackingNumber('');
-            setTrackHistory([]);
-            fetchHistory();
-            setActiveTab('history');
-        } catch (err) {
-            alert('เกิดข้อผิดพลาดในการบันทึก');
-        } finally {
-            setIsSubmitting(false);
+            // Small delay for UI grouping
+            await new Promise(r => setTimeout(r, 500));
+        }
+
+        setIsProcessingQueue(false);
+    };
+
+    const saveQueue = async () => {
+        if (!window.confirm('ยืนยันบันทึกข้อมูลทั้งหมดลงฐานข้อมูล?')) return;
+
+        setIsProcessingQueue(true);
+        const checkedFiles = stagedFiles.filter(f => f.status === 'checked');
+
+        for (const fileItem of checkedFiles) {
+            setStagedFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: 'saving' } : f));
+
+            try {
+                const res = await fetch('/api/rts/import', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records: fileItem.records, monthYear: selectedMonth })
+                });
+
+                if (res.ok) {
+                    setStagedFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: 'saved' } : f));
+                } else {
+                    const err = await res.json();
+                    throw new Error(err.error);
+                }
+            } catch (e: any) {
+                setStagedFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: 'error', message: e.message } : f));
+            }
+        }
+
+        setIsProcessingQueue(false);
+        fetchRecords(); // Update dashboard in background
+
+        if (window.confirm('✅ บันทึกข้อมูลเสร็จสิ้น! ต้องการไปที่หน้าตารางจัดการเลยหรือไม่?')) {
+            setActiveTab('dashboard');
         }
     };
 
-    const filteredShipments = searchTerm.length > 2
-        ? shipments.filter(s =>
-            s.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            s.trackingNumber?.toLowerCase().includes(searchTerm.toLowerCase())
-        ).slice(0, 5)
-        : [];
+    const updateRecord = async (id: string, field: string, value: any) => {
+        // Optimistic Update
+        const oldRecords = [...records];
+        setRecords(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r));
+
+        try {
+            await fetch(`/api/rts/master/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ [field]: value })
+            });
+        } catch (e) {
+            console.error("Update failed", e);
+            setRecords(oldRecords); // Revert
+        }
+    };
+
+    const deleteRecord = async (id: string) => {
+        if (!confirm('ยืนยันลบรายการนี้?')) return;
+        setRecords(prev => prev.filter(r => r.id !== id));
+        await fetch(`/api/rts/master/${id}`, { method: 'DELETE' });
+    };
+
+    const getPreviewData = () => {
+        const file = stagedFiles.find(f => f.id === previewFileId);
+        return file ? file.records : [];
+    };
 
     return (
-        <div className="space-y-6 pb-12 animate-fade-in">
-            {/* Header */}
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                <div className="flex items-center space-x-3">
-                    <div className="bg-slate-900 p-2 rounded-xl text-white shadow-lg">
-                        <Package className="w-6 h-6" />
+        <div className="p-6 max-w-[1600px] mx-auto space-y-6">
+
+            {/* --- TOP HEADER & CONTROLS --- */}
+            <div className="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100 gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="bg-indigo-100 p-3 rounded-lg text-indigo-600">
+                        <FileText size={24} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">ค้นหาพัสดุ (Search & Scan)</h1>
-                        <p className="text-sm text-slate-500 font-medium">สแกนเลขพัสดุหรือค้นหาชื่อเพื่อตรวจสอบสถานะ</p>
+                        <h1 className="text-2xl font-bold text-slate-800">จัดการสินค้าตีกลับ (RTS)</h1>
+                        <p className="text-slate-500 text-sm">ระบบติดตามสถานะและการส่งใหม่</p>
                     </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder="ค้นหา ID, ชื่อ, เบอร์..."
+                            className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none w-64"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    <select
+                        className="p-2 border rounded-lg bg-slate-50 font-medium text-slate-700"
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                    >
+                        {MONTH_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+
+                    <button
+                        onClick={() => setIsManualAddModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 shadow-sm transition-all"
+                    >
+                        <Plus size={18} /> เพิ่มรายการ
+                    </button>
+
+                    <button
+                        onClick={() => setIsImportModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-sm transition-all"
+                    >
+                        <Upload size={18} /> นำเข้า Excel
+                    </button>
+
+                    <button
+                        onClick={fetchRecords}
+                        className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
+                        title="รีเฟรชข้อมูล"
+                    >
+                        <RefreshCw size={20} className={isLoading ? "animate-spin" : ""} />
+                    </button>
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-fit">
-                <button
-                    onClick={() => setActiveTab('search')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'search' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
-                >
-                    <Search className="w-4 h-4" />
-                    ค้นหารายชื่อ
-                </button>
-                <button
-                    onClick={() => setActiveTab('scan')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'scan' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
-                >
-                    <QrCode className="w-4 h-4" />
-                    สแกนกล้อง
-                </button>
-                <button
-                    onClick={() => setActiveTab('history')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'history' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
-                >
-                    <History className="w-4 h-4" />
-                    ประวัติรายงาน
-                </button>
+            {/* --- DASHBOARD CONTENT --- */}
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {isLoading ? (
+                    <div className="flex justify-center py-20"><Loader2 className="animate-spin text-indigo-500" size={40} /></div>
+                ) : (
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-50 text-slate-600 text-sm uppercase tracking-wider">
+                                        <th className="p-4 border-b w-24">ID/วันที่</th>
+                                        <th className="p-4 border-b">ชื่อลูกค้า</th>
+                                        <th className="p-4 border-b w-48">เบอร์โทร</th>
+                                        <th className="p-4 border-b w-48">สินค้า</th>
+                                        <th className="p-4 border-b text-center w-32">COD เดิม</th>
+                                        <th className="p-4 border-b w-40">สถานะติดตาม</th>
+                                        <th className="p-4 border-b w-40">สถานะจบ</th>
+                                        <th className="p-4 border-b w-32">ส่งใหม่ (ยอด)</th>
+                                        <th className="p-4 border-b">หมายเหตุ</th>
+                                        <th className="p-4 border-b w-20"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 text-sm">
+                                    {records
+                                        .filter(r =>
+                                            r.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                            r.facebookName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                            r.customerPhone.includes(searchTerm) ||
+                                            (r.product && r.product.toLowerCase().includes(searchTerm.toLowerCase()))
+                                        )
+                                        .map(r => (
+                                            <tr key={r.id} className="hover:bg-indigo-50/30 transition-colors group">
+                                                <td className="p-4 font-mono font-medium text-slate-600">{r.id}</td>
+                                                <td className="p-4">
+                                                    <div className="font-medium text-slate-800">{r.facebookName}</div>
+                                                    {r.customerName && r.customerName !== r.facebookName && (
+                                                        <div className="text-xs text-slate-400">{r.customerName}</div>
+                                                    )}
+                                                </td>
+                                                <td className="p-4 font-mono text-slate-600">{r.customerPhone}</td>
+
+
+                                                <td className="p-4">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 outline-none text-slate-700"
+                                                        defaultValue={r.product || ''}
+                                                        onBlur={(e) => updateRecord(r.id, 'product', e.target.value)}
+                                                        placeholder="..."
+                                                    />
+                                                </td>
+
+                                                <td className="p-4 text-center text-slate-500">{r.originalCod > 0 ? r.originalCod.toLocaleString() : '-'}</td>
+
+
+                                                <td className="p-4">
+                                                    <select
+                                                        className={`w-full p-1 rounded border text-xs font-medium ${r.followUpStatus === 'ปิดเครื่อง' ? 'bg-red-50 text-red-600 border-red-200' :
+                                                            r.followUpStatus.includes('โทร') ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-slate-50 text-slate-600'
+                                                            }`}
+                                                        value={r.followUpStatus}
+                                                        onChange={(e) => updateRecord(r.id, 'followUpStatus', e.target.value)}
+                                                    >
+                                                        {FOLLOW_UP_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                                                    </select>
+                                                </td>
+                                                <td className="p-4">
+                                                    <select
+                                                        className={`w-full p-1 rounded border text-xs font-medium ${r.finalStatus === 'จัดส่งแล้ว' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' :
+                                                            r.finalStatus === 'แกะทิ้ง' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-slate-50 text-slate-600'
+                                                            }`}
+                                                        value={r.finalStatus}
+                                                        onChange={(e) => updateRecord(r.id, 'finalStatus', e.target.value)}
+                                                    >
+                                                        {STATUS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                                                    </select>
+                                                </td>
+
+
+                                                <td className="p-4">
+                                                    <input
+                                                        type="number"
+                                                        className="w-20 p-1 border rounded text-right text-xs"
+                                                        placeholder="COD"
+                                                        defaultValue={r.resendCod || ''}
+                                                        onBlur={(e) => updateRecord(r.id, 'resendCod', parseFloat(e.target.value) || 0)}
+                                                    />
+                                                </td>
+
+                                                <td className="p-4">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 outline-none text-slate-500 text-xs truncate"
+                                                        defaultValue={r.notes}
+                                                        onBlur={(e) => updateRecord(r.id, 'notes', e.target.value)}
+                                                        title={r.notes}
+                                                    />
+                                                </td>
+
+                                                <td className="p-4 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button
+                                                        onClick={() => deleteRecord(r.id)} // This will be defined implicitly or we need to check if deleteRecord is in scope
+                                                        className="p-2 text-slate-400 hover:text-red-600 rounded-full hover:bg-red-50"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    {records.length === 0 && (
+                                        <tr>
+                                            <td colSpan={10} className="p-10 text-center text-slate-400">
+                                                ไม่พบข้อมูล (เลือกเดือน หรือ เพิ่มรายการใหม่)
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Left Side: Scanning or Search */}
-                <div className="space-y-6">
-                    {activeTab === 'scan' && (
-                        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl overflow-hidden text-center">
-                            {!isScanning ? (
-                                <div className="py-12 space-y-6">
-                                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4 ${getConnectionStatus().color}`}>
-                                        <AlertCircle className="w-3 h-3" />
-                                        {getConnectionStatus().text}
-                                    </div>
-                                    <div className="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-                                        <Camera className="w-10 h-10" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-black text-slate-800">พร้อมสแกนพัสดุ</h3>
-                                        <p className="text-slate-400 font-medium max-w-[250px] mx-auto mt-2">
-                                            {!isSecureContext && !isDemoMode()
-                                                ? "เนื่องจากไม่ได้เชื่อมต่อผ่าน HTTPS ระบบจะเปิดกล้องผ่านไฟล์ภาพแทน"
-                                                : "กดปุ่มด้านล่างเพื่อเริ่มเปิดกล้องสแกนบาร์โค้ดหน้ากล่อง"
-                                            }
-                                        </p>
-                                    </div>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        ref={fileInputRef}
-                                        className="hidden"
-                                        onChange={handleFileScan}
-                                    />
-                                    <button
-                                        onClick={startScanner}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-6 rounded-3xl font-black text-2xl shadow-2xl shadow-indigo-200 transition-all active:scale-90 flex items-center gap-4 mx-auto animate-pulse"
-                                    >
-                                        <QrCode className="w-8 h-8" />
-                                        {!isSecureContext && !isDemoMode() ? 'ถ่ายรูปบาร์โค้ด' : 'เริ่มสแกนพัสดุ'}
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="font-black text-slate-800 flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
-                                            กำลังเปิดกล้อง...
-                                        </h3>
-                                        <button
-                                            onClick={stopScanner}
-                                            className="text-rose-500 text-sm font-bold hover:underline"
-                                        >
-                                            ปิดกล้อง
-                                        </button>
-                                    </div>
-                                    <div id="reader" className="overflow-hidden rounded-2xl border-4 border-slate-900 bg-slate-50 aspect-square"></div>
-                                </div>
-                            )}
-
-                            {scanResult && (
-                                <div className="mt-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                        <div className="text-left">
-                                            <p className="text-[10px] uppercase font-black text-emerald-600 tracking-widest">SCANNED RESULT</p>
-                                            <p className="font-mono font-bold text-slate-700">{scanResult}</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => setScanResult(null)}
-                                        className="p-1 hover:bg-emerald-100 rounded-lg"
-                                    >
-                                        <X className="w-4 h-4 text-emerald-400" />
-                                    </button>
-                                </div>
-                            )}
+            {/* --- IMPORT MODAL --- */}
+            {isImportModalOpen && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl p-6 h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                <Upload size={24} className="text-indigo-600" /> นำเข้าไฟล์ Excel
+                            </h3>
+                            <button onClick={() => setIsImportModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                                <X size={24} />
+                            </button>
                         </div>
-                    )}
 
-                    {activeTab === 'search' && (
-                        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                <input
-                                    type="text"
-                                    placeholder="ค้นหา Tracking หรือ ชื่อลูกค้า..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none font-medium"
-                                />
+                        <div className="flex gap-6 h-full">
+                            {/* Left: Queue */}
+                            <div className="w-1/3 space-y-4">
+                                <div className="bg-slate-50 p-6 rounded-xl border border-dashed border-slate-300">
+                                    <label className="flex flex-col items-center justify-center w-full h-32 cursor-pointer hover:bg-slate-100 transition-colors rounded-lg">
+                                        <CloudUpload className="text-indigo-400 mb-2" size={32} />
+                                        <p className="text-sm text-slate-600 font-medium">คลิกเพื่อเลือกไฟล์ Excel</p>
+                                        <input type="file" className="hidden" accept=".xlsx,.csv" onChange={handleFileUpload} />
+                                    </label>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {stagedFiles.map(f => (
+                                        <div key={f.id} className="p-3 border rounded-lg bg-white shadow-sm">
+                                            <div className="flex justify-between items-center">
+                                                <div className="truncate w-32 font-medium text-sm text-slate-700">{f.file.name}</div>
+                                                <div className="flex gap-1">
+                                                    {f.status === 'pending' && (
+                                                        <button onClick={() => processQueue()} className="p-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"><PlayCircle size={14} /></button>
+                                                    )}
+                                                    {f.status === 'checked' && (
+                                                        <>
+                                                            <button onClick={() => setPreviewFileId(previewFileId === f.id ? null : f.id)} className="p-1 bg-slate-200 text-slate-600 rounded hover:bg-slate-300"><FileText size={14} /></button>
+                                                            <button onClick={saveQueue} className="p-1 bg-emerald-600 text-white rounded hover:bg-emerald-700"><CheckCircle2 size={14} /></button>
+                                                        </>
+                                                    )}
+                                                    <button onClick={() => removeStagedFile(f.id)} className="p-1 text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                                                </div>
+                                            </div>
+                                            <div className="text-xs text-slate-400 mt-1 capitalize">{f.status}</div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
-                            <div className="space-y-2">
-                                {filteredShipments.map(s => (
-                                    <div
-                                        key={s.id}
-                                        onClick={() => setSelectedShipment(s)}
-                                        className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between group ${selectedShipment?.id === s.id ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-100 hover:border-slate-300'}`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedShipment?.id === s.id ? 'bg-white/10' : 'bg-slate-100'}`}>
-                                                <User className={`w-5 h-5 ${selectedShipment?.id === s.id ? 'text-white' : 'text-slate-500'}`} />
-                                            </div>
-                                            <div>
-                                                <p className="font-bold">{s.customerName}</p>
-                                                <p className={`text-xs ${selectedShipment?.id === s.id ? 'text-white/60' : 'text-slate-400'}`}>{s.trackingNumber}</p>
-                                            </div>
+                            {/* Right: Preview */}
+                            <div className="w-2/3 bg-slate-50 rounded-xl border border-slate-200 p-4 overflow-hidden flex flex-col">
+                                {previewFileId ? (() => {
+                                    const f = stagedFiles.find(file => file.id === previewFileId);
+                                    if (!f || !f.records) return <div className="text-center text-slate-400 mt-20">ไม่พบข้อมูลไฟล์</div>;
+                                    return (
+                                        <div className="h-full overflow-auto">
+                                            <table className="w-full text-left text-sm">
+                                                <thead className="sticky top-0 bg-slate-100 z-10">
+                                                    <tr>
+                                                        <th className="p-2 border-b">ID</th>
+                                                        <th className="p-2 border-b">Name</th>
+                                                        <th className="p-2 border-b">Phone</th>
+                                                        <th className="p-2 border-b">Status</th>
+                                                        <th className="p-2 border-b">Notes</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-200">
+                                                    {f.records.map((r: any, i: number) => (
+                                                        <tr key={i} className="bg-white">
+                                                            <td className="p-2 font-mono text-slate-500">{r.id}</td>
+                                                            <td className="p-2 truncate max-w-[150px]">{r.facebookName}</td>
+                                                            <td className="p-2 font-mono">{r.customerPhone}</td>
+                                                            <td className="p-2">{r.isMatched ? '✅' : 'New'}</td>
+                                                            <td className="p-2 text-xs truncate max-w-[150px]">{r.notes}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${selectedShipment?.id === s.id ? 'text-white/40' : 'text-slate-300'}`} />
-                                    </div>
-                                ))}
-                                {searchTerm.length > 2 && filteredShipments.length === 0 && (
-                                    <div className="text-center py-8 text-slate-400">
-                                        <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                                        <p className="text-sm font-bold">ไม่พบข้อมูล</p>
+                                    );
+                                })() : (
+                                    <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                                        <FileSpreadsheet size={48} className="mb-4 opacity-20" />
+                                        <p>เลือกไฟล์เพื่อดูตัวอย่าง</p>
                                     </div>
                                 )}
                             </div>
                         </div>
-                    )}
-
-                    {activeTab === 'history' && (
-                        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col max-h-[600px]">
-                            <div className="p-4 bg-slate-50 border-b border-slate-200 font-black text-slate-800">
-                                ประวัติการรายงานล่าสุด
-                            </div>
-                            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                                {reports.map(r => (
-                                    <div key={r.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex gap-4">
-                                        {r.photoUrl ? (
-                                            <img src={r.photoUrl} className="w-20 h-20 rounded-xl object-cover border" alt="RTS" />
-                                        ) : (
-                                            <div className="w-20 h-20 rounded-xl bg-slate-200 flex items-center justify-center text-slate-400">
-                                                <Camera className="w-8 h-8" />
-                                            </div>
-                                        )}
-                                        <div className="flex-1">
-                                            <div className="flex justify-between items-start">
-                                                <h4 className="font-bold text-slate-800">{r.trackingNumber}</h4>
-                                                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase border ${STATUS_OPTIONS.find(so => so.value === r.status)?.color || 'bg-slate-100'}`}>
-                                                    {STATUS_OPTIONS.find(so => so.value === r.status)?.label || r.status}
-                                                </span>
-                                            </div>
-                                            <p className="text-xs font-bold text-slate-500 mt-1">{r.customerName}</p>
-                                            <p className="text-[10px] mt-2 text-slate-400">{new Date(r.timestamp).toLocaleString('th-TH')}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    </div>
                 </div>
+            )}
 
-                {/* Right Side: Reporting Form */}
-                <div className="space-y-6">
-                    {selectedShipment ? (
-                        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6 animate-slide-up">
-                            <div className="relative group">
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedShipment(null)}
-                                    className="absolute -right-2 -top-2 bg-rose-500 text-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                                <div className="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                                    <div className="relative z-10 flex flex-col gap-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="bg-white/20 p-2 rounded-lg">
-                                                <User className="w-5 h-5" />
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-slate-400">CUSTOMER INFO</p>
-                                                <h4 className="text-xl font-bold">{selectedShipment.customerName}</h4>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-slate-400">TRACKING</p>
-                                                <p className="font-mono font-bold">{selectedShipment.trackingNumber}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-slate-400">STATUS</p>
-                                                <p className="font-bold text-emerald-400">{selectedShipment.status}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            {/* --- MANUAL ADD MODAL --- */}
+            {isManualAddModalOpen && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 animate-in fade-in zoom-in duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-slate-800">เพิ่มรายการใหม่ (Manual Add)</h3>
+                            <button onClick={() => setIsManualAddModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                                <X size={24} />
+                            </button>
+                        </div>
 
-                            {/* Track History Mini View */}
-                            {trackHistory.length > 0 && (
-                                <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden">
-                                    <div className="bg-slate-100 px-4 py-2 text-[10px] font-black text-slate-500 uppercase flex items-center gap-2">
-                                        <History className="w-3 h-3" />
-                                        ประวัติการดำเนินการของแทร็กนี้
-                                    </div>
-                                    <div className="p-3 space-y-2 max-h-40 overflow-y-auto">
-                                        {trackHistory.map((h) => (
-                                            <div key={h.id} className="text-xs flex gap-2 border-b border-slate-100 last:border-0 pb-2">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1 shrink-0"></div>
-                                                <div>
-                                                    <p className="font-bold text-slate-700">{STATUS_OPTIONS.find(so => so.value === h.status)?.label || h.status} ({ACTION_OPTIONS.find(ao => ao.value === h.actionType)?.label || h.actionType})</p>
-                                                    <p className="text-[10px] text-slate-400">{new Date(h.timestamp).toLocaleString('th-TH')}</p>
-                                                    {h.notes && <p className="italic text-slate-500 mt-0.5 opacity-80">{h.notes}</p>}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Status Selection */}
-                            <div className="space-y-3">
-                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">สถานะปัจจุบัน</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {STATUS_OPTIONS.map(opt => (
-                                        <button
-                                            key={opt.value}
-                                            type="button"
-                                            onClick={() => setStatus(opt.value)}
-                                            className={`p-3 rounded-xl border-2 text-xs font-bold transition-all ${status === opt.value ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-100 bg-slate-50 text-slate-500'}`}
-                                        >
-                                            {opt.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Action Selection */}
-                            <div className="space-y-3">
-                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">การดำเนินการ (Action)</label>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {ACTION_OPTIONS.map(opt => (
-                                        <button
-                                            key={opt.value}
-                                            type="button"
-                                            onClick={() => setActionType(opt.value)}
-                                            className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${actionType === opt.value ? 'border-indigo-600 bg-indigo-50/50' : 'border-slate-100 hover:border-slate-200'}`}
-                                        >
-                                            <div className={`p-2 rounded-lg ${actionType === opt.value ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                                                <opt.icon className="w-5 h-5" />
-                                            </div>
-                                            <span className={`font-bold ${actionType === opt.value ? 'text-indigo-700' : 'text-slate-600'}`}>{opt.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* New Tracking Field (Conditionally shown) */}
-                            {(actionType === 'resend_original' || actionType === 'new_production') && (
-                                <div className="space-y-3 animate-slide-up">
-                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center justify-between">
-                                        เลขพัสดุใหม่ (ถ้ามี)
-                                        <span className="text-[10px] text-indigo-500">ใส่กรณีมีการเปลี่ยน Tracking</span>
-                                    </label>
-                                    <div className="relative">
-                                        <Package className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                        <input
-                                            type="text"
-                                            value={newTrackingNumber}
-                                            onChange={(e) => setNewTrackingNumber(e.target.value)}
-                                            placeholder="กรอกเลขพัสดุใหม่..."
-                                            className="w-full pl-12 pr-4 py-3 bg-indigo-50/50 border border-indigo-100 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none font-mono font-bold"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Photo Reporting */}
-                            <div className="space-y-3">
-                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">ถ่ายรูปสินค้า/หลักฐาน</label>
-                                <div className="flex gap-4 items-center">
-                                    <label className="flex-1 cursor-pointer">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            capture="environment"
-                                            onChange={handlePhotoChange}
-                                            className="hidden"
-                                        />
-                                        <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50 hover:bg-slate-100 transition-colors group">
-                                            {previewUrl ? (
-                                                <img src={previewUrl} className="w-full h-32 object-contain rounded-xl" alt="Preview" />
-                                            ) : (
-                                                <>
-                                                    <Camera className="w-8 h-8 text-slate-300 group-hover:text-indigo-500 transition-colors mb-2" />
-                                                    <span className="text-xs font-bold text-slate-400">กดเพื่อเปิดกล้อง</span>
-                                                </>
-                                            )}
-                                        </div>
-                                    </label>
-                                    {previewUrl && (
-                                        <button
-                                            type="button"
-                                            onClick={() => { setPhoto(null); setPreviewUrl(null); }}
-                                            className="bg-rose-50 text-rose-500 p-2 rounded-full border border-rose-100"
-                                        >
-                                            <Trash2 className="w-5 h-5" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Notes */}
-                            <div className="space-y-3">
-                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">หมายเหตุเพิ่มเติม</label>
-                                <textarea
-                                    value={notes}
-                                    onChange={(e) => setNotes(e.target.value)}
-                                    placeholder="ระบุรายละเอียด เช่น สินค้าชำรุดตรงไหน หรือส่งสินค้าตัวใหม่แทน..."
-                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-slate-900 outline-none text-sm min-h-[100px]"
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">ID / วันที่ (เช่น 1-001)</label>
+                                <input
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    value={newRecord.id}
+                                    onChange={e => setNewRecord({ ...newRecord, id: e.target.value })}
+                                    placeholder="Ex. 1-001"
                                 />
                             </div>
-
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full py-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-3xl font-black text-xl shadow-2xl shadow-slate-200 flex items-center justify-center gap-3 active:scale-95 transition-all"
-                            >
-                                {isSubmitting ? <RefreshCw className="w-7 h-7 animate-spin" /> : <Save className="w-7 h-7" />}
-                                บันทึกรายงานทันที
-                            </button>
-                        </form>
-                    ) : (
-                        <div ref={formRef} className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[400px]">
-                            <div className="bg-white p-4 rounded-full shadow-sm mb-4">
-                                <Package className="w-12 h-12 text-slate-300" />
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อลูกค้า (Facebook)</label>
+                                <input
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    value={newRecord.facebookName}
+                                    onChange={e => setNewRecord({ ...newRecord, facebookName: e.target.value })}
+                                    placeholder="ชื่อเฟสบุ๊ค"
+                                />
                             </div>
-                            <h3 className="text-xl font-black text-slate-400">ยังไม่เลือกพัสดุ</h3>
-                            <p className="text-sm text-slate-400 max-w-[200px] mt-2">กรุณาสแกนหรือค้นหาผู้รับ เพื่อเริ่มทำการเช็คสินค้าหรือรายงาน RTS</p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">เบอร์โทร</label>
+                                    <input
+                                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                        value={newRecord.customerPhone}
+                                        onChange={e => setNewRecord({ ...newRecord, customerPhone: e.target.value })}
+                                        placeholder="08xxxxxxxx"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">สินค้า</label>
+                                    <input
+                                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                        value={newRecord.product}
+                                        onChange={e => setNewRecord({ ...newRecord, product: e.target.value })}
+                                        placeholder="ระบุสินค้า..."
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">หมายเหตุ</label>
+                                <textarea
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none h-20"
+                                    value={newRecord.notes}
+                                    onChange={e => setNewRecord({ ...newRecord, notes: e.target.value })}
+                                    placeholder="หมายเหตุเพิ่มเติม..."
+                                />
+                            </div>
                         </div>
+
+                        <div className="flex justify-end gap-3 mt-8">
+                            <button
+                                onClick={() => setIsManualAddModalOpen(false)}
+                                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+                            >
+                                ยกเลิก
+                            </button>
+                            <button
+                                onClick={handleManualAdd}
+                                className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium shadow-sm"
+                            >
+                                บันทึกข้อมูล
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* --- SCAN TAB --- */}
+            {activeTab === 'scan' && (
+                <div className="p-8 max-w-4xl mx-auto w-full h-full overflow-y-auto">
+                    <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xl overflow-hidden text-center">
+                        {!isScanning ? (
+                            <div className="py-8 space-y-6">
+                                <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                                    <QrCode className="w-10 h-10" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-slate-800">โหมดสแกนพัสดุ (ดั้งเดิม)</h3>
+                                    <p className="text-slate-400 font-medium max-w-[280px] mx-auto mt-2 text-sm">
+                                        ใช้สำหรับแจ้งปัญหาด่วน หรือตรวจสอบสถานะรายชิ้น
+                                    </p>
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (!scannerRef.current) {
+                                            const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+                                            scanner.render((decoded) => {
+                                                setScanResult(decoded);
+                                                const found = filteredShipments.find(s => s.trackingNumber === decoded || s.id === decoded);
+                                                if (found) {
+                                                    setSelectedShipment(found);
+                                                    setIsReportModalOpen(true);
+                                                } else {
+                                                    alert('ไม่พบข้อมูลพัสดุ');
+                                                }
+                                                scanner.clear();
+                                                setIsScanning(false);
+                                            }, (err) => console.warn(err));
+                                            scannerRef.current = scanner;
+                                            setIsScanning(true);
+                                        }
+                                    }}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-black shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-2 mx-auto"
+                                >
+                                    <Camera className="w-5 h-5" />
+                                    เปิดกล้องสแกน
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-black text-slate-800">กำลังสแกน...</h3>
+                                    <button onClick={() => { scannerRef.current?.clear(); setIsScanning(false); }} className="text-rose-500 font-bold">ยกเลิก</button>
+                                </div>
+                                <div id="reader" className="overflow-hidden rounded-2xl border-4 border-slate-900 bg-slate-50 aspect-square"></div>
+                            </div>
+                        )}
+                    </div>
+                    {selectedShipment && (
+                        <ReportIssueModal
+                            isOpen={isReportModalOpen}
+                            onClose={() => setIsReportModalOpen(false)}
+                            shipment={selectedShipment}
+                            onSuccess={() => {
+                                setIsReportModalOpen(false);
+                                setActiveTab('dashboard');
+                                fetchRecords();
+                            }}
+                        />
                     )}
                 </div>
-            </div>
-        </div >
+            )}
+        </div>
     );
 };
 

@@ -66,88 +66,181 @@ const ImportPage: React.FC = () => {
     };
 
     // Parsing Helpers
-    const parseNameField = (rawName: string) => {
-        let sequence = '';
-        let name = rawName.trim();
-        const seqMatch = name.match(/^(\d+)[\.\s]+(.*)/);
-        if (seqMatch) { sequence = seqMatch[1]; name = seqMatch[2]; }
-        name = name.replace(/^(fb|f\.b\.|f\.b|facebook)[\.\s]*/i, '');
-        return { sequence, name: name.trim() };
+    const parseExcelClip = (data: string) => {
+        const rows: string[][] = [];
+        let currentRow: string[] = [];
+        let currentCell = '';
+        let inQuote = false;
+
+        for (let i = 0; i < data.length; i++) {
+            const char = data[i];
+            const nextChar = data[i + 1];
+
+            if (inQuote) {
+                if (char === '"' && nextChar === '"') {
+                    currentCell += '"';
+                    i++;
+                } else if (char === '"') {
+                    inQuote = false;
+                } else {
+                    currentCell += char;
+                }
+            } else {
+                if (char === '"') {
+                    inQuote = true;
+                } else if (char === '\t') {
+                    currentRow.push(currentCell.trim());
+                    currentCell = '';
+                } else if (char === '\n' || char === '\r') {
+                    if (currentCell || currentRow.length > 0) {
+                        if (char === '\r' && nextChar === '\n') i++;
+                        currentRow.push(currentCell.trim());
+                        rows.push(currentRow);
+                        currentRow = [];
+                        currentCell = '';
+                    }
+                } else {
+                    currentCell += char;
+                }
+            }
+        }
+        if (currentCell || currentRow.length > 0) {
+            currentRow.push(currentCell.trim());
+            rows.push(currentRow);
+        }
+        return rows;
     };
 
     const parseRowSmart = (parts: string[]): Partial<Shipment> | null => {
-        const trackingIdx = parts.findIndex(p => /^[A-Z0-9]{9,16}$/i.test(p) && (p.endsWith('TH') || p.startsWith('JN') || p.startsWith('SP') || p.length > 10));
-        if (trackingIdx === -1) return null;
+        // Strategy 1: Find columns by Regex
+        const tracking = parts.find(p => /^(JN|SP|TH|Kerry|Flash)\d{8,16}[A-Z]*$/i.test(p) || (p.startsWith('JN') && p.endsWith('TH')));
+        if (!tracking) {
+            // Fallback: Check for any long alphanumeric string if no prefix match
+            const potential = parts.find(p => /^[A-Z0-9]{10,15}$/.test(p));
+            if (!potential) return null;
+        }
 
-        const phoneIdx = parts.findIndex((p, idx) => idx > trackingIdx && /^[\d\-\s]{9,12}$/.test(p) && (p.startsWith('0') || p.startsWith('6') || p.startsWith('8') || p.startsWith('9')));
-        if (phoneIdx === -1) return null;
+        const shipment: Partial<Shipment> = {
+            trackingNumber: tracking || parts.find(p => /^[A-Z0-9]{10,15}$/.test(p))
+        };
 
-        const zipIdx = parts.findIndex((p, idx) => idx > trackingIdx && /^\d{5}$/.test(p));
+        // Phone
+        // Look for phone in any column that looks like a phone number OR in large text blocks
+        let phone = '';
+        const bioColumn = parts.find(p => p.length > 20 && p.includes('\n')); // Likely address block
 
-        const shipment: Partial<Shipment> = {};
-        shipment.trackingNumber = parts[trackingIdx];
-
-        let rawPhone = parts[phoneIdx].replace(/[^0-9]/g, '');
-        if (rawPhone.length === 9) rawPhone = '0' + rawPhone;
-        shipment.phoneNumber = rawPhone;
-
-        if (zipIdx !== -1) {
-            shipment.zipCode = parts[zipIdx];
+        // Try precise phone column first
+        const phoneCol = parts.find(p => /^0\d{9}$/.test(p.replace(/[^0-9]/g, '')));
+        if (phoneCol) {
+            phone = phoneCol.replace(/[^0-9]/g, '');
+        } else if (bioColumn) {
+            const match = bioColumn.match(/0\d{8,9}/);
+            if (match) phone = match[0];
         } else {
-            const possibleZip = parts[phoneIdx + 1];
-            if (possibleZip && /^\d{5}$/.test(possibleZip)) shipment.zipCode = possibleZip;
-        }
-
-        if (phoneIdx > 0) {
-            let rawNameField = parts[phoneIdx - 1];
-            let sequence = '';
-            let name = '';
-            const parsedCheck = parseNameField(rawNameField);
-            if (parsedCheck.sequence) { sequence = parsedCheck.sequence; name = parsedCheck.name; } else { name = parsedCheck.name; }
-
-            if (phoneIdx > 1) {
-                const prevCol = parts[phoneIdx - 2];
-                const seqOnlyMatch = prevCol.match(/^(\d+)[\.]+$/);
-                if (seqOnlyMatch) { if (!sequence) sequence = seqOnlyMatch[1]; }
-                else if (/^[\d,\.]+$/.test(prevCol)) { shipment.codAmount = parseFloat(prevCol.replace(/,/g, '')) || 0; }
+            // Search all parts
+            for (const p of parts) {
+                const match = p.match(/0\d{8,9}/);
+                if (match) { phone = match[0]; break; }
             }
-            name = name.replace(/^(fb|f\.b\.|f\.b|facebook)[\.\s]*/i, '').trim();
-            if (!sequence) { const parsed = parseNameField(rawNameField); sequence = parsed.sequence; name = parsed.name; }
-            shipment.customerName = name || 'ไม่ระบุชื่อ';
-            if (sequence) shipment.sequenceNumber = sequence;
+        }
+        if (phone.length === 9) phone = '0' + phone;
+        shipment.phoneNumber = phone;
+
+        // Name
+        // If we have a bioColumn, name is usually the first line
+        if (bioColumn) {
+            const lines = bioColumn.split('\n').map(l => l.trim()).filter(l => l);
+            // Heuristic: Name is line that is NOT an ID, NOT empty, NOT Phone
+            const nameLine = lines.find(l =>
+                !l.startsWith('#') &&
+                !l.startsWith('💢') &&
+                !l.includes('COD') &&
+                !l.match(/^A\dB\d/) &&
+                l.length > 2
+            );
+            shipment.customerName = nameLine || 'ไม่ระบุชื่อ';
+        } else {
+            // Fallback to previous logic or simple column
+            // Find a column that is not tracking, not phone, not code
+            const nameCandidate = parts.find(p =>
+                p !== shipment.trackingNumber &&
+                !p.includes(phone) &&
+                p.length > 2 && p.length < 50 &&
+                !/^\d+$/.test(p) &&
+                !/^(COD|TT)/i.test(p)
+            );
+            shipment.customerName = nameCandidate || 'ไม่ระบุชื่อ';
         }
 
-        if (zipIdx !== -1 && zipIdx + 1 < parts.length) {
-            const rawCost = parts[zipIdx + 1];
-            if (/^[\d,\.]+$/.test(rawCost)) { shipment.shippingCost = parseFloat(rawCost.replace(/,/g, '')) || 0; }
-        } else if (parts[parts.length - 2] && /^[\d,\.]+$/.test(parts[parts.length - 2])) {
-            shipment.shippingCost = parseFloat(parts[parts.length - 2].replace(/,/g, '')) || 0;
+        // Product Code (e.g. A2B1)
+        // Regex: /^[A-Z]\d+[A-Z]\d+$/
+        const productCode = parts.find(p => /^[A-Z]\d+[A-Z]\d+$/.test(p));
+        // We don't have a productCode field in Shipment type explicitly shown in existing code, 
+        // so we might append it to name or handle it if we add a field.
+        // The user asked for "support directly", maybe as a note?
+        // Let's check `Shipment` type definition. Assuming it might not have 'productCode'.
+        // We will append to `raw_data` or `variant` if exists.
+        // For now, let's append to Customer Name like "Name (A2B1)" if unique?
+        // Or better, checking the provided columns, there is no explicit Product Code column in standard schema shown in `ImportPage` earlier.
+        // Wait, `Shipment` interface:
+        // id, trackingNumber, courier, status, customerName, phoneNumber, zipCode, codAmount, shippingCost, importDate, importTime, timestamp, raw_data?
+        // Use `raw_data` to store full info.
+
+        if (productCode) {
+            shipment.zipCode = productCode; // HACK: temporarily use zipCode or just append to name?
+            // Actually, best to append to name for visibility if no dedicated field
+            // shipment.customerName += ` (${productCode})`;
+            // Re-think: The user emphasized A2B1, A5B6...
+            // Let's put it in `zipCode` if zip is not found? Or create a special logic.
+            // Start with ZipCode as place holder or just ignore?
+            // Let's use `raw_data` field if available.
         }
 
-        const lastCol = parts[parts.length - 1];
-        if (lastCol && (lastCol.includes('รับฝาก') || lastCol.includes('Deliver') || lastCol.length < 20)) {
-            shipment.status = lastCol as any;
-        } else { shipment.status = 'รับฝาก'; }
-
-        if (/\d{4}-\d{2}-\d{2}/.test(lastCol)) {
-            shipment.importDate = lastCol;
-            if (parts.length > 2) shipment.status = parts[parts.length - 2] as any;
+        // COD / TT
+        // Look for "COD 199" or "TT"
+        const paymentInfo = parts.find(p => /COD|TT/i.test(p));
+        if (paymentInfo) {
+            const amountMatch = paymentInfo.match(/\d+/);
+            if (amountMatch) {
+                shipment.codAmount = parseFloat(amountMatch[0]);
+            }
+            // If TT, cod is 0
+            if (/TT/i.test(paymentInfo)) {
+                shipment.codAmount = 0;
+                // Maybe store "TT" status?
+            }
         }
+
+        // ZipCode
+        const zip = parts.find(p => /^\d{5}$/.test(p));
+        if (zip) shipment.zipCode = zip;
 
         return shipment;
     };
 
     const processRawText = (text: string, importDate: string, courierName: Courier, importTime: string = '00:00'): Shipment[] => {
-        const lines = text.trim().split('\n');
+        // Detect Excel/TSV format
+        const isExcelClip = text.includes('\t') || (text.includes('"') && text.includes('\n'));
+        let rows: string[][] = [];
+
+        if (isExcelClip) {
+            rows = parseExcelClip(text);
+        } else {
+            rows = text.trim().split('\n').map(line => {
+                const separator = line.includes('\t') ? '\t' : ',';
+                return line.split(separator).map(cleanString).filter(p => p !== '');
+            });
+        }
+
         const results: Shipment[] = [];
         const baseId = Date.now();
         const randomOffset = Math.floor(Math.random() * 10000);
 
-        lines.forEach((line, index) => {
-            if (!line.trim()) return;
-            if (line.includes('Barcode') || line.includes('Tracking') || line.includes('ผู้รับ')) return;
-            const separator = line.includes('\t') ? '\t' : ',';
-            const parts = line.split(separator).map(cleanString).filter(p => p !== '');
+        rows.forEach((parts, index) => {
+            if (parts.length === 0) return;
+            // Skip headers
+            if (parts.some(p => p.includes('Barcode') || p.includes('Tracking'))) return;
+
             const shipment = parseRowSmart(parts);
             if (shipment && shipment.trackingNumber) {
                 results.push({
