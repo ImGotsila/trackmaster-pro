@@ -155,6 +155,8 @@ const SummaryPage: React.FC = () => {
             totalOrders: filteredShipments.length,
             totalTransferCount,
             totalCodCount,
+            estimatedTransferRevenue,
+            avgTransferVal: settings.avg_transfer_value || 0
         };
     }, [filteredShipments, codFeePercent]);
 
@@ -279,8 +281,13 @@ const SummaryPage: React.FC = () => {
                             ฿{stats.profit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </h3>
                         <p className="text-[10px] text-slate-400 mt-1 font-bold">
-                            ROI (Net): {stats.roi.toFixed(1)}%
+                            ROI: {stats.roi.toFixed(1)}% {stats.avgTransferVal > 0 && <span className="font-normal text-indigo-400">(รวมยอดโอนประมาณการ)</span>}
                         </p>
+                        {stats.avgTransferVal > 0 && stats.estimatedTransferRevenue > 0 && (
+                            <p className="text-[9px] text-slate-400 mt-0.5">
+                                *รวมมูลค่าโอน ~฿{stats.estimatedTransferRevenue.toLocaleString()}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

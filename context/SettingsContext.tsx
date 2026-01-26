@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 interface Settings {
     cod_fee: number;
+    avg_transfer_value: number;
     [key: string]: any;
 }
 
@@ -15,7 +16,7 @@ interface SettingsContextType {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [settings, setSettings] = useState<Settings>({ cod_fee: 3 });
+    const [settings, setSettings] = useState<Settings>({ cod_fee: 3, avg_transfer_value: 0 });
     const [isLoading, setIsLoading] = useState(true);
     const isDemoMode = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
 
@@ -32,6 +33,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 // Convert string values to numbers where appropriate
                 const formatted = { ...data };
                 if (formatted.cod_fee) formatted.cod_fee = Number(formatted.cod_fee);
+                if (formatted.avg_transfer_value) formatted.avg_transfer_value = Number(formatted.avg_transfer_value);
                 setSettings(prev => ({ ...prev, ...formatted }));
             }
         } catch (e) {

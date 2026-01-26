@@ -11,6 +11,7 @@ const AdminSettingsPage: React.FC = () => {
 
     // States for Settings
     const [codFee, setCodFee] = useState(settings.cod_fee.toString());
+    const [avgTransferValue, setAvgTransferValue] = useState(settings.avg_transfer_value?.toString() || '0');
     const [isSaving, setIsSaving] = useState(false);
 
     // States for User Management
@@ -32,12 +33,14 @@ const AdminSettingsPage: React.FC = () => {
     useEffect(() => {
         if (isAdmin) fetchUsers();
         setCodFee(settings.cod_fee.toString());
-    }, [isAdmin, settings.cod_fee]);
+        setAvgTransferValue(settings.avg_transfer_value?.toString() || '0');
+    }, [isAdmin, settings.cod_fee, settings.avg_transfer_value]);
 
     const handleSaveSettings = async () => {
         setIsSaving(true);
         try {
             await updateSetting('cod_fee', parseFloat(codFee));
+            await updateSetting('avg_transfer_value', parseFloat(avgTransferValue));
             alert('บันทึกการตั้งค่าเรียบร้อยแล้ว');
         } catch (e) { alert('เกิดข้อผิดพลาด'); }
         finally { setIsSaving(false); }
@@ -122,17 +125,32 @@ const AdminSettingsPage: React.FC = () => {
                                         className="flex-1 px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         placeholder="3"
                                     />
-                                    <button
-                                        onClick={handleSaveSettings}
-                                        disabled={isSaving}
-                                        className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all flex items-center gap-2"
-                                    >
-                                        <Save className="w-4 h-4" />
-                                        {isSaving ? 'กำลังบันทึก...' : 'บันทึก'}
-                                    </button>
                                 </div>
                                 <p className="text-xs text-slate-400">ค่าเริ่มต้นคือ 3% ซึ่งจะถูกนำไปคำนวณกำไรสุทธิในทุกหน้าของระบบ</p>
                             </div>
+
+                            <div className="space-y-2 pt-2 border-t border-slate-100">
+                                <label className="text-sm font-bold text-slate-600">มูลค่าเฉลี่ยออร์เดอร์โอน (Estimated Value)</label>
+                                <div className="flex gap-3">
+                                    <input
+                                        type="number"
+                                        value={avgTransferValue}
+                                        onChange={(e) => setAvgTransferValue(e.target.value)}
+                                        className="flex-1 px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="500"
+                                    />
+                                </div>
+                                <p className="text-xs text-slate-400">ระบุยอดขายเฉลี่ยต่อออร์เดอร์ (สำหรับรายการโอน/ส่งฟรี) เพื่อให้ระบบคำนวณกำไรได้แม่นยำขึ้น</p>
+                            </div>
+
+                            <button
+                                onClick={handleSaveSettings}
+                                disabled={isSaving}
+                                className="w-full mt-4 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-200"
+                            >
+                                <Save className="w-4 h-4" />
+                                {isSaving ? 'บันทึกการตั้งค่า' : 'บันทึกการตั้งค่า'}
+                            </button>
                         </div>
                     </div>
 
@@ -141,7 +159,8 @@ const AdminSettingsPage: React.FC = () => {
                             <Info className="w-6 h-6 shrink-0" />
                             <div className="text-sm">
                                 <p className="font-bold">ข้อมูลการคำนวณกำไร (Formula)</p>
-                                <p className="mt-1">กำไร = ยอด COD - ค่าส่ง - (ยอด COD &times; {settings.cod_fee}%)</p>
+                                <p className="mt-1 pb-1 border-b border-amber-200/50">กำไร COD = ยอด COD - ค่าส่ง - (ยอด COD &times; {settings.cod_fee}%)</p>
+                                <p className="mt-1">กำไรโอน = ((ยอดโอน + ส่งฟรี) &times; ฿{settings.avg_transfer_value || 0}) - ต้นทุนสินค้าโอน</p>
                             </div>
                         </div>
                     </div>
