@@ -75,7 +75,13 @@ app.post('/api/history', (req, res) => {
 });
 
 // --- GOOGLE SHEETS PROXY API ---
-const GS_URL = process.env.VITE_GOOGLE_SHEETS_SCRIPT_URL;
+// --- GOOGLE SHEETS PROXY API ---
+let GS_URL = process.env.VITE_GOOGLE_SHEETS_SCRIPT_URL;
+
+// Auto-fix: Remove /u/1/ or similar specific-user paths from URL to make it universal
+if (GS_URL) {
+    GS_URL = GS_URL.replace(/\/u\/\d+\//, '/');
+}
 
 app.get('/api/gsheets/get', async (req, res) => {
     if (!GS_URL) {
@@ -622,11 +628,6 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', message: 'TrackMaster API is running' });
 });
 
-// 404 handler for API routes
-app.use('/api/*', (req, res) => {
-    res.status(404).json({ error: 'API endpoint not found' });
-});
-
 // --- SYNC & BACKUP SERVICES ---
 const syncService = require('./services/SyncService');
 const backupService = require('./services/BackupService');
@@ -658,6 +659,13 @@ app.get('/api/backups', (req, res) => {
     const backups = backupService.getBackups();
     res.json(backups);
 });
+
+// 404 handler for API routes (MUST BE LAST API ROUTE)
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ error: 'API endpoint not found' });
+});
+
+
 
 // Fallback for SPA routing (if serving frontend locally)
 app.get('*', (req, res) => {

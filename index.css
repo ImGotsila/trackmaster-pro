@@ -54,25 +54,21 @@
 
   /* Custom scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-slate-100 rounded-full;
+    @apply bg-slate-50 rounded-full;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gradient-to-b from-blue-400 to-blue-600 rounded-full;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply from-blue-500 to-blue-700;
+    @apply bg-gradient-to-b from-indigo-400 to-violet-600 rounded-full opacity-80 hover:opacity-100 transition-opacity;
   }
 
   /* Glass morphism effect */
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-lg;
+    @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl;
   }
 
   /* Text shadow for better readability */
@@ -83,5 +79,33 @@
   /* Smooth transitions */
   .transition-smooth {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scaleUp {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-scale-up {
+    animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }

@@ -4,7 +4,7 @@ import { useData } from '../context/DataContext';
 import { useSettings } from '../context/SettingsContext';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
-    LineChart, Line, AreaChart, Area, PieChart, Pie, Cell
+    LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis
 } from 'recharts';
 import { TrendingUp, BarChart3, PieChart as PieChartIcon, Activity, DollarSign, Package, MapPin, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
@@ -89,6 +89,42 @@ const VisualMetricsPage: React.FC = () => {
                 };
             });
     }, [filteredShipments, codFeePercent]);
+
+    // 5. Weight Distribution (Bar Chart Data)
+    const weightDistributionData = useMemo(() => {
+        const ranges = [
+            { label: '<1kg', min: 0, max: 1, count: 0 },
+            { label: '1-3kg', min: 1, max: 3, count: 0 },
+            { label: '3-10kg', min: 3, max: 10, count: 0 },
+            { label: '10-20kg', min: 10, max: 20, count: 0 },
+            { label: '>20kg', min: 20, max: 9999, count: 0 },
+        ];
+
+        filteredShipments.forEach(s => {
+            const w = s.weight || 0;
+            if (w === 0) return;
+            const range = ranges.find(r => w >= r.min && w < r.max);
+            if (range) range.count++;
+        });
+
+        return ranges.map(r => ({ range: r.label, count: r.count }));
+    }, [filteredShipments]);
+
+    // 6. Weight vs Cost (Scatter Data) - Sampled for performance
+    const weightCostData = useMemo(() => {
+        // Take up to 200 data points to avoid crashing the chart if too many
+        const limit = 200;
+        const step = Math.max(1, Math.floor(filteredShipments.length / limit));
+        const data = [];
+
+        for (let i = 0; i < filteredShipments.length; i += step) {
+            const s = filteredShipments[i];
+            if ((s.weight || 0) > 0 && (s.shippingCost || 0) > 0) {
+                data.push({ weight: s.weight, cost: s.shippingCost });
+            }
+        }
+        return data;
+    }, [filteredShipments]);
 
     const totalCOD = filteredShipments.reduce((sum, s) => sum + (s.codAmount || 0), 0);
     const totalCost = filteredShipments.reduce((sum, s) => sum + (s.shippingCost || 0), 0);
@@ -275,8 +311,55 @@ const VisualMetricsPage: React.FC = () => {
                     </div>
                 </div>
 
+                {/* 5. Weight Distribution (Bar Chart) */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[400px]">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-black text-slate-700 flex items-center gap-2">
+                            <Package className="w-4 h-4 text-cyan-500" />
+                            การกระจายตัวของน้ำหนัก
+                        </h3>
+                        <span className="text-[10px] font-bold bg-cyan-50 text-cyan-600 px-2 py-1 rounded-lg uppercase">Weight Dist.</span>
+                    </div>
+                    <div className="flex-1">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={weightDistributionData}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis dataKey="range" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#94a3b8' }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#94a3b8' }} />
+                                <RechartsTooltip
+                                    cursor={{ fill: '#f8fafc' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                />
+                                <Bar dataKey="count" name="จำนวนพัสดุ" fill="#06b6d4" radius={[4, 4, 0, 0]} barSize={40} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* 6. Weight vs Cost Correlation (Scatter Chart) */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[400px]">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-black text-slate-700 flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-pink-500" />
+                            ความสัมพันธ์ น้ำหนัก vs ค่าส่ง
+                        </h3>
+                        <span className="text-[10px] font-bold bg-pink-50 text-pink-600 px-2 py-1 rounded-lg uppercase">Cost Correlation</span>
+                    </div>
+                    <div className="flex-1">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                <XAxis type="number" dataKey="weight" name="น้ำหนัก" unit="kg" tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                                <YAxis type="number" dataKey="cost" name="ค่าส่ง" unit="฿" tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                                <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ borderRadius: '12px' }} />
+                                <Scatter name="Shipments" data={weightCostData} fill="#ec4899" fillOpacity={0.6} shape="circle" />
+                            </ScatterChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
         </div>
+
     );
 };
 

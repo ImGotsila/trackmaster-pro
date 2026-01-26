@@ -1,15 +1,3 @@
-// --------------------------------------------------------------------------------------------------------------------
-// Google Apps Script for TrackMaster Pro (Fixed Compatibility Version + Delete Fix)
-// --------------------------------------------------------------------------------------------------------------------
-// INSTRUCTIONS:
-// 1. Open Google Sheet > Extensions > Apps Script.
-// 2. Delete ALL existing code.
-// 3. Paste this code completely.
-// 4. Click 'Deploy' > 'New deployment'.
-// 5. Select type: 'Web app', Execute as: 'Me', Who has access: 'Anyone'.
-// 6. Click 'Deploy'.
-// --------------------------------------------------------------------------------------------------------------------
-
 function doGet(e) {
   // Standard API Handling
   if (e && e.parameter && e.parameter.action) {
@@ -113,6 +101,9 @@ function getData() {
         id: 'row-' + i,
         sequenceNumber: row[0] || '', // Col A
         trackingNumber: tracking,     // Col B
+        payTag: row[2] || '',         // Col C (Added)
+        serviceType: row[3] || '',    // Col D (Added)
+        weight: parseFloat(row[4] ? row[4].replace(/,/g, '') : 0) || 0, // Col E (Added)
         customerName: cleanName,
         phoneNumber: phone,
         codAmount: parseFloat(row[5] ? row[5].replace(/,/g, '') : 0) || 0, // Col F
@@ -154,6 +145,11 @@ function saveShipments(newShipments) {
 
     var track = item.trackingNumber;
     var ref   = item.sequenceNumber || ''; 
+    // ADDED: New Fields
+    var payTag = item.payTag || '';
+    var service = item.serviceType || '';
+    var weight = item.weight || '';
+    // END ADDED
     var cod   = item.codAmount;
     var name  = item.customerName;
     var phone = item.phoneNumber;
@@ -164,17 +160,17 @@ function saveShipments(newShipments) {
 
     if (rowIndex !== -1) {
       // UPDATE
-      // F(6), G(7), H(8), I(9), J(10), K(11), L(12)
-      sheet.getRange(rowNum, 6, 1, 7).setValues([[cod, name, phone, zip, cost, status, date]]);
+      // MODIFIED: Updated range to include C, D, E (Start Col 3, 10 columns)
+      sheet.getRange(rowNum, 3, 1, 10).setValues([[payTag, service, weight, cod, name, phone, zip, cost, status, date]]);
       updatedCount++;
     } else {
       // APPEND
       var rowData = [
         ref,    // A
         track,  // B
-        '',     // C
-        '',     // D
-        '',     // E
+        payTag, // C (Added)
+        service,// D (Added)
+        weight, // E (Added)
         cod,    // F
         name,   // G
         phone,  // H

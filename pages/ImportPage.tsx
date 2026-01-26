@@ -112,6 +112,30 @@ const ImportPage: React.FC = () => {
     };
 
     const parseRowSmart = (parts: string[]): Partial<Shipment> | null => {
+        // Strategy 0: Specific Format Detection (11 columns from user sample)
+        // Col 1: Barcode (JN...), Col 2: Pay Tag, Col 8: Zip (PC)
+        if (parts.length >= 10 && (parts[1].startsWith('JN') || parts[1].startsWith('EF') || parts[1].length > 10)) {
+            const tracking = parts[1];
+            // Validate tracking roughly
+            if (/^[A-Z0-9]{10,20}$/.test(tracking)) {
+                let phone = parts[7] || '';
+                if (phone && !phone.startsWith('0') && phone.length === 9) phone = '0' + phone;
+
+                return {
+                    trackingNumber: tracking,
+                    payTag: parts[2],
+                    serviceType: parts[3],
+                    weight: parseFloat(parts[4]) || 0,
+                    codAmount: (parseFloat(parts[5]) || 0) > 10 ? (parseFloat(parts[5]) || 0) : 0, // Fix: If < 10, assume it's Quantity, not COD
+                    customerName: parts[6] ? parts[6].replace(/^\d+\./, '') : '', // Remove "250." prefix if any
+                    phoneNumber: phone,
+                    zipCode: parts[8], // PC Column
+                    shippingCost: parseFloat(parts[9]) || 0,
+                    status: (parts[10] as any) || 'รับฝาก'
+                };
+            }
+        }
+
         // Strategy 1: Find columns by Regex
         const tracking = parts.find(p => /^(JN|SP|TH|Kerry|Flash)\d{8,16}[A-Z]*$/i.test(p) || (p.startsWith('JN') && p.endsWith('TH')));
         if (!tracking) {
@@ -172,29 +196,8 @@ const ImportPage: React.FC = () => {
             shipment.customerName = nameCandidate || 'ไม่ระบุชื่อ';
         }
 
-        // Product Code (e.g. A2B1)
-        // Regex: /^[A-Z]\d+[A-Z]\d+$/
-        const productCode = parts.find(p => /^[A-Z]\d+[A-Z]\d+$/.test(p));
-        // We don't have a productCode field in Shipment type explicitly shown in existing code, 
-        // so we might append it to name or handle it if we add a field.
-        // The user asked for "support directly", maybe as a note?
-        // Let's check `Shipment` type definition. Assuming it might not have 'productCode'.
-        // We will append to `raw_data` or `variant` if exists.
-        // For now, let's append to Customer Name like "Name (A2B1)" if unique?
-        // Or better, checking the provided columns, there is no explicit Product Code column in standard schema shown in `ImportPage` earlier.
-        // Wait, `Shipment` interface:
-        // id, trackingNumber, courier, status, customerName, phoneNumber, zipCode, codAmount, shippingCost, importDate, importTime, timestamp, raw_data?
-        // Use `raw_data` to store full info.
-
-        if (productCode) {
-            shipment.zipCode = productCode; // HACK: temporarily use zipCode or just append to name?
-            // Actually, best to append to name for visibility if no dedicated field
-            // shipment.customerName += ` (${productCode})`;
-            // Re-think: The user emphasized A2B1, A5B6...
-            // Let's put it in `zipCode` if zip is not found? Or create a special logic.
-            // Start with ZipCode as place holder or just ignore?
-            // Let's use `raw_data` field if available.
-        }
+        // Product Code logic removed to prevent mixing with ZipCode
+        // if (productCode) ...
 
         // COD / TT
         // Look for "COD 199" or "TT"
@@ -213,7 +216,15 @@ const ImportPage: React.FC = () => {
 
         // ZipCode
         const zip = parts.find(p => /^\d{5}$/.test(p));
-        if (zip) shipment.zipCode = zip;
+        if (zip) {
+            shipment.zipCode = zip;
+        } else if (bioColumn) {
+            // Try to extract ZipCode from address block
+            const zipMatch = bioColumn.match(/\b\d{5}\b/);
+            if (zipMatch) {
+                shipment.zipCode = zipMatch[0];
+            }
+        }
 
         return shipment;
     };
@@ -275,7 +286,7 @@ const ImportPage: React.FC = () => {
             let fileDate = date;
 
             // Date Extraction
-            const dateMatch = file.name.match(/(\d{2})[-/.](\d{2})[-/.](\d{4})/);
+            const dateMatch = file.name.match(/(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
             if (dateMatch) {
                 let day = parseInt(dateMatch[1]);
                 let month = parseInt(dateMatch[2]);

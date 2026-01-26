@@ -12,6 +12,9 @@ export interface Shipment {
   importTime?: string; // HH:mm format
   timestamp: number;
   sequenceNumber?: string; // For the "718." prefix
+  payTag?: string;         // For "Pay Tag" (e.g. SPYA...)
+  serviceType?: string;    // For "บริการ"
+  weight?: number;         // For "นน."
 }
 
 export type Courier = 'Thailand Post - EMS' | 'Kerry Express' | 'J&T Express' | 'Flash Express';

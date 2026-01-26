@@ -55,6 +55,7 @@ const CostAnalyticsPage: React.FC = () => {
             district: string;
             count: number;
             totalCost: number;
+            totalWeight: number; // Added
             avgCost: number;
         }>();
         const total = filteredShipments.length;
@@ -73,11 +74,13 @@ const CostAnalyticsPage: React.FC = () => {
 
                 const addressInfo = addresses[0];
                 const zipKey = s.zipCode;
+                const weight = s.weight || 0;
 
                 const existing = stats.get(zipKey);
                 if (existing) {
                     existing.count++;
                     existing.totalCost += (s.shippingCost || 0);
+                    existing.totalWeight += weight;
                     existing.avgCost = existing.totalCost / existing.count;
                 } else {
                     stats.set(zipKey, {
@@ -86,6 +89,7 @@ const CostAnalyticsPage: React.FC = () => {
                         district: addressInfo.amphoe || addressInfo.district || 'ไม่ระบุ',
                         count: 1,
                         totalCost: (s.shippingCost || 0),
+                        totalWeight: weight,
                         avgCost: (s.shippingCost || 0)
                     });
                 }
@@ -143,7 +147,9 @@ const CostAnalyticsPage: React.FC = () => {
             const mappedData = data.map((item: any) => {
                 const coords = getUniqueCoordinates(item.zipCode, item.province);
                 const avgCost = item.totalCost / Math.max(1, item.count);
-                return { ...item, ...coords, avgCost };
+                const avgWeight = (item.totalWeight || 0) / Math.max(1, item.count);
+                const costPerKg = (item.totalWeight > 0) ? (item.totalCost / item.totalWeight) : 0;
+                return { ...item, ...coords, avgCost, avgWeight, costPerKg };
             });
 
             setProvinceData(mappedData.filter((p: any) => p.count > 0));
@@ -165,7 +171,9 @@ const CostAnalyticsPage: React.FC = () => {
                     const mappedData = data.map((item: any) => {
                         const coords = getUniqueCoordinates(item.zipCode, item.province);
                         const avgCost = item.totalCost / Math.max(1, item.count);
-                        return { ...item, ...coords, avgCost };
+                        const avgWeight = (item.totalWeight || 0) / Math.max(1, item.count);
+                        const costPerKg = (item.totalWeight > 0) ? (item.totalCost / item.totalWeight) : 0;
+                        return { ...item, ...coords, avgCost, avgWeight, costPerKg };
                     });
                     setProvinceData(mappedData.filter((p: any) => p.count > 0));
                     setCurrentPage(1);
@@ -294,6 +302,8 @@ const CostAnalyticsPage: React.FC = () => {
                                                 <p className="flex justify-between gap-4"><span>จำนวนส่ง:</span><span className="font-bold">{data.count} ชิ้น</span></p>
                                                 <p className="flex justify-between gap-4"><span>รวมค่าส่ง:</span><span className="font-bold text-indigo-600">฿{data.totalCost.toLocaleString()}</span></p>
                                                 <p className="flex justify-between gap-4 border-t pt-1 mt-1"><span>ค่าส่งเฉลี่ย:</span><span className="font-bold text-rose-600">฿{Math.round(data.avgCost)}</span></p>
+                                                {data.avgWeight > 0 && <p className="flex justify-between gap-4"><span>นน.เฉลี่ย:</span><span className="font-bold text-slate-700">{data.avgWeight.toFixed(2)} kg</span></p>}
+                                                {data.costPerKg > 0 && <p className="flex justify-between gap-4"><span>บาท/กก.:</span><span className="font-bold text-slate-700">฿{data.costPerKg.toFixed(1)}</span></p>}
                                             </div>
                                         </div>
                                     </Popup>
@@ -342,6 +352,7 @@ const CostAnalyticsPage: React.FC = () => {
                                         <div>
                                             <span className="font-bold text-slate-800">{data.zipCode}</span>
                                             <p className="text-[10px] text-slate-500">อ.{data.district}, {data.province}</p>
+                                            {data.avgWeight > 0 && <p className="text-[10px] text-slate-400 font-bold mt-0.5">{data.avgWeight.toFixed(2)} kg/ชิ้น</p>}
                                         </div>
                                         <div className="text-right">
                                             <span className="text-sm font-black text-rose-600">฿{Math.round(data.avgCost)}</span>

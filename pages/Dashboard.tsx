@@ -219,30 +219,32 @@ const Dashboard: React.FC = () => {
                 </button>
               </div>
 
-              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2 text-xs md:text-sm items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-500 font-medium">รวม: <b className="text-slate-800">{stats.count}</b> ชิ้น</span>
+              <div className="flex flex-wrap gap-3 mt-3">
+                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">
+                  <div className="p-1 bg-slate-200 rounded-full"><Package className="w-3 h-3 text-slate-600" /></div>
+                  <span className="text-xs text-slate-500 font-bold">รวม: <b className="text-slate-800 text-sm">{stats.count}</b> ชิ้น</span>
                 </div>
-                <div className="h-4 w-px bg-slate-200 hidden md:block"></div>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-500 font-medium">COD: <b className="text-emerald-600">{stats.totalCOD.toLocaleString()}</b> บ.</span>
+
+                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-lg shadow-sm">
+                  <div className="p-1 bg-emerald-200 rounded-full"><Save className="w-3 h-3 text-emerald-700" /></div>
+                  <span className="text-xs text-emerald-700 font-bold">COD: <b className="text-sm">{stats.totalCOD.toLocaleString()}</b> บ.</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-500 font-medium">ค่าส่ง: <b className="text-rose-600">{stats.totalCost.toLocaleString()}</b> บ.</span>
+
+                <div className="flex items-center gap-2 bg-rose-50 border border-rose-100 px-3 py-1.5 rounded-lg shadow-sm">
+                  <div className="p-1 bg-rose-200 rounded-full"><Package className="w-3 h-3 text-rose-700" /></div>
+                  <span className="text-xs text-rose-700 font-bold">ค่าส่ง: <b className="text-sm">{stats.totalCost.toLocaleString()}</b> บ.</span>
                 </div>
-                <div className="h-4 w-px bg-slate-200 hidden md:block"></div>
-                {/* Cost Analysis */}
-                <div className="flex items-center gap-3 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">
-                  <span className="text-slate-500 font-medium">
-                    กำไร (Est): <b className="text-indigo-600">{(stats.totalCOD - stats.totalCost - stats.totalFee).toLocaleString(undefined, { maximumFractionDigits: 0 })}</b> บ.
-                  </span>
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${((stats.totalCost + stats.totalFee) / (stats.totalCOD || 1)) * 100 > 30
-                    ? 'bg-rose-100 text-rose-700'
-                    : 'bg-emerald-100 text-emerald-700'
-                    }`}>
-                    ต้นทุน {stats.totalCOD > 0 ? (((stats.totalCost + stats.totalFee) / stats.totalCOD) * 100).toFixed(1) : 0}%
-                  </span>
-                  {codFeePercent > 0 && <span className="text-[10px] font-bold text-slate-400 tracking-tight">(หักค่า COD {codFeePercent}%)</span>}
+
+                {/* Cost Analysis Badge */}
+                <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg shadow-sm">
+                  <div className="p-1 bg-indigo-200 rounded-full"><Database className="w-3 h-3 text-indigo-700" /></div>
+                  <div className="flex flex-col leading-none">
+                    <span className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider">กำไร (Est)</span>
+                    <span className="text-sm font-black text-indigo-700">{(stats.totalCOD - stats.totalCost - stats.totalFee).toLocaleString(undefined, { maximumFractionDigits: 0 })} บ.</span>
+                  </div>
+                  <div className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-black border ${((stats.totalCost + stats.totalFee) / (stats.totalCOD || 1)) * 100 > 30 ? 'bg-rose-100 text-rose-600 border-rose-200' : 'bg-emerald-100 text-emerald-600 border-emerald-200'}`}>
+                    {stats.totalCOD > 0 ? (((stats.totalCost + stats.totalFee) / stats.totalCOD) * 100).toFixed(1) : 0}% Cost
+                  </div>
                 </div>
               </div>
             </div>
@@ -262,95 +264,19 @@ const Dashboard: React.FC = () => {
 
         {/* Table Container */}
         <div className="flex-1 overflow-x-auto overflow-y-auto bg-white custom-scrollbar relative">
-          {/* Mobile Card View (Visible on small screens) */}
-          <div className="md:hidden space-y-3 p-3">
-            {paginatedShipments.map((item) => {
-              const profit = (item.codAmount || 0) - (item.shippingCost || 0) - ((item.codAmount || 0) * (codFeePercent / 100));
-              const costPercent = item.codAmount > 0 ? ((item.shippingCost || 0) / item.codAmount) * 100 : 0;
 
-              return (
-                <div key={item.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <a
-                        href={getTrackingUrl(item.trackingNumber, item.courier)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-bold text-indigo-700 font-mono tracking-tight flex items-center gap-1"
-                      >
-                        {item.trackingNumber}
-                        <ExternalLink className="w-3 h-3 opacity-50" />
-                      </a>
-                      <p className="text-xs text-slate-500 font-medium mt-0.5">{item.customerName}</p>
-                    </div>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${item.status === 'รับฝาก'
-                      ? 'bg-blue-50 text-blue-700 border-blue-200'
-                      : item.status === 'Delivered'
-                        ? 'bg-green-50 text-green-700 border-green-200'
-                        : 'bg-slate-100 text-slate-600 border-slate-200'
-                      }`}>
-                      {item.status}
-                    </span>
-                  </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-50">
-                    <div>
-                      <p className="text-[10px] uppercase font-bold text-slate-400">COD Amount</p>
-                      <p className="text-sm font-bold text-slate-800">{item.codAmount > 0 ? item.codAmount.toLocaleString() : '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase font-bold text-slate-400">Profit (Est.)</p>
-                      <p className={`text-sm font-bold ${profit > 0 ? 'text-emerald-600' : 'text-slate-400'}`}>
-                        {profit > 0 ? profit.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '-'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleZipClick(item.zipCode);
-                      }}
-                      className="text-xs font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded hover:bg-indigo-100"
-                    >
-                      {item.zipCode}
-                    </button>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (window.confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) {
-                            deleteShipment(item.id);
-                          }
-                        }}
-                        className="p-1.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            {paginatedShipments.length === 0 && (
-              <div className="text-center py-10 text-slate-400">
-                <Package className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                <p className="text-sm font-medium">ไม่พบข้อมูล</p>
-              </div>
-            )}
-          </div>
-
-          {/* Desktop Table View (Hidden on mobile) */}
-          <div className="hidden md:block min-w-full">
-            <table className="w-full text-left border-collapse min-w-[900px]">
+          {/* Table View (Scrollable on mobile) */}
+          <div className="min-w-full">
+            <table className="w-full text-left border-collapse min-w-[1200px]">
               <thead className="bg-slate-50 sticky top-0 z-10 shadow-sm">
                 <tr>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider w-10 text-center">#</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider w-14 text-center">ลำดับ</th>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[130px]">Tracking</th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">Pay Tag</th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">Service</th>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[160px]">ชื่อลูกค้า</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">เบอร์โทร</th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[70px]">นน.(kg)</th>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[80px]">COD</th>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[70px]">ค่าส่ง</th>
                   <th
@@ -376,34 +302,39 @@ const Dashboard: React.FC = () => {
                     <td className="px-3 py-3 text-xs font-medium text-slate-400 text-center">
                       {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
                     </td>
-                    <td className="px-3 py-3 text-center">
-                      {item.sequenceNumber ? (
-                        <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                          {item.sequenceNumber}
-                        </span>
-                      ) : (
-                        <span className="text-slate-300">-</span>
-                      )}
+                    <td className="px-3 py-3">
+                      <div className="flex flex-col">
+                        <a
+                          href={getTrackingUrl(item.trackingNumber, item.courier)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs md:text-sm font-bold text-indigo-700 font-mono tracking-tight whitespace-nowrap hover:text-indigo-900 hover:underline cursor-pointer"
+                          title={`ตรวจสอบสถานะ ${item.trackingNumber}`}
+                        >
+                          {item.trackingNumber}
+                          <ExternalLink className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />
+                        </a>
+                        {item.sequenceNumber && <span className="text-[10px] text-slate-400 font-mono">Ref: {item.sequenceNumber}</span>}
+                      </div>
                     </td>
                     <td className="px-3 py-3">
-                      <a
-                        href={getTrackingUrl(item.trackingNumber, item.courier)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs md:text-sm font-bold text-indigo-700 font-mono tracking-tight whitespace-nowrap hover:text-indigo-900 hover:underline cursor-pointer"
-                        title={`ตรวจสอบสถานะ ${item.trackingNumber}`}
-                      >
-                        {item.trackingNumber}
-                        <ExternalLink className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />
-                      </a>
-                    </td>
-                    <td className="px-3 py-3 text-sm font-semibold text-slate-700 truncate max-w-[180px]" title={item.customerName}>
-                      {item.customerName}
-                    </td>
-                    <td className="px-3 py-3">
-                      <span className="inline-block px-2 py-0.5 bg-slate-100 rounded text-sm font-bold text-slate-700 font-mono tracking-wide">
-                        {item.phoneNumber}
+                      <span className="text-xs font-mono text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 truncate max-w-[100px] block" title={item.payTag || '-'}>
+                        {item.payTag || '-'}
                       </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className="text-xs text-slate-500 truncate max-w-[100px] block" title={item.serviceType || '-'}>
+                        {item.serviceType || '-'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-slate-700 truncate max-w-[180px]" title={item.customerName}>{item.customerName}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">{item.phoneNumber}</span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3 text-xs md:text-sm font-medium text-slate-600 text-right">
+                      {item.weight ? item.weight.toFixed(2) : '-'}
                     </td>
                     <td className="px-3 py-3 text-xs md:text-sm font-bold text-right">
                       {item.codAmount > 0 ? (
@@ -471,7 +402,7 @@ const Dashboard: React.FC = () => {
                 ))}
                 {filteredShipments.length === 0 && (
                   <tr>
-                    <td colSpan={10} className="px-6 py-20 text-center">
+                    <td colSpan={13} className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center text-slate-400">
                         <Package className="w-16 h-16 mb-4 opacity-10" />
                         <p className="text-base font-semibold">ไม่พบข้อมูลในวันที่เลือก</p>
