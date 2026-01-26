@@ -74,16 +74,26 @@ const Dashboard: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'cod' | 'transfer'>('all');
+
   const filteredResults = useMemo(() => {
     return filteredShipments.filter(s => {
+      // 1. Search Filter
       const matchesSearch = searchTerm === '' ||
         s.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         s.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         s.phoneNumber.includes(searchTerm) ||
         (s.sequenceNumber && s.sequenceNumber.includes(searchTerm));
-      return matchesSearch;
+
+      if (!matchesSearch) return false;
+
+      // 2. Payment Filter
+      if (paymentFilter === 'cod') return (s.codAmount || 0) > 0;
+      if (paymentFilter === 'transfer') return (s.codAmount || 0) === 0;
+
+      return true;
     });
-  }, [filteredShipments, searchTerm]);
+  }, [filteredShipments, searchTerm, paymentFilter]);
 
   // Sorting Logic
   const sortedShipments = useMemo(() => {
@@ -92,6 +102,12 @@ const Dashboard: React.FC = () => {
       sortableItems.sort((a, b) => {
         let aValue: any = a[sortConfig.key as keyof typeof a];
         let bValue: any = b[sortConfig.key as keyof typeof b];
+
+        // Specific handling for nulls/undefined to ensure standard behavior
+        if (sortConfig.key === 'weight' || sortConfig.key === 'codAmount' || sortConfig.key === 'shippingCost') {
+          aValue = aValue || 0;
+          bValue = bValue || 0;
+        }
 
         // Custom Sort Keys (Computed)
         if (sortConfig.key === 'profit') {
@@ -115,7 +131,7 @@ const Dashboard: React.FC = () => {
       });
     }
     return sortableItems;
-  }, [filteredShipments, sortConfig]);
+  }, [filteredResults, sortConfig, codFeePercent]);
 
   // Pagination Logic
   const totalPages = Math.ceil(sortedShipments.length / ITEMS_PER_PAGE);
@@ -249,15 +265,43 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative w-full md:w-80 group">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-indigo-500 transition-colors" />
-              <input
-                type="text"
-                placeholder="ค้นหา (ชื่อ, เบอร์, Tracking)..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400 text-sm"
-              />
+            {/* Filters and Actions */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              {/* Left: Auto-scroll from previous block */}
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-3 md:items-center ml-auto">
+              <div className="flex bg-slate-100 p-1 rounded-xl">
+                <button
+                  onClick={() => setPaymentFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${paymentFilter === 'all' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  ทั้งหมด
+                </button>
+                <button
+                  onClick={() => setPaymentFilter('cod')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${paymentFilter === 'cod' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-emerald-600'}`}
+                >
+                  COD ปลายทาง
+                </button>
+                <button
+                  onClick={() => setPaymentFilter('transfer')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${paymentFilter === 'transfer' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-indigo-600'}`}
+                >
+                  โอนเงิน/ส่งฟรี
+                </button>
+              </div>
+
+              <div className="relative w-full md:w-64 group">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-indigo-500 transition-colors" />
+                <input
+                  type="text"
+                  placeholder="ค้นหา..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400 text-sm"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -272,13 +316,23 @@ const Dashboard: React.FC = () => {
               <thead className="bg-slate-50 sticky top-0 z-10 shadow-sm">
                 <tr>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider w-10 text-center">#</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[130px]">Tracking</th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[130px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('trackingNumber')}>
+                    Tracking <span className="opacity-50 ml-1">⇅</span>
+                  </th>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">Pay Tag</th>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">Service</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[160px]">ชื่อลูกค้า</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[70px]">นน.(kg)</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[80px]">COD</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[70px]">ค่าส่ง</th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[160px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('customerName')}>
+                    ชื่อลูกค้า <span className="opacity-50 ml-1">⇅</span>
+                  </th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[70px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('weight')}>
+                    นน.(kg) <span className="opacity-50 ml-1">⇅</span>
+                  </th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[80px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('codAmount')}>
+                    COD <span className="opacity-50 ml-1">⇅</span>
+                  </th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[70px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('shippingCost')}>
+                    ค่าส่ง <span className="opacity-50 ml-1">⇅</span>
+                  </th>
                   <th
                     className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[80px] cursor-pointer hover:bg-slate-100 transition-colors"
                     onClick={() => handleSort('profit')}

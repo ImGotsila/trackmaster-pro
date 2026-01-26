@@ -146,7 +146,7 @@ const VisualMetricsPage: React.FC = () => {
             </div>
 
             {/* Top Summaries */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
                     <div className="absolute -right-2 -top-2 opacity-5 group-hover:opacity-10 transition-opacity">
                         <Package className="w-20 h-20 text-indigo-600" />
@@ -192,6 +192,29 @@ const VisualMetricsPage: React.FC = () => {
                     <div className="flex items-center gap-1 mt-2 text-amber-600 font-bold text-xs bg-amber-50 w-fit px-2 py-0.5 rounded-full">
                         <TrendingUp className="w-3 h-3" />
                         <span>Zip Codes</span>
+                    </div>
+                </div>
+
+                {/* 5. Payment Split (New) */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                    <div className="absolute -right-2 -top-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <DollarSign className="w-20 h-20 text-indigo-600" />
+                    </div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">สัดส่วนยอดโอน / COD</p>
+                    <div className="flex items-end gap-2">
+                        <div className="flex-1">
+                            <p className="text-xs font-bold text-slate-500">โอน/ส่งฟรี</p>
+                            <h4 className="text-2xl font-black text-indigo-600">{filteredShipments.filter(s => (s.codAmount || 0) === 0).length.toLocaleString()}</h4>
+                        </div>
+                        <div className="h-8 w-px bg-slate-200"></div>
+                        <div className="flex-1">
+                            <p className="text-xs font-bold text-slate-500">COD (ปลายทาง)</p>
+                            <h4 className="text-2xl font-black text-emerald-600">{filteredShipments.filter(s => (s.codAmount || 0) > 0).length.toLocaleString()}</h4>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-1 mt-2 text-indigo-600 font-bold text-xs bg-indigo-50 w-fit px-2 py-0.5 rounded-full">
+                        <Activity className="w-3 h-3" />
+                        <span>{(filteredShipments.filter(s => (s.codAmount || 0) === 0).length / Math.max(1, filteredShipments.length) * 100).toFixed(0)}% โอนเงิน</span>
                     </div>
                 </div>
             </div>
