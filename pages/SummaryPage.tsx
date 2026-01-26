@@ -29,17 +29,24 @@ const SummaryPage: React.FC = () => {
         const totalShippingCost = filteredShipments.reduce((sum, s) => sum + (s.shippingCost || 0), 0);
         const totalCOD = filteredShipments.reduce((sum, s) => sum + (s.codAmount || 0), 0);
         const totalCodFees = totalCOD * (codFeePercent / 100);
-        const profit = totalCOD - totalShippingCost - totalCodFees;
-        const totalActualCost = totalShippingCost + totalCodFees;
-        const costPercentage = totalCOD > 0 ? (totalActualCost / totalCOD) * 100 : 0;
-        const roi = totalShippingCost > 0 ? ((profit / totalShippingCost) * 100) : 0;
 
-        // 2. Average metrics and Counts
-        const avgShippingCost = filteredShipments.length > 0 ? totalShippingCost / filteredShipments.length : 0;
-        const avgCOD = filteredShipments.length > 0 ? totalCOD / filteredShipments.length : 0;
-
+        // Transfer Estimation & Counts
+        const avgTransferVal = settings.avg_transfer_value || 0;
         const totalTransferCount = filteredShipments.filter(s => (s.codAmount || 0) === 0).length;
         const totalCodCount = filteredShipments.filter(s => (s.codAmount || 0) > 0).length;
+        const estimatedTransferRevenue = totalTransferCount * avgTransferVal;
+
+        // Profit Calculation (COD + Transfer Estimation)
+        const totalRevenue = totalCOD + estimatedTransferRevenue;
+        const profit = totalRevenue - totalShippingCost - totalCodFees;
+
+        const totalActualCost = totalShippingCost + totalCodFees;
+        const costPercentage = totalRevenue > 0 ? (totalActualCost / totalRevenue) * 100 : 0;
+        const roi = totalShippingCost > 0 ? ((profit / totalShippingCost) * 100) : 0;
+
+        // 2. Average metrics
+        const avgShippingCost = filteredShipments.length > 0 ? totalShippingCost / filteredShipments.length : 0;
+        const avgCOD = filteredShipments.length > 0 ? totalCOD / filteredShipments.length : 0;
 
         // 3. Top Areas (Zip Code)
         const zipMap = new Map<string, number>();
@@ -158,7 +165,7 @@ const SummaryPage: React.FC = () => {
             estimatedTransferRevenue,
             avgTransferVal: settings.avg_transfer_value || 0
         };
-    }, [filteredShipments, codFeePercent]);
+    }, [filteredShipments, codFeePercent, settings]);
 
     const exportToCSV = () => {
         const headers = ['รหัสติดตาม', 'ชื่อลูกค้า', 'เบอร์โทร', 'COD', 'ค่าส่ง', 'รหัสไปรษณีย์', 'สถานะ', 'ขนส่ง', 'วันที่', 'เวลา'];
