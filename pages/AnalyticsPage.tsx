@@ -155,6 +155,10 @@ const AnalyticsPage: React.FC = () => {
 
             // Map data to coordinates with UNIQUE distribution
             const mappedData = data.map((item: any) => {
+                // If service provided exact coordinates, use them
+                if (item.lat && item.lng && item.isMatched) {
+                    return item;
+                }
                 const coords = getUniqueCoordinates(item.zipCode, item.province);
                 return {
                     ...item,
@@ -179,6 +183,7 @@ const AnalyticsPage: React.FC = () => {
             try {
                 const computed = await computeAnalytics(filteredShipments, setProgress);
                 const mappedData = computed.map((item: any) => {
+                    if (item.lat && item.lng && item.isMatched) return item;
                     const coords = getUniqueCoordinates(item.zipCode, item.province);
                     return {
                         ...item,
@@ -236,10 +241,13 @@ const AnalyticsPage: React.FC = () => {
                 if (filteredShipments.length > 500) setIsLoading(true);
                 try {
                     const computed = await computeAnalytics(filteredShipments, setProgress);
-                    const mappedData = computed.map((item: any) => ({
-                        ...item,
-                        ...getUniqueCoordinates(item.zipCode, item.province)
-                    }));
+                    const mappedData = computed.map((item: any) => {
+                        if (item.lat && item.lng && item.isMatched) return item;
+                        return {
+                            ...item,
+                            ...getUniqueCoordinates(item.zipCode, item.province)
+                        };
+                    });
                     setProvinceData(mappedData.filter((p: any) => p.count > 0));
                     setCurrentPage(1);
                 } catch (e) {

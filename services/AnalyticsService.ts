@@ -1,4 +1,5 @@
 import { getAddressByZipCode } from './AddressService';
+import { thaiZipCoords } from '../data/thaiZipCoords';
 
 export interface AnalyticsStats {
     zipCode: string;
@@ -44,6 +45,7 @@ export const computeAnalytics = async (
             const zipKey = s.zipCode;
             const existing = stats.get(zipKey);
             const isCOD = (s.codAmount || 0) > 0;
+            const exactCoord = thaiZipCoords[zipKey]; // Lookup exact coordinate
 
             if (existing) {
                 existing.count++;
@@ -51,17 +53,28 @@ export const computeAnalytics = async (
                 existing.totalCost += (s.shippingCost || 0);
                 if (isCOD) existing.codCount++;
                 else existing.transferCount++;
+
+                // If we find a specific coordinate match, upgrade the existing one
+                if (exactCoord && !existing.isMatched) {
+                    existing.lat = exactCoord.lat;
+                    existing.lng = exactCoord.lng;
+                    existing.district = exactCoord.name; // Use precise district name
+                    existing.isMatched = true;
+                }
             } else {
                 stats.set(zipKey, {
                     zipCode: s.zipCode,
                     province: addressInfo.province,
-                    district: addressInfo.amphoe || addressInfo.district || 'ไม่ระบุ',
+                    district: exactCoord ? exactCoord.name : (addressInfo.amphoe || addressInfo.district || 'ไม่ระบุ'),
                     subdistrict: addressInfo.district || 'ไม่ระบุ',
                     count: 1,
                     totalCOD: (s.codAmount || 0),
                     totalCost: (s.shippingCost || 0),
                     codCount: isCOD ? 1 : 0,
-                    transferCount: isCOD ? 0 : 1
+                    transferCount: isCOD ? 0 : 1,
+                    lat: exactCoord ? exactCoord.lat : undefined,
+                    lng: exactCoord ? exactCoord.lng : undefined,
+                    isMatched: !!exactCoord
                 });
             }
         });
