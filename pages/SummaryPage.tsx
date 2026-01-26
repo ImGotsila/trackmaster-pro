@@ -34,9 +34,12 @@ const SummaryPage: React.FC = () => {
         const costPercentage = totalCOD > 0 ? (totalActualCost / totalCOD) * 100 : 0;
         const roi = totalShippingCost > 0 ? ((profit / totalShippingCost) * 100) : 0;
 
-        // 2. Average metrics
+        // 2. Average metrics and Counts
         const avgShippingCost = filteredShipments.length > 0 ? totalShippingCost / filteredShipments.length : 0;
         const avgCOD = filteredShipments.length > 0 ? totalCOD / filteredShipments.length : 0;
+
+        const totalTransferCount = filteredShipments.filter(s => (s.codAmount || 0) === 0).length;
+        const totalCodCount = filteredShipments.filter(s => (s.codAmount || 0) > 0).length;
 
         // 3. Top Areas (Zip Code)
         const zipMap = new Map<string, number>();
@@ -149,7 +152,9 @@ const SummaryPage: React.FC = () => {
             batchStats,
             totalCodFees,
             totalActualCost,
-            totalOrders: filteredShipments.length
+            totalOrders: filteredShipments.length,
+            totalTransferCount,
+            totalCodCount,
         };
     }, [filteredShipments, codFeePercent]);
 
@@ -198,9 +203,17 @@ const SummaryPage: React.FC = () => {
             </div>
 
             {/* Data Count Indicator */}
-            <div className="flex justify-end">
-                <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                    ข้อมูล {stats.totalOrders.toLocaleString()} รายการในช่วงที่เลือก
+            <div className="flex flex-col md:flex-row justify-end items-end md:items-center gap-2">
+                <div className="flex gap-2">
+                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-1">
+                        COD: {stats.totalCodCount.toLocaleString()}
+                    </span>
+                    <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 flex items-center gap-1">
+                        Paid/Transfer: {stats.totalTransferCount.toLocaleString()}
+                    </span>
+                </div>
+                <span className="text-sm font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                    รวมทั้งหมด {stats.totalOrders.toLocaleString()} รายการ
                 </span>
             </div>
 

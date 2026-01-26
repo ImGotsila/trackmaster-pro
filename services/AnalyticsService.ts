@@ -8,6 +8,8 @@ export interface AnalyticsStats {
     count: number;
     totalCOD: number;
     totalCost: number;
+    codCount: number;
+    transferCount: number;
     lat?: number;
     lng?: number;
     isMatched?: boolean;
@@ -41,11 +43,14 @@ export const computeAnalytics = async (
 
             const zipKey = s.zipCode;
             const existing = stats.get(zipKey);
+            const isCOD = (s.codAmount || 0) > 0;
 
             if (existing) {
                 existing.count++;
                 existing.totalCOD += (s.codAmount || 0);
                 existing.totalCost += (s.shippingCost || 0);
+                if (isCOD) existing.codCount++;
+                else existing.transferCount++;
             } else {
                 stats.set(zipKey, {
                     zipCode: s.zipCode,
@@ -54,7 +59,9 @@ export const computeAnalytics = async (
                     subdistrict: addressInfo.district || 'ไม่ระบุ',
                     count: 1,
                     totalCOD: (s.codAmount || 0),
-                    totalCost: (s.shippingCost || 0)
+                    totalCost: (s.shippingCost || 0),
+                    codCount: isCOD ? 1 : 0,
+                    transferCount: isCOD ? 0 : 1
                 });
             }
         });

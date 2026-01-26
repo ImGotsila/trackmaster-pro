@@ -57,6 +57,8 @@ const CostAnalyticsPage: React.FC = () => {
             totalCost: number;
             totalWeight: number; // Added
             avgCost: number;
+            codCount?: number;
+            transferCount?: number;
         }>();
         const total = filteredShipments.length;
         const CHUNK_SIZE = 150;
@@ -77,11 +79,15 @@ const CostAnalyticsPage: React.FC = () => {
                 const weight = s.weight || 0;
 
                 const existing = stats.get(zipKey);
+                const isCOD = (s.codAmount || 0) > 0;
+
                 if (existing) {
                     existing.count++;
                     existing.totalCost += (s.shippingCost || 0);
                     existing.totalWeight += weight;
                     existing.avgCost = existing.totalCost / existing.count;
+                    if (isCOD) existing.codCount = (existing.codCount || 0) + 1;
+                    else existing.transferCount = (existing.transferCount || 0) + 1;
                 } else {
                     stats.set(zipKey, {
                         zipCode: s.zipCode,
@@ -90,7 +96,9 @@ const CostAnalyticsPage: React.FC = () => {
                         count: 1,
                         totalCost: (s.shippingCost || 0),
                         totalWeight: weight,
-                        avgCost: (s.shippingCost || 0)
+                        avgCost: (s.shippingCost || 0),
+                        codCount: isCOD ? 1 : 0,
+                        transferCount: isCOD ? 0 : 1
                     });
                 }
             });
@@ -356,7 +364,11 @@ const CostAnalyticsPage: React.FC = () => {
                                         </div>
                                         <div className="text-right">
                                             <span className="text-sm font-black text-rose-600">฿{Math.round(data.avgCost)}</span>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase">{data.count} ORDERS</p>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">{data.count} ORDERS</p>
+                                            <div className="flex justify-end gap-1">
+                                                {data.codCount > 0 && <span className="text-[9px] bg-emerald-50 text-emerald-600 px-1 rounded border border-emerald-100">COD {data.codCount}</span>}
+                                                {data.transferCount > 0 && <span className="text-[9px] bg-indigo-50 text-indigo-600 px-1 rounded border border-indigo-100">Paid {data.transferCount}</span>}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -414,6 +414,10 @@ const AnalyticsPage: React.FC = () => {
                                                     <span className="text-slate-500">จำนวน:</span>
                                                     <span className="font-bold text-indigo-600">{data.count}</span>
                                                 </p>
+                                                <div className="flex justify-between text-xs text-slate-500 pt-1">
+                                                    <span>COD: {data.codCount}</span>
+                                                    <span>Paid: {data.transferCount}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </Popup>
@@ -510,6 +514,10 @@ const AnalyticsPage: React.FC = () => {
                                                 </div>
                                                 <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded inline-block">
                                                     ฿{data.totalCOD.toLocaleString()}
+                                                </div>
+                                                <div className="flex justify-end gap-1 mt-1">
+                                                    {data.codCount > 0 && <span className="text-[8px] bg-slate-100 text-slate-500 px-1 rounded">COD {data.codCount}</span>}
+                                                    {data.transferCount > 0 && <span className="text-[8px] bg-indigo-50 text-indigo-600 px-1 rounded">Paid {data.transferCount}</span>}
                                                 </div>
                                             </div>
                                         </div>
