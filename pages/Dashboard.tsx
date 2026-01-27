@@ -194,101 +194,114 @@ const Dashboard: React.FC = () => {
       <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
         {/* Dashboard Header */}
-        <div className="p-4 md:p-6 border-b border-slate-100 bg-white space-y-4 md:space-y-6 shrink-0">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                {startDate && endDate ? (startDate === endDate ? formatDate(startDate) : `${formatDate(startDate)} - ${formatDate(endDate)}`) : 'สรุปข้อมูลทั้งหมด'}
-                <button
-                  onClick={() => refreshData && refreshData()}
-                  className="text-slate-400 hover:text-indigo-600 transition-colors p-1 rounded-full hover:bg-indigo-50"
-                  title="รีเฟรชข้อมูล"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </button>
-                <span className="text-[10px] font-black bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full border border-indigo-100 uppercase tracking-tighter">
-                  v1.5 - Factory Mode
-                </span>
-              </h2>
-              <div className="flex items-center gap-2 mt-2">
-                <button
-                  onClick={handleSync}
-                  disabled={isSyncing}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${isSyncing
-                    ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                    : 'bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-100'
-                    }`}
-                >
-                  <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
-                  {isSyncing ? 'กำลังซิงค์...' : 'Sync Data'}
-                </button>
-                <button
-                  onClick={handleBackup}
-                  disabled={isBackingUp}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${isBackingUp
-                    ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                    : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
-                    }`}
-                >
-                  <Save className="w-3 h-3" />
-                  {isBackingUp ? 'กำลังสำรอง...' : 'Backup DB'}
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-3 mt-3">
-                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">
-                  <div className="p-1 bg-slate-200 rounded-full"><Package className="w-3 h-3 text-slate-600" /></div>
-                  <span className="text-xs text-slate-500 font-bold">รวม: <b className="text-slate-800 text-sm">{stats.count}</b> ชิ้น</span>
-                </div>
-
-                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-lg shadow-sm">
-                  <div className="p-1 bg-emerald-200 rounded-full"><Save className="w-3 h-3 text-emerald-700" /></div>
-                  <span className="text-xs text-emerald-700 font-bold">COD: <b className="text-sm">{stats.totalCOD.toLocaleString()}</b> บ.</span>
-                </div>
-
-                <div className="flex items-center gap-2 bg-rose-50 border border-rose-100 px-3 py-1.5 rounded-lg shadow-sm">
-                  <div className="p-1 bg-rose-200 rounded-full"><Package className="w-3 h-3 text-rose-700" /></div>
-                  <span className="text-xs text-rose-700 font-bold">ค่าส่ง: <b className="text-sm">{stats.totalCost.toLocaleString()}</b> บ.</span>
-                </div>
-
-                {/* Cost Analysis Badge */}
-                <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg shadow-sm">
-                  <div className="p-1 bg-indigo-200 rounded-full"><Database className="w-3 h-3 text-indigo-700" /></div>
-                  <div className="flex flex-col leading-none">
-                    <span className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider">กำไร (Est)</span>
-                    <span className="text-sm font-black text-indigo-700">{(stats.totalCOD - stats.totalCost - stats.totalFee).toLocaleString(undefined, { maximumFractionDigits: 0 })} บ.</span>
+        <div className="p-3 md:p-6 border-b border-slate-100 bg-white space-y-3 md:space-y-6 shrink-0">
+          <div className="flex flex-col gap-3">
+            {/* Top Row: Title & Actions */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg md:text-2xl font-bold text-slate-900 tracking-tight flex flex-wrap items-center gap-2">
+                  {startDate && endDate ? (startDate === endDate ? formatDate(startDate) : `${formatDate(startDate)} - ${formatDate(endDate)}`) : 'สรุปข้อมูลทั้งหมด'}
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => refreshData && refreshData()}
+                      className="text-slate-400 hover:text-indigo-600 transition-colors p-1 rounded-full hover:bg-indigo-50"
+                      title="รีเฟรชข้อมูล"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </button>
+                    <span className="text-[10px] font-black bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full border border-indigo-100 uppercase tracking-tighter">
+                      v1.5
+                    </span>
                   </div>
-                  <div className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-black border ${((stats.totalCost + stats.totalFee) / (stats.totalCOD || 1)) * 100 > 30 ? 'bg-rose-100 text-rose-600 border-rose-200' : 'bg-emerald-100 text-emerald-600 border-emerald-200'}`}>
-                    {stats.totalCOD > 0 ? (((stats.totalCost + stats.totalFee) / stats.totalCOD) * 100).toFixed(1) : 0}% Cost
-                  </div>
+                </h2>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <button
+                    onClick={handleSync}
+                    disabled={isSyncing}
+                    className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${isSyncing
+                      ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                      : 'bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-100'
+                      }`}
+                  >
+                    <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
+                    {isSyncing ? 'Syncing...' : 'Sync Data'}
+                  </button>
+                  <button
+                    onClick={handleBackup}
+                    disabled={isBackingUp}
+                    className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${isBackingUp
+                      ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                      : 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                      }`}
+                  >
+                    <Save className="w-3 h-3" />
+                    {isBackingUp ? 'Backing up...' : 'Backup DB'}
+                  </button>
                 </div>
               </div>
             </div>
 
-            {/* Filters and Actions */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              {/* Left: Auto-scroll from previous block */}
+            {/* Stats Grid (Mobile Optimized) */}
+            <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-3">
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 bg-slate-200 rounded-full shrink-0"><Package className="w-3 h-3 text-slate-600" /></div>
+                  <span className="text-xs text-slate-500 font-bold">รวม:</span>
+                </div>
+                <b className="text-slate-800 text-sm md:ml-auto">{stats.count} ชิ้น</b>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 bg-emerald-50 border border-emerald-100 px-3 py-2 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 bg-emerald-200 rounded-full shrink-0"><Save className="w-3 h-3 text-emerald-700" /></div>
+                  <span className="text-xs text-emerald-700 font-bold">COD:</span>
+                </div>
+                <b className="text-sm text-emerald-900 md:ml-auto">{stats.totalCOD.toLocaleString()}</b>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 bg-rose-50 border border-rose-100 px-3 py-2 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 bg-rose-200 rounded-full shrink-0"><Package className="w-3 h-3 text-rose-700" /></div>
+                  <span className="text-xs text-rose-700 font-bold">ค่าส่ง:</span>
+                </div>
+                <b className="text-sm text-rose-900 md:ml-auto">{stats.totalCost.toLocaleString()}</b>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 bg-indigo-50 border border-indigo-100 px-3 py-2 rounded-lg shadow-sm relative overflow-hidden">
+                <div className="flex items-center gap-2 relative z-10">
+                  <div className="p-1 bg-indigo-200 rounded-full shrink-0"><Database className="w-3 h-3 text-indigo-700" /></div>
+                  <span className="text-xs text-indigo-600 font-bold">กำไร:</span>
+                </div>
+                <b className="text-sm text-indigo-900 relative z-10 md:ml-auto">{(stats.totalCOD - stats.totalCost - stats.totalFee).toLocaleString(undefined, { maximumFractionDigits: 0 })}</b>
+
+                {/* % Cost Badge - Absolute on Mobile */}
+                <div className={`absolute top-0 right-0 bottom-0 w-1.5 md:w-auto md:static md:ml-2 md:px-1.5 md:py-0.5 md:rounded md:text-[10px] md:font-black md:border ${((stats.totalCost + stats.totalFee) / (stats.totalCOD || 1)) * 100 > 30 ? 'bg-rose-500 md:bg-rose-100 md:text-rose-600 md:border-rose-200' : 'bg-emerald-500 md:bg-emerald-100 md:text-emerald-600 md:border-emerald-200'}`}>
+                  <span className="hidden md:inline">{stats.totalCOD > 0 ? (((stats.totalCost + stats.totalFee) / stats.totalCOD) * 100).toFixed(1) : 0}% Cost</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-3 md:items-center ml-auto">
-              <div className="flex bg-slate-100 p-1 rounded-xl">
+            {/* Filters */}
+            <div className="flex flex-col md:flex-row gap-2 md:items-center ml-auto w-full">
+              <div className="flex bg-slate-100 p-1 rounded-xl w-full md:w-auto">
                 <button
                   onClick={() => setPaymentFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${paymentFilter === 'all' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-center ${paymentFilter === 'all' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   ทั้งหมด
                 </button>
                 <button
                   onClick={() => setPaymentFilter('cod')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${paymentFilter === 'cod' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-emerald-600'}`}
+                  className={`flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-center ${paymentFilter === 'cod' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-emerald-600'}`}
                 >
-                  COD ปลายทาง
+                  COD
                 </button>
                 <button
                   onClick={() => setPaymentFilter('transfer')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${paymentFilter === 'transfer' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-indigo-600'}`}
+                  className={`flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-center ${paymentFilter === 'transfer' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-indigo-600'}`}
                 >
-                  โอนเงิน/ส่งฟรี
+                  โอน
                 </button>
               </div>
 
