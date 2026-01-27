@@ -7,7 +7,8 @@ function doGet(e) {
   // Return the HTML file (User requested gas_html to show)
   try {
     return HtmlService.createHtmlOutputFromFile('gas_html')
-        .setTitle('TrackMaster Pro Search')
+        .setTitle('NOBPHAKAO CREATIVE')
+        .setFaviconUrl('https://cdn-icons-png.flaticon.com/512/2830/2830305.png') // Transport/Shipping Icon
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
         .addMetaTag('viewport', 'width=device-width, initial-scale=1');
   } catch (e) {
@@ -109,9 +110,11 @@ function getData() {
         codAmount: parseFloat(row[5] ? row[5].replace(/,/g, '') : 0) || 0, // Col F
         shippingCost: parseFloat(row[9] ? row[9].replace(/,/g, '') : 0) || 0, // Col J
         zipCode: row[8] || '', // Col I
+        statusCode: row[10] || 'pending', // internal status code if needed
         status: row[10] || 'รับฝาก', // Col K
         courier: 'Thailand Post',
         importDate: dateVal, // Col L
+        proofImage: row[12] || '', // Col M (Added for Drive Image)
         timestamp: new Date().getTime() - i
       });
     }
@@ -160,8 +163,10 @@ function saveShipments(newShipments) {
 
     if (rowIndex !== -1) {
       // UPDATE
-      // MODIFIED: Updated range to include C, D, E (Start Col 3, 10 columns)
-      sheet.getRange(rowNum, 3, 1, 10).setValues([[payTag, service, weight, cod, name, phone, zip, cost, status, date]]);
+      // MODIFIED: Updated range to include C, D, E, M (Start Col 3, 11 columns)
+      // C, D, E, F, G, H, I, J, K, L, M
+      var proof = item.proofImage || '';
+      sheet.getRange(rowNum, 3, 1, 11).setValues([[payTag, service, weight, cod, name, phone, zip, cost, status, date, proof]]);
       updatedCount++;
     } else {
       // APPEND
@@ -177,7 +182,8 @@ function saveShipments(newShipments) {
         zip,    // I
         cost,   // J
         status, // K
-        date    // L
+        date,   // L
+        item.proofImage || '' // M (Proof Image)
       ];
       sheet.appendRow(rowData);
       addedCount++;

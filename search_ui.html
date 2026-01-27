@@ -1,209 +1,887 @@
 <!DOCTYPE html>
 <html lang="th">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-    <title>TrackMaster Pro</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Kanit', 'Inter', 'sans-serif'],
-            },
-            colors: {
-              primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
-            }
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <title>NOBPHAKAO CREATIVE</title>
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Kanit', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
           }
         }
       }
-    </script>
-    <style>
-      body { font-family: 'Kanit', sans-serif; background-color: #f1f5f9; color: #0f172a; -webkit-tap-highlight-color: transparent; }
-      .animate-fade-in { animation: fadeIn 0.3s ease-out; }
-      .animate-slide-up { animation: slideUp 0.3s ease-out; }
-      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-      @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    <script type="text/babel">
-      const { useState, useEffect, useMemo } = React;
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
 
-      // --- Icons Component (Inline SVGs) ---
-      const Icons = {
-        ShieldCheck: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>,
-        Search: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>,
-        ArrowLeft: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>,
-        X: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
-        Lock: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-        CheckCircle2: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>,
-        Phone: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
-        Banknote: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>,
-        MapPin: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>,
-        Eye: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
-        Copy: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>,
-        ExternalLink: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>,
-        Package: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16.5 9.4-9-5.19"/><path d="m21 16-9 5.19-9-5.19"/><path d="m3.11 6.04 9 5.19 9-5.19"/><path d="m12 11.23v10.38"/><path d="M12 2.24 3 7.42v9.16l9 5.18 9-5.18V7.42z"/></svg>,
-        Calendar: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
-        User: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-        ChevronRight: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
-        History: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>,
-        Trash2: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>,
-        AlertCircle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+    .animate-slide-up {
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(10px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // --- Icons Component (Inline SVGs) ---
+    const Icons = {
+      ShieldCheck: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg>,
+      Search: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>,
+      ArrowLeft: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>,
+      X: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>,
+      Lock: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>,
+      CheckCircle2: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>,
+      Phone: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>,
+      Banknote: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></svg>,
+      MapPin: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>,
+      Eye: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>,
+      Copy: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>,
+      ExternalLink: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>,
+      Package: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16.5 9.4-9-5.19" /><path d="m21 16-9 5.19-9-5.19" /><path d="m3.11 6.04 9 5.19 9-5.19" /><path d="m12 11.23v10.38" /><path d="M12 2.24 3 7.42v9.16l9 5.18 9-5.18V7.42z" /></svg>,
+      Calendar: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>,
+      User: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>,
+      ChevronRight: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>,
+      History: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M12 7v5l4 2" /></svg>,
+      Trash2: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>,
+      AlertCircle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>,
+      Store: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></svg>
+    };
+
+    const SearchPage = () => {
+      const [shipments, setShipments] = useState([]);
+      const [isLoading, setIsLoading] = useState(true);
+      const [query, setQuery] = useState('');
+
+      // Search State
+      const [searchResults, setSearchResults] = useState([]);
+      const [selectedShipment, setSelectedShipment] = useState(null);
+
+      // Security & Verification States
+      const [isDetailsRevealed, setIsDetailsRevealed] = useState(false);
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [verifyInput, setVerifyInput] = useState('');
+      const [verifyError, setVerifyError] = useState('');
+
+      // History State
+      const [historyIds, setHistoryIds] = useState([]);
+
+      // Load Data from GAS
+      useEffect(() => {
+        if (typeof google !== 'undefined' && google.script) {
+          google.script.run
+            .withSuccessHandler((data) => {
+              setShipments(data);
+              setIsLoading(false);
+            })
+            .withFailureHandler((err) => {
+              console.error("Failed to load data", err);
+              setIsLoading(false);
+            })
+            .getData();
+        } else {
+          // Dev Mock
+          setIsLoading(false);
+        }
+      }, []);
+
+      // Load history on mount
+      useEffect(() => {
+        const saved = localStorage.getItem('trackmaster_search_history');
+        if (saved) {
+          try {
+            setHistoryIds(JSON.parse(saved));
+          } catch (e) {
+            console.error("Failed to parse history");
+          }
+        }
+      }, []);
+
+      const resetSelection = () => {
+        setSelectedShipment(null);
+        setIsDetailsRevealed(false);
+        setVerifyInput('');
+        setVerifyError('');
       };
 
-      const SearchPage = () => {
-        const [shipments, setShipments] = useState([]);
-        const [isLoading, setIsLoading] = useState(true);
-        const [query, setQuery] = useState('');
-        
-        // Search State
-        const [searchResults, setSearchResults] = useState([]);
-        const [selectedShipment, setSelectedShipment] = useState(null);
-        
-        // Security & Verification States
-        const [isDetailsRevealed, setIsDetailsRevealed] = useState(false);
-        const [isModalOpen, setIsModalOpen] = useState(false);
-        const [verifyInput, setVerifyInput] = useState('');
-        const [verifyError, setVerifyError] = useState('');
+      // Search Logic
+      useEffect(() => {
+        const cleanQuery = query.trim();
+        if (cleanQuery.length < 2) {
+          setSearchResults([]);
+          return;
+        }
 
-        // History State
-        const [historyIds, setHistoryIds] = useState([]);
-
-        // Load Data from GAS
-        useEffect(() => {
-          if (typeof google !== 'undefined' && google.script) {
-            google.script.run
-              .withSuccessHandler((data) => {
-                setShipments(data);
-                setIsLoading(false);
-              })
-              .withFailureHandler((err) => {
-                console.error("Failed to load data", err);
-                setIsLoading(false);
-              })
-              .getData();
-          } else {
-            // Dev Mock
-            setIsLoading(false);
-          }
-        }, []);
-
-        // Load history on mount
-        useEffect(() => {
-          const saved = localStorage.getItem('trackmaster_search_history');
-          if (saved) {
-            try {
-              setHistoryIds(JSON.parse(saved));
-            } catch (e) {
-              console.error("Failed to parse history");
-            }
-          }
-        }, []);
-
-        const resetSelection = () => {
+        if (selectedShipment) {
           setSelectedShipment(null);
           setIsDetailsRevealed(false);
-          setVerifyInput('');
+        }
+
+        const found = shipments
+          .filter(s =>
+            s.trackingNumber.toLowerCase().includes(cleanQuery.toLowerCase()) ||
+            s.phoneNumber.includes(cleanQuery) ||
+            s.customerName.toLowerCase().includes(cleanQuery.toLowerCase())
+          )
+          .sort((a, b) => b.timestamp - a.timestamp);
+
+        setSearchResults(found);
+      }, [query, shipments]);
+
+      // Grouping Logic
+      const groupedResults = useMemo(() => {
+        const groups = {};
+        searchResults.forEach(item => {
+          const key = `${item.customerName.trim()}|${item.phoneNumber.replace(/[^0-9]/g, '')}`;
+          if (!groups[key]) {
+            groups[key] = {
+              customerName: item.customerName,
+              phoneNumber: item.phoneNumber,
+              items: []
+            };
+          }
+          groups[key].items.push(item);
+        });
+        return Object.values(groups);
+      }, [searchResults]);
+
+      // Derive Customer Shipments
+      const customerShipments = useMemo(() => {
+        if (!selectedShipment) return [];
+        const clean = (p) => p.replace(/[^0-9]/g, '');
+        const targetPhone = clean(selectedShipment.phoneNumber);
+        const targetName = selectedShipment.customerName.trim();
+
+        return shipments.filter(s =>
+          clean(s.phoneNumber) === targetPhone &&
+          s.customerName.trim() === targetName
+        ).sort((a, b) => b.timestamp - a.timestamp);
+      }, [selectedShipment, shipments]);
+
+      const totalCOD = useMemo(() => customerShipments.reduce((sum, s) => sum + s.codAmount, 0), [customerShipments]);
+
+      const addToHistory = (id) => {
+        setHistoryIds(prev => {
+          const filtered = prev.filter(existingId => existingId !== id);
+          const newHistory = [id, ...filtered].slice(0, 5);
+          localStorage.setItem('trackmaster_search_history', JSON.stringify(newHistory));
+          return newHistory;
+        });
+      };
+
+      const removeFromHistory = (e, id) => {
+        e.stopPropagation();
+        setHistoryIds(prev => {
+          const newHistory = prev.filter(existingId => existingId !== id);
+          localStorage.setItem('trackmaster_search_history', JSON.stringify(newHistory));
+          return newHistory;
+        });
+      };
+
+      const clearHistory = () => {
+        setHistoryIds([]);
+        localStorage.removeItem('trackmaster_search_history');
+      };
+
+      const clearSearch = () => {
+        setQuery('');
+        setSearchResults([]);
+        resetSelection();
+      };
+
+      const handleSelectShipment = (item) => {
+        setSelectedShipment(item);
+        setIsDetailsRevealed(false);
+        setVerifyInput('');
+        setVerifyError('');
+        addToHistory(item.id);
+      };
+
+      const handleVerify = (e) => {
+        e.preventDefault();
+        if (!selectedShipment) return;
+        const cleanInput = verifyInput.replace(/[^0-9]/g, '');
+        const cleanTarget = selectedShipment.phoneNumber.replace(/[^0-9]/g, '').substring(0, 5);
+        if (cleanInput === cleanTarget) {
+          setIsDetailsRevealed(true);
+          setIsModalOpen(false);
           setVerifyError('');
-        };
+          setVerifyInput('');
+        } else {
+          setVerifyError('เลข 5 ตัวหน้าไม่ถูกต้อง กรุณาลองใหม่');
+        }
+      };
 
-        // Search Logic
-        useEffect(() => {
-          const cleanQuery = query.trim();
-          if (cleanQuery.length < 2) {
-            setSearchResults([]);
-            return;
-          }
+      const copyToClipboard = (text) => navigator.clipboard.writeText(text);
 
-          if (selectedShipment) {
-            setSelectedShipment(null);
-            setIsDetailsRevealed(false);
-          }
+      const getTrackingUrl = (tracking, courier) => {
+        if (courier && courier.includes('Kerry')) return `https://th.kerryexpress.com/th/track/?track=${tracking}`;
+        if (courier && courier.includes('J&T')) return `https://www.jtexpress.co.th/service/track?billcode=${tracking}`;
+        if (courier && courier.includes('Flash')) return `https://www.flashexpress.co.th/tracking/?se=${tracking}`;
+        return `https://track.thailandpost.co.th/?trackNumber=${tracking}`;
+      };
 
-          const found = shipments
-            .filter(s => 
-              s.trackingNumber.toLowerCase().includes(cleanQuery.toLowerCase()) || 
-              s.phoneNumber.includes(cleanQuery) ||
-              s.customerName.toLowerCase().includes(cleanQuery.toLowerCase())
-            )
-            .sort((a, b) => b.timestamp - a.timestamp);
+      const getMultiTrackingUrl = (courier, trackings) => {
+        const t = trackings.join(',');
+        if (courier && courier.includes('Kerry')) return `https://th.kerryexpress.com/th/track/?track=${t}`;
+        if (courier && courier.includes('J&T')) return `https://www.jtexpress.co.th/service/track?billcode=${t}`;
+        if (courier && courier.includes('Flash')) return `https://www.flashexpress.co.th/tracking/?se=${t}`;
+        return `https://track.thailandpost.co.th/?trackNumber=${t}`;
+      };
 
-          setSearchResults(found);
-        }, [query, shipments]);
+      const maskName = (fullName) => {
+        if (isDetailsRevealed) return fullName;
+        if (!fullName) return '';
+        const parts = fullName.split(' ');
+        return parts.map(part => {
+          if (part.length < 2) return part;
+          // Show about 40% of the name
+          const visibleLen = Math.ceil(part.length * 0.4);
+          const visiblePart = part.substring(0, visibleLen);
+          const remaining = part.length - visibleLen;
+          return visiblePart + '•'.repeat(remaining);
+        }).join(' ');
+      };
 
-        // Grouping Logic
-        const groupedResults = useMemo(() => {
-          const groups = {};
-          searchResults.forEach(item => {
-            const key = `${item.customerName.trim()}|${item.phoneNumber.replace(/[^0-9]/g, '')}`;
-            if (!groups[key]) {
-              groups[key] = {
-                customerName: item.customerName,
-                phoneNumber: item.phoneNumber,
-                items: []
-              };
+      const maskPhone = (phone) => {
+        if (isDetailsRevealed) return phone;
+        if (!phone) return '';
+        const clean = phone.replace(/[^0-9]/g, '');
+        if (clean.length < 5) return clean;
+        return 'xxxxx' + clean.slice(-5);
+      };
+
+      const maskTracking = (tracking) => {
+        if (!tracking) return '';
+        if (tracking.length < 5) return tracking;
+        return '•••••' + tracking.slice(-5);
+      };
+
+      const recentShipments = historyIds
+        .map(id => shipments.find(s => s.id === id))
+        .filter(s => !!s);
+      // Safe Date Range & Average Logic
+      const { dateRangeString, averageShipments } = useMemo(() => {
+        if (!shipments || shipments.length === 0) return { dateRangeString: 'กำลังรวบรวมข้อมูล', averageShipments: 0 };
+        try {
+          // Parse all dates
+          const dates = shipments
+            .map(s => s.importDate)
+            .filter(d => d && typeof d === 'string')
+            .map(d => {
+              const parts = d.split(/\/|-/);
+              if (parts.length !== 3) return null;
+
+              let p1 = parseInt(parts[0]);
+              let p2 = parseInt(parts[1]);
+              let p3 = parseInt(parts[2]);
+
+              if (!p1 || !p2 || !p3) return null;
+
+              let day, month, year;
+              if (p1 > 31) { year = p1; month = p2; day = p3; }
+              else { day = p1; month = p2; year = p3; }
+
+              if (year < 100) year += 2000;
+              if (year > 2400) year -= 543;
+
+              return new Date(year, month - 1, day);
+            })
+            .filter(d => d && !isNaN(d.getTime()))
+            .sort((a, b) => a - b);
+
+          let rangeStr = 'กำลังรวบรวมข้อมูล';
+          let avg = 0;
+
+          if (dates.length > 0) {
+            const formatDate = (date) => {
+              const day = date.getDate();
+              const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+              const month = monthNames[date.getMonth()];
+              const year = date.getFullYear() + 543;
+              return `${day} ${month} ${year}`;
+            };
+
+            const startDate = dates[0];
+            const endDate = dates[dates.length - 1];
+            rangeStr = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+
+            // Calculate Average
+            const oneDay = 24 * 60 * 60 * 1000;
+            const diffDays = Math.round(Math.abs((endDate - startDate) / oneDay)) + 1; // +1 to include start date
+            if (diffDays > 0) {
+              avg = Math.round(shipments.length / diffDays);
             }
-            groups[key].items.push(item);
-          });
-          return Object.values(groups);
-        }, [searchResults]);
+          }
+          return { dateRangeString: rangeStr, averageShipments: avg };
+        } catch (e) {
+          console.error("Date/Stats parsing error", e);
+          return { dateRangeString: 'ข้อมูลล่าสุดวันนี้', averageShipments: 0 };
+        }
+      }, [shipments]);
 
-        // Derive Customer Shipments
-        const customerShipments = useMemo(() => {
-          if (!selectedShipment) return [];
-          const clean = (p) => p.replace(/[^0-9]/g, '');
-          const targetPhone = clean(selectedShipment.phoneNumber);
-          const targetName = selectedShipment.customerName.trim();
-          
-          return shipments.filter(s => 
-             clean(s.phoneNumber) === targetPhone &&
-             s.customerName.trim() === targetName
-          ).sort((a, b) => b.timestamp - a.timestamp);
-        }, [selectedShipment, shipments]);
+      // Lazy Loading State
+      const [visibleLimit, setVisibleLimit] = useState(20);
 
-        const totalCOD = useMemo(() => customerShipments.reduce((sum, s) => sum + s.codAmount, 0), [customerShipments]);
+      const displayedResults = useMemo(() => {
+        return groupedResults.slice(0, visibleLimit);
+      }, [groupedResults, visibleLimit]);
 
-        const addToHistory = (id) => {
-          setHistoryIds(prev => {
-            const filtered = prev.filter(existingId => existingId !== id);
-            const newHistory = [id, ...filtered].slice(0, 5); 
-            localStorage.setItem('trackmaster_search_history', JSON.stringify(newHistory));
-            return newHistory;
-          });
-        };
+      const handleLoadMore = () => {
+        setVisibleLimit(prev => prev + 20);
+      };
 
-        const removeFromHistory = (e, id) => {
-          e.stopPropagation();
-          setHistoryIds(prev => {
-            const newHistory = prev.filter(existingId => existingId !== id);
-            localStorage.setItem('trackmaster_search_history', JSON.stringify(newHistory));
-            return newHistory;
-          });
-        };
+      // Reset visible limit on new search
+      useEffect(() => {
+        setVisibleLimit(20);
+      }, [query]);
 
-        const clearHistory = () => {
-          setHistoryIds([]);
-          localStorage.removeItem('trackmaster_search_history');
-        };
 
-        const clearSearch = () => {
-          setQuery('');
-          setSearchResults([]);
-          resetSelection();
-        };
+      if (isLoading) {
+        return (
+          <div className="flex flex-col items-center justify-center min-h-screen">
+            <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+            <p className="mt-4 text-slate-500 font-medium">กำลังโหลดข้อมูล...</p>
+          </div>
+        );
+      }
 
-        const handleSelectShipment = (item) => {
+      return (
+        <div className="max-w-xl mx-auto flex flex-col items-center pt-6 md:pt-8 animate-fade-in px-4 pb-24 md:pb-20">
+          {/* Shop Card */}
+          <div className="w-full mb-4 relative overflow-hidden rounded-2xl shadow-xl shadow-indigo-200/50 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 opacity-95 group-hover:scale-105 transition-transform duration-700"></div>
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+            <div className="relative p-5 md:p-8 text-center text-white">
+              <div className="w-14 h-14 md:w-20 md:h-20 bg-white/10 backdrop-blur-md rounded-2xl mx-auto mb-3 flex items-center justify-center border border-white/20 shadow-inner">
+                <Icons.Store className="w-7 h-7 md:w-10 md:h-10 text-white drop-shadow-md" />
+              </div>
+              <h2 className="text-xl md:text-4xl font-black tracking-wider mb-1 drop-shadow-lg">
+                NOBPHAKAO CREATIVE
+              </h2>
+              <div className="w-12 h-1 bg-white/30 mx-auto rounded-full mb-2"></div>
+              <p className="text-xs md:text-lg font-medium text-indigo-50 leading-relaxed max-w-lg mx-auto drop-shadow-md">
+                กรอบรูปกรอปลอย ไวนิล-โฟโตพรีเมี่ยม <br className="hidden md:block" />
+                และผลิตเสื้อพิมพ์ลายครบวงจร
+              </p>
+              <div className="mt-3 inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-[10px] md:text-sm font-bold shadow-lg">
+                ✨ ออกแบบฟรีแก้ไขได้ไม่จำกัด เริ่มต้นเพียง 5 ตัว ✨
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Card - Responsive Grid */}
+          <div className="w-full mb-4 animate-fade-in delay-100">
+            <div className="bg-white rounded-xl shadow-lg border border-slate-100 p-4 grid grid-cols-2 gap-4 relative overflow-hidden">
+              {/* Total */}
+              <div className="flex flex-col justify-between relative z-10">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                    <Icons.Package className="w-4 h-4" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">พัสดุทั้งหมด</span>
+                </div>
+                <div>
+                  <span className="text-2xl font-black text-slate-800 tracking-tight block">
+                    {shipments.length.toLocaleString()}
+                  </span>
+                  <span className="text-[10px] text-slate-400 block truncate">
+                    {dateRangeString}
+                  </span>
+                </div>
+              </div>
+
+              {/* Average */}
+              <div className="flex flex-col justify-between relative z-10 pl-4 border-l border-slate-100">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                    <Icons.History className="w-4 h-4" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">เฉลี่ยต่อวัน</span>
+                </div>
+                <div>
+                  <span className="text-2xl font-black text-slate-800 tracking-tight block">
+                    {averageShipments.toLocaleString()}
+                  </span>
+                  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 inline-block">
+                    Items / Day
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Search Bar with Integrated Shield (Space Saving) */}
+          <div className="w-full relative group mb-6 z-20">
+            {/* Label above input for clarity but compact */}
+            <div className="flex items-center justify-between px-1 mb-2">
+              <h3 className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                <Icons.ShieldCheck className="w-4 h-4 text-indigo-600" />
+                ค้นหาพัสดุ (PDPA)
+              </h3>
+              <span className="text-[10px] text-slate-400">พิมพ์เบอร์โทร หรือ ชื่อ (2 ตัวอักษรขึ้นไป)</span>
+            </div>
+
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              {selectedShipment ? (
+                <button onClick={resetSelection} className="pointer-events-auto">
+                  <Icons.ArrowLeft className="h-5 w-5 text-indigo-600" />
+                </button>
+              ) : (
+                <Icons.Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+              )}
+            </div>
+            <input
+              type="text"
+              className={`block w-full pl-11 pr-10 py-3.5 border rounded-xl leading-5 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all text-base shadow-sm ${selectedShipment
+                ? 'bg-indigo-50 border-indigo-200 text-indigo-900 font-bold'
+                : 'bg-white border-slate-200 text-slate-800 focus:border-indigo-500'
+                }`}
+              placeholder="ค้นหาพัสดุ... (กรอกชื่อ, เบอร์โทร)"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onClick={() => { if (selectedShipment) resetSelection(); }}
+            />
+            {query && (
+              <button
+                onClick={clearSearch}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-slate-300 hover:text-slate-500"
+              >
+                <Icons.X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {selectedShipment ? (
+            <div className="w-full relative animate-fade-in">
+              <div className={`w-full bg-white rounded-2xl shadow-xl shadow-indigo-100/40 border overflow-hidden transition-all duration-300 ${isDetailsRevealed ? 'border-indigo-200' : 'border-slate-200'}`}>
+                <div className={`px-6 pt-8 pb-4 border-b flex justify-between items-end ${isDetailsRevealed ? 'bg-indigo-50/50 border-indigo-100' : 'bg-slate-50/50 border-slate-100'}`}>
+                  <div>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                      {isDetailsRevealed ? 'ข้อมูลยืนยันแล้ว' : 'ข้อมูลส่วนบุคคล (PDPA)'}
+                    </p>
+                    <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                      {maskName(selectedShipment.customerName)}
+                      {!isDetailsRevealed && <Icons.Lock className="w-4 h-4 text-slate-400" />}
+                      {isDetailsRevealed && <Icons.CheckCircle2 className="w-5 h-5 text-indigo-600" />}
+                    </h3>
+                  </div>
+                  <div className="text-right">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-white border border-slate-200 text-slate-600 shadow-sm">
+                      {customerShipments.length} พัสดุ
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-5">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isDetailsRevealed ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400'}`}>
+                      <Icons.Phone className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-400 font-bold uppercase mb-0.5">เบอร์โทรศัพท์</p>
+                      <p className={`text-base font-mono font-bold ${isDetailsRevealed ? 'text-indigo-700' : 'text-slate-800'}`}>
+                        {maskPhone(selectedShipment.phoneNumber)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isDetailsRevealed ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                      <Icons.Banknote className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-400 font-bold uppercase mb-0.5">ยอดรวม COD ทั้งหมด</p>
+                      <div className={`font-mono font-bold flex items-center gap-2 ${isDetailsRevealed ? 'text-emerald-600 text-2xl' : 'text-slate-300 text-base'}`}>
+                        {isDetailsRevealed ? (
+                          totalCOD > 0 ? (<span>฿{totalCOD.toLocaleString()}</span>) : <span className="text-slate-400 text-lg">ชำระแล้ว</span>
+                        ) : ('฿ ••••')}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isDetailsRevealed ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400'}`}>
+                      <Icons.MapPin className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-400 font-bold uppercase mb-0.5">รหัสไปรษณีย์</p>
+                      <p className="text-base font-mono font-bold text-slate-800">{selectedShipment.zipCode}</p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 mt-2 border-t border-slate-100">
+                    {!isDetailsRevealed ? (
+                      <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold text-sm shadow-lg shadow-slate-200 hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                      >
+                        <Icons.Eye className="w-4 h-4" />
+                        ยืนยันตัวตนเพื่อดูพัสดุทั้งหมด ({customerShipments.length} รายการ)
+                      </button>
+                    ) : (
+                      <div className="space-y-4 animate-slide-up">
+                        <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                          <Icons.Package className="w-4 h-4 text-indigo-600" />
+                          รายการพัสดุ ({customerShipments.length})
+                        </h4>
+
+                        {customerShipments.length > 1 && (
+                          <div className="flex flex-col gap-2 mb-2">
+                            {Object.entries(customerShipments.reduce((acc, s) => {
+                              if (!acc[s.courier]) acc[s.courier] = [];
+                              acc[s.courier].push(s.trackingNumber);
+                              return acc;
+                            }, {})).map(([courierName, trackings]) => (
+                              <a
+                                key={courierName}
+                                href={getMultiTrackingUrl(courierName, trackings)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-md shadow-indigo-200 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+                              >
+                                <Icons.ExternalLink className="w-4 h-4" />
+                                ติดตามพัสดุทั้งหมด ({trackings.length} รายการ)
+                              </a>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="space-y-3">
+                          {customerShipments.map((item, idx) => (
+                            <div key={item.id} className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 transition-all hover:bg-indigo-50">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-mono text-sm md:text-base font-bold text-indigo-900">
+                                    {item.trackingNumber}
+                                  </span>
+                                  <button
+                                    onClick={() => copyToClipboard(item.trackingNumber)}
+                                    className="p-1.5 text-indigo-400 hover:text-indigo-700 hover:bg-indigo-200/50 rounded-lg transition-colors"
+                                  >
+                                    <Icons.Copy className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${item.status === 'รับฝาก' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                                  item.status === 'Delivered' ? 'bg-green-100 text-green-700 border-green-200' :
+                                    'bg-slate-100 text-slate-600 border-slate-200'
+                                  }`}>
+                                  {item.status}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between text-xs text-slate-500">
+                                <div className="flex items-center gap-2">
+                                  <Icons.Calendar className="w-3 h-3" />
+                                  {item.importDate}
+                                </div>
+                                <div className="font-bold">
+                                  {item.codAmount > 0 ? (
+                                    <span className="text-emerald-600">COD: ฿{item.codAmount.toLocaleString()}</span>
+                                  ) : (
+                                    <span className="text-slate-400">Paid</span>
+                                  )}
+                                </div>
+                              </div>
+
+                              <a
+                                href={getTrackingUrl(item.trackingNumber, item.courier)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-3 w-full py-2 bg-white border border-indigo-200 text-indigo-600 rounded-lg font-bold text-xs hover:bg-indigo-50 hover:border-indigo-300 transition-colors flex items-center justify-center gap-1.5"
+                              >
+                                <Icons.ExternalLink className="w-3 h-3" />
+                                ติดตามพัสดุ
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          ) : query.length >= 2 ? (
+            <div className="w-full animate-fade-in">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <h3 className="text-sm font-bold text-slate-500">
+                  ผลการค้นหา ({groupedResults.length} รายชื่อ)
+                </h3>
+              </div>
+
+              {groupedResults.length > 0 ? (
+                <div className="space-y-4">
+                  {/* Rendering Displayed Results based on Lazy Limit */}
+                  {displayedResults.map((group, index) => (
+                    <div key={index} className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                      <div className="p-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-200">
+                          <Icons.User className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-slate-800 text-base truncate">
+                            {maskName(group.customerName)}
+                          </h4>
+                          <p className="text-xs text-slate-500 font-mono">
+                            {maskPhone(group.phoneNumber)}
+                          </p>
+                        </div>
+                        {group.items.length > 1 && (
+                          <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-500 px-2 py-1 rounded-md shadow-sm">
+                            {group.items.length} พัสดุ
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="divide-y divide-slate-50">
+                        {group.items.map(item => (
+                          <button
+                            key={item.id}
+                            onClick={() => handleSelectShipment(item)}
+                            className="w-full p-4 flex items-center justify-between hover:bg-indigo-50/30 transition-colors group text-left"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${item.status === 'รับฝาก' ? 'bg-blue-50 text-blue-600' :
+                                item.status === 'Delivered' ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-500'
+                                }`}>
+                                <Icons.Package className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2 mb-0.5">
+                                  <span className="font-mono text-sm font-bold text-slate-700 truncate">
+                                    {maskTracking(item.trackingNumber)}
+                                  </span>
+                                  <span className={`text-[10px] px-1.5 py-0.5 rounded border ${item.status === 'รับฝาก' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                    item.status === 'Delivered' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-slate-50 text-slate-500 border-slate-200'
+                                    }`}>
+                                    {item.status}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-slate-400">
+                                  {item.importDate}
+                                </p>
+                              </div>
+                            </div>
+                            <Icons.ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-colors" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Load More Button */}
+                  {groupedResults.length > visibleLimit && (
+                    <button
+                      onClick={handleLoadMore}
+                      className="w-full py-4 text-center text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-colors text-sm"
+                    >
+                      โหลดเพิ่มเติม ({groupedResults.length - visibleLimit} รายการ)
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="w-full p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 border-dashed">
+                  <Icons.Package className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                  <p className="text-sm font-medium">ไม่พบข้อมูลที่ตรงกัน</p>
+                </div>
+              )}
+            </div>
+
+          ) : (
+            recentShipments.length > 0 && (
+              <div className="w-full animate-fade-in">
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <h3 className="text-sm font-bold text-slate-500 flex items-center gap-2">
+                    <Icons.History className="w-4 h-4" />
+                    รายการที่ดูล่าสุด
+                  </h3>
+                  <button
+                    onClick={clearHistory}
+                    className="text-xs font-medium text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1"
+                  >
+                    <Icons.Trash2 className="w-3 h-3" /> ล้างประวัติ
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {recentShipments.map(item => (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSelectShipment(item)}
+                      className="w-full bg-white p-3 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all flex items-center gap-3 group text-left"
+                    >
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${item.status === 'รับฝาก' ? 'bg-blue-50 text-blue-600' :
+                        item.status === 'Delivered' ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-500'
+                        }`}>
+                        <Icons.Package className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-slate-800 truncate text-sm">{maskName(item.customerName)}</p>
+                        <p className="text-xs text-slate-400 font-mono truncate">{maskPhone(item.phoneNumber)}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-slate-50 text-slate-500 font-bold border border-slate-100 hidden sm:inline-block">
+                          {item.importDate}
+                        </span>
+                        <div
+                          onClick={(e) => removeFromHistory(e, item.id)}
+                          className="p-1.5 rounded-md text-slate-300 hover:bg-rose-50 hover:text-rose-500 transition-colors"
+                        >
+                          <Icons.X className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
+          )}
+
+          {/* Added Footer Links */}
+          <div className="mt-8 pt-6 border-t border-slate-200 w-full mb-8">
+            <p className="text-center text-xs text-slate-400 font-bold mb-4 uppercase tracking-wider">ช่องทางการติดต่อ</p>
+            <div className="grid grid-cols-2 gap-3">
+              <a href="https://lin.ee/OgSD8Ej" target="_blank" className="flex items-center justify-center gap-2 p-3 bg-white rounded-xl border border-slate-200 hover:border-green-400 hover:text-green-600 transition-all shadow-sm group">
+                <div className="w-8 h-8 rounded-full bg-green-50 text-green-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                </div>
+                <span className="font-bold text-sm text-slate-600 group-hover:text-green-600">ไลน์ร้านเสื้อ</span>
+              </a>
+              <a href="https://drive.google.com/drive/u/0/folders/1LSkp3Xkmx1nBYzNPNXBBR4f4geEzyfuG" target="_blank" className="flex items-center justify-center gap-2 p-3 bg-white rounded-xl border border-slate-200 hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm group">
+                <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Icons.ExternalLink className="w-5 h-5" />
+                </div>
+                <span className="font-bold text-sm text-slate-600 group-hover:text-blue-600">ตัวอย่างเสื้อ</span>
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=100089594178116" target="_blank" className="flex items-center justify-center gap-2 p-3 bg-white rounded-xl border border-slate-200 hover:border-orange-400 hover:text-orange-600 transition-all shadow-sm group">
+                <div className="w-8 h-8 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
+                </div>
+                <span className="font-bold text-sm text-slate-600 group-hover:text-orange-600">ร้านกรอบรูป</span>
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61575667480601" target="_blank" className="flex items-center justify-center gap-2 p-3 bg-white rounded-xl border border-slate-200 hover:border-pink-400 hover:text-pink-600 transition-all shadow-sm group">
+                <div className="w-8 h-8 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.4a1.6 1.6 0 0 0-2.22 0l-1.67 1.67a5.23 5.23 0 0 1-3.4 1.53H11a5.23 5.23 0 0 1-3.4-1.53L5.84 3.4a1.6 1.6 0 0 0-2.22 0l-1.64 1.63a1.6 1.6 0 0 0 0 2.22l1.64 1.66a2.6 2.6 0 0 1 0 3.67l-1.64 1.66a1.6 1.6 0 0 0 0 2.22l1.64 1.66a5.23 5.23 0 0 0 3.4 1.53h5.92a5.23 5.23 0 0 0 3.4-1.53l1.67-1.67a1.6 1.6 0 0 0 0-2.22l-1.67-1.66a2.6 2.6 0 0 1 0-3.67l1.67-1.66a1.6 1.6 0 0 0 0-2.22z" /><path d="M12 12h.01" /></svg>
+                </div>
+                <span className="font-bold text-sm text-slate-600 group-hover:text-pink-600">ร้านเสื้อ</span>
+              </a>
+            </div>
+          </div>
+
+          {isModalOpen && selectedShipment && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)}></div>
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 overflow-hidden animate-scale-up">
+                <div className="p-6 pt-8 text-center">
+                  <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 text-indigo-600">
+                    <Icons.Lock className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800">ยืนยันความเป็นเจ้าของ</h3>
+                  <p className="text-slate-500 text-sm mt-2 mb-6">
+                    กรุณากรอก <b>5 ตัวหน้า</b> ของเบอร์โทรศัพท์ <br />เพื่อยืนยันตัวตน
+                  </p>
+
+                  <form onSubmit={handleVerify} className="space-y-4">
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        autoFocus
+                        className={`w-full text-center text-2xl font-mono font-bold tracking-widest py-3 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all ${verifyError ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20 bg-rose-50' : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'}`}
+                        placeholder="0xxxx"
+                        maxLength={5}
+                        value={verifyInput}
+                        onChange={(e) => setVerifyInput(e.target.value)}
+                      />
+                    </div>
+
+                    {verifyError && (
+                      <div className="text-rose-600 text-xs font-bold flex items-center justify-center gap-1 animate-shake">
+                        <Icons.AlertCircle className="w-3 h-3" /> {verifyError}
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => { setIsModalOpen(false); setVerifyError(''); }}
+                        className="py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors text-sm"
+                      >
+                        ยกเลิก
+                      </button>
+                      <button
+                        type="submit"
+                        className="py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors text-sm shadow-md shadow-indigo-200"
+                      >
+                        ยืนยัน
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<SearchPage />);
+  </script>
+</body>
+
+</html>

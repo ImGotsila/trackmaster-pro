@@ -316,16 +316,16 @@ const Dashboard: React.FC = () => {
               <thead className="bg-slate-50 sticky top-0 z-10 shadow-sm">
                 <tr>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider w-10 text-center">#</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[130px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('trackingNumber')}>
-                    Tracking <span className="opacity-50 ml-1">⇅</span>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[180px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('trackingNumber')}>
+                    Tracking / Status <span className="opacity-50 ml-1">⇅</span>
                   </th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">Pay Tag</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">Service</th>
+                  {/* <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">Pay Tag</th> */}
+                  {/* <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[100px]">Service</th> */}
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[160px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('customerName')}>
-                    ชื่อลูกค้า <span className="opacity-50 ml-1">⇅</span>
+                    ชื่อลูกค้า / Service <span className="opacity-50 ml-1">⇅</span>
                   </th>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[70px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('weight')}>
-                    นน.(kg) <span className="opacity-50 ml-1">⇅</span>
+                    นน. <span className="opacity-50 ml-1">⇅</span>
                   </th>
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right min-w-[80px] cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('codAmount')}>
                     COD <span className="opacity-50 ml-1">⇅</span>
@@ -340,13 +340,13 @@ const Dashboard: React.FC = () => {
                     Profit <span className="text-[10px] opacity-50 ml-1">⇅</span>
                   </th>
                   <th
-                    className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center min-w-[80px] cursor-pointer hover:bg-slate-100 transition-colors"
+                    className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center min-w-[60px] cursor-pointer hover:bg-slate-100 transition-colors"
                     onClick={() => handleSort('costPercent')}
                   >
-                    % Cost <span className="text-[10px] opacity-50 ml-1">⇅</span>
+                    % <span className="text-[10px] opacity-50 ml-1">⇅</span>
                   </th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[70px] text-center">ปณ.</th>
-                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center min-w-[90px]">สถานะ</th>
+                  <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[60px] text-center">ปณ.</th>
+                  {/* <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center min-w-[90px]">สถานะ</th> */}
                   <th className="px-3 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider w-10 text-center"></th>
                 </tr>
               </thead>
@@ -357,7 +357,22 @@ const Dashboard: React.FC = () => {
                       {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
                     </td>
                     <td className="px-3 py-3">
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border ${item.status === 'รับฝาก'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : item.status === 'Delivered'
+                              ? 'bg-green-50 text-green-700 border-green-200'
+                              : 'bg-slate-100 text-slate-600 border-slate-200'
+                            }`}>
+                            {item.status}
+                          </span>
+                          {item.payTag && (
+                            <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1 rounded border border-slate-200" title="Pay Tag">
+                              {item.payTag}
+                            </span>
+                          )}
+                        </div>
                         <a
                           href={getTrackingUrl(item.trackingNumber, item.courier)}
                           target="_blank"
@@ -371,20 +386,17 @@ const Dashboard: React.FC = () => {
                         {item.sequenceNumber && <span className="text-[10px] text-slate-400 font-mono">Ref: {item.sequenceNumber}</span>}
                       </div>
                     </td>
-                    <td className="px-3 py-3">
-                      <span className="text-xs font-mono text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 truncate max-w-[100px] block" title={item.payTag || '-'}>
-                        {item.payTag || '-'}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3">
-                      <span className="text-xs text-slate-500 truncate max-w-[100px] block" title={item.serviceType || '-'}>
-                        {item.serviceType || '-'}
-                      </span>
-                    </td>
+                    {/* Removed Pay Tag Column */}
+                    {/* Removed Service Column */}
                     <td className="px-3 py-3">
                       <div className="flex flex-col">
                         <span className="text-sm font-semibold text-slate-700 truncate max-w-[180px]" title={item.customerName}>{item.customerName}</span>
-                        <span className="text-[10px] text-slate-400 font-mono">{item.phoneNumber}</span>
+                        <span className="text-sm text-indigo-700 font-bold font-mono my-0.5">{item.phoneNumber}</span>
+                        {item.serviceType && (
+                          <span className="text-[9px] text-slate-400 truncate max-w-[150px] italic" title={item.serviceType}>
+                            {item.serviceType}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="px-3 py-3 text-xs md:text-sm font-medium text-slate-600 text-right">
@@ -406,11 +418,11 @@ const Dashboard: React.FC = () => {
                     </td>
                     <td className="px-3 py-3 text-center">
                       {item.codAmount > 0 ? (
-                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${((item.shippingCost || 0) / item.codAmount) * 100 > 30
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${((item.shippingCost || 0) / item.codAmount) * 100 > 30
                           ? 'bg-rose-100 text-rose-700 border border-rose-200'
                           : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
                           }`}>
-                          {((item.shippingCost || 0) / item.codAmount * 100).toFixed(1)}%
+                          {((item.shippingCost || 0) / item.codAmount * 100).toFixed(0)}%
                         </span>
                       ) : (
                         <span className="text-slate-300">-</span>
@@ -422,22 +434,13 @@ const Dashboard: React.FC = () => {
                           e.stopPropagation();
                           handleZipClick(item.zipCode);
                         }}
-                        className="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-sm font-bold font-mono hover:bg-indigo-100 hover:scale-105 transition-all cursor-pointer"
+                        className="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-xs font-bold font-mono hover:bg-indigo-100 hover:scale-105 transition-all cursor-pointer"
                         title="คลิกเพื่อดูรายละเอียดพื้นที่"
                       >
                         {item.zipCode}
                       </button>
                     </td>
-                    <td className="px-3 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] md:text-xs font-bold border ${item.status === 'รับฝาก'
-                        ? 'bg-blue-50 text-blue-700 border-blue-200'
-                        : item.status === 'Delivered'
-                          ? 'bg-green-50 text-green-700 border-green-200'
-                          : 'bg-slate-100 text-slate-600 border-slate-200'
-                        }`}>
-                        {item.status}
-                      </span>
-                    </td>
+                    {/* Removed Status Column */}
                     <td className="px-3 py-3 text-center">
                       <button
                         onClick={(e) => {
