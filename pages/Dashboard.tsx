@@ -390,7 +390,7 @@ const Dashboard: React.FC = () => {
                           href={getTrackingUrl(item.trackingNumber, item.courier)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs md:text-sm font-bold text-indigo-700 font-mono tracking-tight whitespace-nowrap hover:text-indigo-900 hover:underline cursor-pointer"
+                          className="inline-flex items-center gap-1 text-sm md:text-base font-bold text-indigo-700 font-mono tracking-tight whitespace-nowrap hover:text-indigo-900 hover:underline cursor-pointer"
                           title={`ตรวจสอบสถานะ ${item.trackingNumber}`}
                         >
                           {item.trackingNumber}
@@ -403,27 +403,27 @@ const Dashboard: React.FC = () => {
                     {/* Removed Service Column */}
                     <td className="px-3 py-3">
                       <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-slate-700 truncate max-w-[180px]" title={item.customerName}>{item.customerName}</span>
-                        <span className="text-sm text-indigo-700 font-bold font-mono my-0.5">{item.phoneNumber}</span>
+                        <span className="text-sm md:text-base font-semibold text-slate-700 truncate max-w-[180px]" title={item.customerName}>{item.customerName}</span>
+                        <span className="text-sm md:text-base text-indigo-700 font-bold font-mono my-0.5">{item.phoneNumber}</span>
                         {item.serviceType && (
-                          <span className="text-[9px] text-slate-400 truncate max-w-[150px] italic" title={item.serviceType}>
+                          <span className="text-[10px] text-slate-400 truncate max-w-[150px] italic" title={item.serviceType}>
                             {item.serviceType}
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="px-3 py-3 text-xs md:text-sm font-medium text-slate-600 text-right">
+                    <td className="px-3 py-3 text-sm font-medium text-slate-600 text-right">
                       {item.weight ? item.weight.toFixed(2) : '-'}
                     </td>
-                    <td className="px-3 py-3 text-xs md:text-sm font-bold text-right">
+                    <td className="px-3 py-3 text-sm font-bold text-right">
                       {item.codAmount > 0 ? (
                         <span className="text-emerald-600">{item.codAmount.toLocaleString()}</span>
                       ) : (
                         <span className="text-slate-300">-</span>
                       )}
                     </td>
-                    <td className="px-3 py-3 text-xs md:text-sm font-medium text-slate-600 text-right">{item.shippingCost}</td>
-                    <td className="px-3 py-3 text-xs md:text-sm font-bold text-right bg-indigo-50/20">
+                    <td className="px-3 py-3 text-sm font-medium text-slate-600 text-right">{item.shippingCost}</td>
+                    <td className="px-3 py-3 text-sm font-bold text-right bg-indigo-50/20">
                       <span className={(item.codAmount - item.shippingCost - ((item.codAmount || 0) * (codFeePercent / 100))) > 0 ? 'text-indigo-700' : 'text-slate-400'}>
                         {(item.codAmount - item.shippingCost - ((item.codAmount || 0) * (codFeePercent / 100))) > 0 ?
                           (item.codAmount - item.shippingCost - ((item.codAmount || 0) * (codFeePercent / 100))).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '-'}
