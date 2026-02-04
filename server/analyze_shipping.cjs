@@ -217,7 +217,48 @@ function runAnalysis() {
         fs.writeFileSync(mdPath, mdContent);
         console.log(`✅ Report written to: ${mdPath}`);
 
-        db.close();
-        console.log('\n✅ Analysis complete!');
+        // Save anomalies to database
+        console.log(`💾 Saving ${anomalies.length} anomalies to database...`);
+        db.run(`DELETE FROM shipping_anomalies`, (err) => {
+            if (err) {
+                console.error('Error clearing anomalies:', err);
+                db.close();
+                return;
+            }
+
+            const stmt = db.prepare(`INSERT INTO shipping_anomalies 
+                (id, trackingNumber, customerName, phoneNumber, weight, shippingCost, codAmount, profit, costPercent, expectedCost, diff, anomalyType, importDate, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+
+            let savedCount = 0;
+            anomalies.forEach(a => {
+                stmt.run(
+                    a.id,
+                    a.tracking,
+                    a.name,
+                    a.phone || '',
+                    a.weight,
+                    a.cost,
+                    a.cod,
+                    a.profit,
+                    a.costPercent,
+                    a.expected,
+                    a.diff,
+                    a.anomalyType,
+                    a.date,
+                    Date.now(),
+                    (err) => {
+                        if (err) console.error('Insert error:', err);
+                        else savedCount++;
+                    }
+                );
+            });
+
+            stmt.finalize(() => {
+                console.log(`✅ Saved ${savedCount} anomalies to database`);
+                db.close();
+                console.log('\n✅ Analysis complete!');
+            });
+        });
     });
 }

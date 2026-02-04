@@ -163,6 +163,24 @@ db.serialize(() => {
         updatedAt INTEGER
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS shipping_anomalies (
+        id TEXT PRIMARY KEY,
+        trackingNumber TEXT,
+        customerName TEXT,
+        phoneNumber TEXT,
+        weight REAL,
+        shippingCost REAL,
+        codAmount REAL,
+        profit REAL,
+        costPercent REAL,
+        expectedCost REAL,
+        diff REAL,
+        anomalyType TEXT,
+        importDate TEXT,
+        timestamp INTEGER
+    )`);
+
+
     db.run(`CREATE TABLE IF NOT EXISTS products (
         id TEXT PRIMARY KEY,
         sku TEXT UNIQUE,
