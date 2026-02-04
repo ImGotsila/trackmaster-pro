@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-const dbPath = path.resolve(__dirname, 'trackmaster.db');
+const dbPath = process.env.DB_PATH || path.resolve(__dirname, '../data/trackmaster.db');
 const db = new sqlite3.Database(dbPath);
 
 const SERVER_URL = 'http://localhost:3000';
