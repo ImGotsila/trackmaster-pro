@@ -278,6 +278,7 @@ app.get('/api/analytics/shipping-anomalies', (req, res) => {
 
         // 3. Identify Anomalies (Global Calculation)
         const allResults = [];
+        let trueAnomalyCount = 0; // Track actual anomalies independent of showAll
         const isShowAll = req.query.showAll === 'true';
 
         // Dynamic Thresholds
@@ -285,11 +286,13 @@ app.get('/api/analytics/shipping-anomalies', (req, res) => {
         const costRatioThreshold = parseFloat(req.query.costRatioThreshold) || 50; // Default 50%
 
         data.forEach(d => {
-            const expected = standardCosts[d.weight];
+            const expected = standardCosts[d.weight]; // Mode cost for this weight
             const isCostMismatch = d.cost !== expected;
             const isNegativeProfit = d.profit < profitThreshold;
-            const isHighRatio = d.costPercent > costRatioThreshold;
+            const isHighRatio = d.costPercent > costRatioThreshold; // e.g. Shipping is > 50% of COD
             const isAnomaly = isNegativeProfit || isHighRatio || isCostMismatch;
+
+            if (isAnomaly) trueAnomalyCount++;
 
             if (isShowAll || isAnomaly) {
                 let type = 'normal';
@@ -404,7 +407,7 @@ app.get('/api/analytics/shipping-anomalies', (req, res) => {
             stats: {
                 totalScanned: rows.length,
                 validRecords: data.length,
-                anomaliesFound: allResults.length, // Total anomalies in DB (unfiltered)
+                anomaliesFound: trueAnomalyCount, // Use the correct filtered count
                 filteredCount: filtered.length, // Count after filters applied
                 totalRefundPotential: validRefunds,
                 standardCosts
