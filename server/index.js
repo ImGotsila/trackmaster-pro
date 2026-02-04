@@ -375,7 +375,8 @@ app.get('/api/analytics/shipping-anomalies', (req, res) => {
         });
 
         // 6. Stats Calculation (Filtered)
-        const validRefunds = filtered.reduce((acc, curr) => acc + (curr.diff > 0 ? curr.diff : 0), 0);
+        // User requested to ignore refund calculation for now (as +20 is often remote area fee)
+        const validRefunds = 0; // filtered.reduce((acc, curr) => acc + (curr.diff > 0 ? curr.diff : 0), 0);
 
         // 7. Handle Export vs Pagination
         if (req.query.export === 'true') {

@@ -328,12 +328,14 @@ const ShippingAnomalyPage: React.FC = () => {
                         <div className="text-xs font-semibold uppercase tracking-wider text-red-600 mb-1">Anomalies Detected</div>
                         <div className="text-2xl font-bold text-red-700">{stats.anomaliesFound.toLocaleString()}</div>
                     </div>
+                    {/* Potential Refund Card Hidden as per user request (criteria pending)
                     <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 bg-emerald-50 border-emerald-100">
                         <div className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-1">Potential Refund</div>
                         <div className="text-2xl font-bold text-emerald-700">
                             ฿{stats.totalRefundPotential ? stats.totalRefundPotential.toLocaleString() : 0}
                         </div>
                     </div>
+                    */}
                 </div>
             )}
 
