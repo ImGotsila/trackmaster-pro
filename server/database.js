@@ -154,6 +154,15 @@ db.serialize(() => {
         timestamp INTEGER
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS cod_weight_rules (
+        id TEXT PRIMARY KEY,
+        codAmount REAL UNIQUE NOT NULL,
+        minWeight REAL DEFAULT 0,
+        maxWeight REAL DEFAULT 0,
+        isActive BOOLEAN DEFAULT 1,
+        updatedAt INTEGER
+    )`);
+
     db.run(`CREATE TABLE IF NOT EXISTS products (
         id TEXT PRIMARY KEY,
         sku TEXT UNIQUE,

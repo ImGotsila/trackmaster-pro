@@ -149,6 +149,33 @@ app.post('/api/gsheets/delete', async (req, res) => {
     }
 });
 
+// --- WEIGHT RULES API ---
+app.get('/api/weight-rules', (req, res) => {
+    db.all('SELECT * FROM cod_weight_rules WHERE isActive = 1', (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+app.post('/api/weight-rules', (req, res) => {
+    const { codAmount, minWeight, maxWeight } = req.body;
+    const id = `rule-${codAmount}`;
+    const timestamp = Date.now();
+
+    db.run(`INSERT INTO cod_weight_rules (id, codAmount, minWeight, maxWeight, isActive, updatedAt)
+            VALUES (?, ?, ?, ?, 1, ?)
+            ON CONFLICT(codAmount) DO UPDATE SET
+            minWeight = excluded.minWeight,
+            maxWeight = excluded.maxWeight,
+            updatedAt = excluded.updatedAt,
+            isActive = 1`,
+        [id, codAmount, minWeight, maxWeight, timestamp],
+        function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ success: true, id: id });
+        });
+});
+
 // --- ANALYTICS DATABASE STORAGE ---
 app.post('/api/analytics', (req, res) => {
     const data = JSON.stringify(req.body);
