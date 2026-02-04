@@ -452,11 +452,15 @@ const ShippingAnomalyPage: React.FC = () => {
                                         return (
                                             <tr key={row.id} className={`${rowClass} transition-colors border-b last:border-0`}>
                                                 <td className="p-4 text-gray-500 text-sm text-center">{(currentPage - 1) * 50 + index + 1}</td>
-                                                <td className="p-4 font-mono font-medium text-indigo-600 select-all">
-                                                    {row.tracking}
-                                                    {isCritical && <span className="ml-2 px-2 py-0.5 bg-red-600 text-white text-[10px] rounded uppercase">Loss</span>}
-                                                    {isWarning && <span className="ml-2 px-2 py-0.5 bg-orange-500 text-white text-[10px] rounded uppercase">Check</span>}
-                                                    {isNormal && <span className="ml-2 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] rounded uppercase">OK</span>}
+                                                <td className="p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-mono font-medium text-indigo-600 select-all cursor-text">{row.tracking}</span>
+                                                        <div className="select-none flex gap-1">
+                                                            {isCritical && <span className="px-2 py-0.5 bg-red-600 text-white text-[10px] rounded uppercase">Loss</span>}
+                                                            {isWarning && <span className="px-2 py-0.5 bg-orange-500 text-white text-[10px] rounded uppercase">Check</span>}
+                                                            {isNormal && <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] rounded uppercase">OK</span>}
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <td className="p-4 text-gray-600">{row.date}</td>
                                                 <td className="p-4 text-gray-800 font-medium">{row.name}</td>
