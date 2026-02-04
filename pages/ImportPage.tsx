@@ -41,11 +41,11 @@ const ImportPage: React.FC = () => {
 
     const cleanString = (str: string) => str ? str.trim().replace(/^"/, '').replace(/"$/, '') : '';
 
-    // Helper: Parse amount (supports 1-7 digits with comma separators)
+    // Helper: Parse amount (supports 1-7 digits with comma separators and ฿ symbol)
     const parseAmount = (str: string): number => {
         if (!str) return 0;
-        // Remove commas and parse
-        const cleaned = str.replace(/,/g, '').trim();
+        // Remove ฿, commas, spaces, and parse
+        const cleaned = str.replace(/[฿,\s]/g, '').trim();
         const value = parseFloat(cleaned);
         // Validate: must be positive number, 1-7 digits (up to 9,999,999)
         if (isNaN(value) || value < 0 || value > 9999999) return 0;
