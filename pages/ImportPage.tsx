@@ -41,6 +41,17 @@ const ImportPage: React.FC = () => {
 
     const cleanString = (str: string) => str ? str.trim().replace(/^"/, '').replace(/"$/, '') : '';
 
+    // Helper: Parse amount (supports 1-7 digits with comma separators)
+    const parseAmount = (str: string): number => {
+        if (!str) return 0;
+        // Remove commas and parse
+        const cleaned = str.replace(/,/g, '').trim();
+        const value = parseFloat(cleaned);
+        // Validate: must be positive number, 1-7 digits (up to 9,999,999)
+        if (isNaN(value) || value < 0 || value > 9999999) return 0;
+        return value;
+    };
+
     const calculatePreviewStats = (itemsToCheck: Shipment[]) => {
         const parsedMap = new Map<string, Shipment>();
         itemsToCheck.forEach(item => parsedMap.set(item.trackingNumber, item));
@@ -126,11 +137,11 @@ const ImportPage: React.FC = () => {
                     payTag: parts[2],
                     serviceType: parts[3],
                     weight: parseFloat(parts[4]) || 0,
-                    codAmount: (parseFloat(parts[5]) || 0) > 10 ? (parseFloat(parts[5]) || 0) : 0, // Fix: If < 10, assume it's Quantity, not COD
+                    codAmount: parseAmount(parts[5]), // Column 5: COD Amount (supports 1-7 digits)
                     customerName: parts[6] ? parts[6].replace(/^\d+\./, '') : '', // Remove "250." prefix if any
                     phoneNumber: phone,
                     zipCode: parts[8], // PC Column
-                    shippingCost: parseFloat(parts[9]) || 0,
+                    shippingCost: parseAmount(parts[9]), // Column 9: Shipping Cost
                     status: (parts[10] as any) || 'รับฝาก'
                 };
             }
@@ -199,19 +210,30 @@ const ImportPage: React.FC = () => {
         // Product Code logic removed to prevent mixing with ZipCode
         // if (productCode) ...
 
-        // COD / TT
-        // Look for "COD 199" or "TT"
+        // COD / TT (Fallback Strategy)
+        // First try to find numeric column with reasonable amount (1-7 digits)
+        const amountColumns = parts.filter(p => {
+            const cleaned = p.replace(/,/g, '').trim();
+            return /^\d{1,7}(\.\d{1,2})?$/.test(cleaned);
+        });
+
+        // Look for "COD" tag or "TT" tag
         const paymentInfo = parts.find(p => /COD|TT/i.test(p));
-        if (paymentInfo) {
-            const amountMatch = paymentInfo.match(/\d+/);
+
+        if (paymentInfo && /TT/i.test(paymentInfo)) {
+            // Transfer payment - no COD
+            shipment.codAmount = 0;
+        } else if (paymentInfo && /COD/i.test(paymentInfo)) {
+            // Extract number from "COD 199" format
+            const amountMatch = paymentInfo.match(/[\d,]+/);
             if (amountMatch) {
-                shipment.codAmount = parseFloat(amountMatch[0]);
+                shipment.codAmount = parseAmount(amountMatch[0]);
             }
-            // If TT, cod is 0
-            if (/TT/i.test(paymentInfo)) {
-                shipment.codAmount = 0;
-                // Maybe store "TT" status?
-            }
+        } else if (amountColumns.length > 0) {
+            // Fallback: Use first numeric column that looks like an amount
+            // Heuristic: Likely to be the largest number (COD is usually larger than weight/quantity)
+            const amounts = amountColumns.map(p => parseAmount(p));
+            shipment.codAmount = Math.max(...amounts.filter(a => a > 0));
         }
 
         // ZipCode
