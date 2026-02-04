@@ -5,7 +5,7 @@ const fs = require('fs');
 const dbPath = path.resolve(__dirname, 'trackmaster.db');
 const db = new sqlite3.Database(dbPath);
 
-const SERVER_URL = 'http://localhost:3001';
+const SERVER_URL = 'http://localhost:3000';
 
 console.log('🔄 Fetching fresh data from Google Sheets via server...');
 
