@@ -136,6 +136,24 @@ db.serialize(() => {
         timestamp INTEGER
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS verified_weight_anomalies (
+        id TEXT PRIMARY KEY,
+        trackingNumber TEXT UNIQUE,
+        customerName TEXT,
+        phoneNumber TEXT,
+        weight REAL,
+        normalWeight REAL,
+        codAmount REAL,
+        shippingCost REAL,
+        expectedCost REAL,
+        diff REAL,
+        profit REAL,
+        percentCost REAL,
+        status TEXT,
+        notes TEXT,
+        timestamp INTEGER
+    )`);
+
     db.run(`CREATE TABLE IF NOT EXISTS products (
         id TEXT PRIMARY KEY,
         sku TEXT UNIQUE,

@@ -15,6 +15,9 @@ import VisualMetricsPage from './pages/VisualMetricsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import RTSManagementPage from './pages/RTSManagementPage';
 import ClaimsDashboardPage from './pages/ClaimsDashboardPage';
+import ShippingAnomalyPage from './pages/ShippingAnomalyPage';
+import WeightAnalysisPage from './pages/WeightAnalysisPage';
+import VerifiedWeightsPage from './pages/VerifiedWeightsPage';
 import LoginPage from './pages/LoginPage';
 import { DataProvider } from './context/DataContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -55,6 +58,12 @@ const AppContent: React.FC = () => {
         <Route path="/management" element={<DataManagementPage />} />
         <Route path="/rts" element={<RTSManagementPage />} />
         <Route path="/claims" element={<ClaimsDashboardPage />} />
+        <Route path="/claims" element={<ClaimsDashboardPage />} />
+        <Route path="/shipping-anomalies" element={<ShippingAnomalyPage />} />
+        <Route path="/weight-analysis" element={<WeightAnalysisPage />} />
+        <Route path="/weight-anomalies" element={<WeightAnalysisPage />} />
+        <Route path="/weight-anomalies-list" element={<WeightAnalysisPage />} />
+        <Route path="/verified-weights" element={<VerifiedWeightsPage />} />
         <Route path="/admin" element={<AdminSettingsPage />} />
       </Routes>
     </Layout>

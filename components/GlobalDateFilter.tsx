@@ -2,8 +2,20 @@ import React from 'react';
 import { useData } from '../context/DataContext';
 import { Calendar, X } from 'lucide-react';
 
-const GlobalDateFilter: React.FC = () => {
-    const { startDate, endDate, setDateRange, shipments } = useData();
+interface GlobalDateFilterProps {
+    externalStartDate?: string | null;
+    externalEndDate?: string | null;
+    onDateChange?: (start: string | null, end: string | null) => void;
+}
+
+const GlobalDateFilter: React.FC<GlobalDateFilterProps> = ({ externalStartDate, externalEndDate, onDateChange }) => {
+    // Use Context (default) or External Props
+    const contextData = useData();
+
+    // Determine which values to use
+    const startDate = onDateChange ? externalStartDate : contextData.startDate;
+    const endDate = onDateChange ? externalEndDate : contextData.endDate;
+    const setDateRange = onDateChange || contextData.setDateRange;
 
     // Helper to get today's date in YYYY-MM-DD
     const today = new Date().toISOString().split('T')[0];

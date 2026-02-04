@@ -188,6 +188,238 @@ app.get('/api/analytics/geo', (req, res) => {
     });
 });
 
+// API: Get Shipping Cost Anomalies (From Database)
+app.get('/api/analytics/shipping-anomalies', (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    // Base SQL query (customerPhone doesn't exist in DB, extract from raw_data)
+    let sql = `SELECT id, trackingNumber, shippingCost, codAmount, raw_data, customerName, timestamp 
+               FROM shipments`;
+    let params = [];
+
+    // Filter by date if provided
+    if (startDate && endDate) {
+        const startTs = new Date(startDate).getTime();
+        const endTs = new Date(endDate).getTime() + 86399999;
+        sql += " WHERE timestamp BETWEEN ? AND ?";
+        params.push(startTs, endTs);
+    }
+
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.error('Database error fetching shipping anomalies:', err);
+            return res.status(500).json({ error: err.message });
+        }
+
+        const data = [];
+
+        // Extract valid data from database
+        rows.forEach(row => {
+            let weight = null;
+            let phone = null;
+
+            if (row.raw_data) {
+                try {
+                    const parsed = JSON.parse(row.raw_data);
+                    weight = parsed.weight;
+                    phone = parsed.phone || parsed.phoneNumber;  // Support both field names
+                } catch (e) {
+                    console.warn(`Could not parse raw_data for shipment ${row.id}:`, e);
+                }
+            }
+
+            if (row.shippingCost != null && weight != null) {
+                const cod = row.codAmount || 0;
+                if (cod <= 0) return; // Only COD orders
+
+                const cost = parseFloat(row.shippingCost);
+                const profit = cod - cost;
+                const costPercent = cod > 0 ? (cost / cod) * 100 : 0;
+
+                data.push({
+                    id: row.id,
+                    tracking: row.trackingNumber,
+                    name: row.customerName,
+                    phone: phone || '-',
+                    cost: cost,
+                    codAmount: cod,
+                    profit: profit,
+                    costPercent: parseFloat(costPercent.toFixed(2)),
+                    weight: parseFloat(weight),
+                    timestamp: row.timestamp,
+                    date: new Date(row.timestamp).toISOString().split('T')[0]
+                });
+            }
+        });
+
+        // 2. Calculate Mode Cost per Weight (The "Standard")
+        const weightGroups = {};
+        data.forEach(item => {
+            if (!weightGroups[item.weight]) weightGroups[item.weight] = [];
+            weightGroups[item.weight].push(item.cost);
+        });
+
+        const standardCosts = {};
+        Object.keys(weightGroups).forEach(w => {
+            const costs = weightGroups[w];
+            const frequency = {};
+            let maxFreq = 0;
+            let modeCost = costs[0];
+
+            costs.forEach(c => {
+                frequency[c] = (frequency[c] || 0) + 1;
+                if (frequency[c] > maxFreq) {
+                    maxFreq = frequency[c];
+                    modeCost = c;
+                }
+            });
+            standardCosts[w] = modeCost;
+        });
+
+        // 3. Identify Anomalies (Global Calculation)
+        const allResults = [];
+        const isShowAll = req.query.showAll === 'true';
+
+        // Dynamic Thresholds
+        const profitThreshold = parseFloat(req.query.profitThreshold) || 0; // Default 0
+        const costRatioThreshold = parseFloat(req.query.costRatioThreshold) || 50; // Default 50%
+
+        data.forEach(d => {
+            const expected = standardCosts[d.weight];
+            const isCostMismatch = d.cost !== expected;
+            const isNegativeProfit = d.profit < profitThreshold;
+            const isHighRatio = d.costPercent > costRatioThreshold;
+            const isAnomaly = isNegativeProfit || isHighRatio || isCostMismatch;
+
+            if (isShowAll || isAnomaly) {
+                let type = 'normal';
+                if (isNegativeProfit) type = 'negative_profit';
+                else if (isHighRatio) type = 'high_ratio';
+                else if (isCostMismatch) type = 'mismatch';
+
+                allResults.push({
+                    ...d,
+                    expectedCost: expected,
+                    diff: d.cost - expected,
+                    anomalyType: type
+                });
+            }
+        });
+
+        // 4. Server-Side Filtering
+        console.log('[DEBUG] Query params:', req.query);
+        console.log('[DEBUG] Data before filter:', data.length, 'records');
+
+        let filtered = allResults.filter(item => {
+            // 4.1 Check Range Filters (min_X, max_X)
+            const rangeCheck = Object.keys(req.query).every(key => {
+                if (key.startsWith('min_')) {
+                    const field = key.replace('min_', '');
+                    const val = parseFloat(req.query[key]);
+                    if (isNaN(val)) return true;
+                    return item[field] >= val;
+                }
+                if (key.startsWith('max_')) {
+                    const field = key.replace('max_', '');
+                    const val = parseFloat(req.query[key]);
+                    if (isNaN(val)) return true;
+                    return item[field] <= val;
+                }
+                return true;
+            });
+            if (!rangeCheck) return false;
+
+            // 4.2 Check Text Filters (filter_X)
+            const textCheck = Object.keys(req.query).every(key => {
+                if (!key.startsWith('filter_')) return true;
+                const field = key.replace('filter_', '');
+                const filterValue = req.query[key].toLowerCase();
+                if (!filterValue) return true;
+
+                const itemValue = item[field];
+                return itemValue != null && String(itemValue).toLowerCase().includes(filterValue);
+            });
+            if (!textCheck) return false;
+
+            // 4.3 Check Minimum Difference Filter
+            const minDiff = parseFloat(req.query.minDiff);
+            if (!isNaN(minDiff) && minDiff > 0) {
+                // Only show items where diff >= minDiff (overcharged amounts)
+                if (item.diff < minDiff) return false;
+            }
+
+            return true;
+        });
+
+        // 5. Server-Side Sorting
+        const sortBy = req.query.sortBy || 'profit'; // Default to profit to show losses
+        const sortDir = req.query.sortDir === 'desc' ? -1 : 1;
+
+        filtered.sort((a, b) => {
+            // Special sort for severity if default
+            if (req.query.sortBy === undefined) {
+                const scoreA = a.anomalyType === 'negative_profit' ? 2 : (a.anomalyType === 'high_ratio' ? 1 : 0);
+                const scoreB = b.anomalyType === 'negative_profit' ? 2 : (b.anomalyType === 'high_ratio' ? 1 : 0);
+                if (scoreA !== scoreB) return scoreB - scoreA;
+                return a.profit - b.profit;
+            }
+
+            const valA = a[sortBy];
+            const valB = b[sortBy];
+            if (valA < valB) return -1 * sortDir;
+            if (valA > valB) return 1 * sortDir;
+            return 0;
+        });
+
+        // 6. Stats Calculation (Filtered)
+        const validRefunds = filtered.reduce((acc, curr) => acc + (curr.diff > 0 ? curr.diff : 0), 0);
+
+        // 7. Handle Export vs Pagination
+        if (req.query.export === 'true') {
+            // Generate CSV
+            const headers = "Tracking,Date,Customer,Weight,COD,Profit,%Cost,Charged,Expected,Diff,Status\n";
+            const csvRows = filtered.map(a => {
+                let status = 'Normal';
+                if (a.anomalyType === 'negative_profit') status = 'CRITICAL LOSS';
+                else if (a.anomalyType === 'high_ratio') status = 'High Cost %';
+                else if (a.anomalyType === 'mismatch') status = 'Refund Request';
+
+                return `"${a.tracking}","${a.date}","${a.name}",${a.weight},${a.codAmount},${a.profit},${a.costPercent}%,${a.cost},${a.expectedCost},${a.diff},"${status}"`;
+            }).join("\n");
+
+            res.header('Content-Type', 'text/csv');
+            res.attachment(`shipping_analysis_${new Date().toISOString().split('T')[0]}.csv`);
+            return res.send(headers + csvRows);
+        }
+
+        // Pagination
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedResults = filtered.slice(startIndex, endIndex);
+
+        res.json({
+            success: true,
+            stats: {
+                totalScanned: rows.length,
+                validRecords: data.length,
+                anomaliesFound: allResults.length, // Total anomalies in DB (unfiltered)
+                filteredCount: filtered.length, // Count after filters applied
+                totalRefundPotential: validRefunds,
+                standardCosts
+            },
+            data: paginatedResults,
+            pagination: {
+                current: page,
+                total: Math.ceil(filtered.length / limit),
+                totalItems: filtered.length
+            },
+            standardCosts
+        });
+    });
+});
+
 // --- ADMIN & AUTH API ---
 
 // API: Login (Simple for now, will enhance with hashing/JWT if needed)
@@ -660,6 +892,58 @@ app.get('/api/backups', (req, res) => {
     res.json(backups);
 });
 
+// --- VERIFIED WEIGHT ANOMALIES API ---
+
+// API: Save Verified Anomaly
+app.post('/api/weight-verification', (req, res) => {
+    const data = req.body;
+    const id = uuidv4();
+    const timestamp = Date.now();
+
+    const stmt = db.prepare(`INSERT INTO verified_weight_anomalies (
+        id, trackingNumber, customerName, phoneNumber, weight, normalWeight, 
+        codAmount, shippingCost, expectedCost, diff, profit, percentCost, 
+        status, notes, timestamp
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(trackingNumber) DO UPDATE SET
+        weight=excluded.weight,
+        status=excluded.status,
+        notes=excluded.notes,
+        timestamp=excluded.timestamp
+    `);
+
+    stmt.run(
+        id, data.trackingNumber, data.customerName, data.phoneNumber, data.weight, data.normalWeight,
+        data.codAmount, data.shippingCost, data.expectedCost, data.diff, data.profit, data.percentCost,
+        data.status || 'Verified', data.notes, timestamp,
+        function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ success: true, id: this.lastID || id });
+        }
+    );
+    stmt.finalize();
+});
+
+// API: Get Verified Anomalies
+app.get('/api/weight-verification', (req, res) => {
+    db.all("SELECT * FROM verified_weight_anomalies ORDER BY timestamp DESC", (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// API: Delete Verified Anomaly
+app.delete('/api/weight-verification/:id', (req, res) => {
+    db.run("DELETE FROM verified_weight_anomalies WHERE id = ?", [req.params.id], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+    });
+});
+
+// Register report generation endpoint (BEFORE app.listen)
+require('./generate-report')(app, db);
+require('./weight-analysis')(app, db);
+
 // 404 handler for API routes (MUST BE LAST API ROUTE)
 app.use('/api/*', (req, res) => {
     res.status(404).json({ error: 'API endpoint not found' });
@@ -672,7 +956,10 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(staticPath, 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+// Start server
+const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`API endpoints available at http://localhost:${PORT}/api`);
 });
+
+module.exports = server;

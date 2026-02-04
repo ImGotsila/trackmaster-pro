@@ -1,4 +1,5 @@
-import { LayoutDashboard, Search, FileInput, Package, Database, TrendingUp, Map, DollarSign, BarChart3, Shield, LogOut, RotateCcw, ShieldAlert, LucideIcon } from 'lucide-react';
+import React from 'react';
+import { LayoutDashboard, Search, FileInput, Package, Database, TrendingUp, Map, DollarSign, BarChart3, Shield, LogOut, RotateCcw, ShieldAlert, LucideIcon, Scale, List, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { isDemoMode } from '../utils/environment';
@@ -17,7 +18,11 @@ export const MENU_ITEMS: MenuItem[] = [
   { path: '/cost-analytics', label: 'วิเคราะห์ค่าส่ง (Cost)', icon: DollarSign },
   { path: '/products', label: 'จัดการสินค้า (Products)', icon: Package },
   { path: '/rts', label: 'ค้นหาพัสดุ (Search & Scan)', icon: Search },
-  { path: '/claims', label: 'จัดการเคส (Claims)', icon: ShieldAlert },
+  { path: '/shipping-anomalies', label: 'ตรวจสอบค่าส่ง (Claims)', icon: ShieldAlert },
+  { path: '/weight-analysis', label: 'วิเคราะห์น้ำหนัก (Graphs)', icon: Scale },
+  { path: '/weight-anomalies-list', label: 'รายการน้ำหนัก (List)', icon: List },
+  { path: '/verified-weights', label: 'รายการตรวจสอบแล้ว', icon: CheckCircle },
+  { path: '/claims', label: 'จัดการเคส (Case Mgmt)', icon: Shield },
   { path: '/import', label: 'นำเข้าข้อมูล (Import)', icon: FileInput },
   { path: '/management', label: 'จัดการข้อมูล (Data)', icon: Database },
 ];
