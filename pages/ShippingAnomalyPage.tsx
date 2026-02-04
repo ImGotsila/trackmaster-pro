@@ -39,7 +39,7 @@ const ShippingAnomalyPage: React.FC = () => {
     const [minDiff, setMinDiff] = useState(0); // Changed from 20 to 0
     // Dynamic Analysis Settings
     const [profitThreshold, setProfitThreshold] = useState(0);
-    const [costRatioThreshold, setCostRatioThreshold] = useState(50);
+    const [costRatioThreshold, setCostRatioThreshold] = useState(20);
 
     // Local date state removed in favor of global context
     const [showAll, setShowAll] = useState(true); // Changed from false to true

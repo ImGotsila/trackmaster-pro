@@ -283,7 +283,7 @@ app.get('/api/analytics/shipping-anomalies', (req, res) => {
 
         // Dynamic Thresholds
         const profitThreshold = parseFloat(req.query.profitThreshold) || 0; // Default 0
-        const costRatioThreshold = parseFloat(req.query.costRatioThreshold) || 50; // Default 50%
+        const costRatioThreshold = parseFloat(req.query.costRatioThreshold) || 20; // Default 20%
 
         data.forEach(d => {
             const expected = standardCosts[d.weight]; // Mode cost for this weight
