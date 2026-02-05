@@ -18,6 +18,8 @@ import ClaimsDashboardPage from './pages/ClaimsDashboardPage';
 import ShippingAnomalyPage from './pages/ShippingAnomalyPage';
 import WeightAnalysisPage from './pages/WeightAnalysisPage';
 import VerifiedWeightsPage from './pages/VerifiedWeightsPage';
+import CodAnalysisPage from './pages/CodAnalysisPage';
+import TrendAnalysisPage from './pages/TrendAnalysisPage';
 import LoginPage from './pages/LoginPage';
 import { DataProvider } from './context/DataContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -51,6 +53,7 @@ const AppContent: React.FC = () => {
         <Route path="/import" element={<ImportPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/summary" element={<SummaryPage />} />
+        <Route path="/trends" element={<TrendAnalysisPage />} />
         <Route path="/visual-stats" element={<VisualMetricsPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/cost-analytics" element={<CostAnalyticsPage />} />
@@ -61,8 +64,8 @@ const AppContent: React.FC = () => {
         <Route path="/claims" element={<ClaimsDashboardPage />} />
         <Route path="/shipping-anomalies" element={<ShippingAnomalyPage />} />
         <Route path="/weight-analysis" element={<WeightAnalysisPage />} />
-        <Route path="/weight-anomalies" element={<WeightAnalysisPage />} />
         <Route path="/weight-anomalies-list" element={<WeightAnalysisPage />} />
+        <Route path="/cod-analysis" element={<CodAnalysisPage />} />
         <Route path="/verified-weights" element={<VerifiedWeightsPage />} />
         <Route path="/admin" element={<AdminSettingsPage />} />
       </Routes>

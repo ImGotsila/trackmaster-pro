@@ -32,8 +32,7 @@ const VisualMetricsPage: React.FC = () => {
         });
 
         return Array.from(map.values())
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .slice(-15);
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     }, [filteredShipments]);
 
     // 2. Courier Distribution (Pie Chart)
@@ -76,7 +75,6 @@ const VisualMetricsPage: React.FC = () => {
 
         return Array.from(map.values())
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .slice(-10)
             .map(d => {
                 const avgCOD = d.totalCOD / d.count;
                 const avgCost = d.totalCost / d.count;

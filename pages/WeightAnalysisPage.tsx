@@ -30,6 +30,8 @@ interface Outlier {
     ruleMax?: number;
     expectedCost: number;
     diff: number;
+    profit?: number;
+    percentCost?: number;
 }
 
 interface CodGroupSummary {
@@ -88,7 +90,7 @@ const SortableTable = ({ data, columns }: { data: any[], columns: any[] }) => {
             if (filters[key]) {
                 const lowerVal = filters[key].toLowerCase();
                 result = result.filter(item =>
-                    String(item[key]).toLowerCase().includes(lowerVal)
+                    String(item[key] ?? '').toLowerCase().includes(lowerVal)
                 );
             }
         });
@@ -168,6 +170,7 @@ const WeightAnalysisPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedCod, setSelectedCod] = useState<number | null>(null);
     const [viewMode, setViewMode] = useState<'summary' | 'detail'>('summary');
+    const [analysisMode, setAnalysisMode] = useState<'weight' | 'sales'>('weight'); // New Toggle State
 
     // Rule Editing State
     const [editMin, setEditMin] = useState<string>('');
@@ -202,7 +205,12 @@ const WeightAnalysisPage: React.FC = () => {
             let allOutliers: Outlier[] = [];
             result.summary.forEach((g: CodGroupSummary) => {
                 if (g.outliers && g.outliers.length > 0) {
-                    allOutliers = [...allOutliers, ...g.outliers];
+                    const mapped = g.outliers.map(o => ({
+                        ...o,
+                        profit: o.cod - o.cost,
+                        percentCost: o.cod ? parseFloat(((o.cost / o.cod) * 100).toFixed(2)) : 0
+                    }));
+                    allOutliers = [...allOutliers, ...mapped];
                 }
             });
 
@@ -322,6 +330,28 @@ const WeightAnalysisPage: React.FC = () => {
                     </p>
                 </div>
                 <div className="flex gap-2">
+                    {/* Mode Toggle */}
+                    <div className="bg-slate-100 p-1 rounded-lg flex items-center mr-2">
+                        <button
+                            onClick={() => setAnalysisMode('weight')}
+                            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${analysisMode === 'weight'
+                                ? 'bg-white text-indigo-600 shadow-sm'
+                                : 'text-slate-500 hover:text-slate-700'
+                                }`}
+                        >
+                            <Scale className="w-3 h-3" /> Weight
+                        </button>
+                        <button
+                            onClick={() => setAnalysisMode('sales')}
+                            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${analysisMode === 'sales'
+                                ? 'bg-white text-emerald-600 shadow-sm'
+                                : 'text-slate-500 hover:text-slate-700'
+                                }`}
+                        >
+                            <LayoutGrid className="w-3 h-3" /> Sales Vol
+                        </button>
+                    </div>
+
                     <button
                         onClick={() => { setSelectedCod(null); setViewMode('summary'); }}
                         className={`px-4 py-2 rounded-lg font-bold transition-all ${viewMode === 'summary'
@@ -413,115 +443,157 @@ const WeightAnalysisPage: React.FC = () => {
             {/* Overview Mode */}
             {viewMode === 'summary' && !isListMode && (
                 <div className="space-y-6">
-                    {/* COD Cards Grid */}
+                    {/* SUMMARY CARDS GRID */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {data.summary.map(group => (
-                            <div
-                                key={group.cod}
-                                onClick={() => { setSelectedCod(group.cod); setViewMode('detail'); }}
-                                className={`rounded-xl p-5 border shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden ${group.ruleApplied ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200'
-                                    }`}
-                            >
-                                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                                    <Scale className="w-16 h-16 text-indigo-600" />
-                                </div>
+                        {data.summary.map(group => {
+                            if (analysisMode === 'sales') {
+                                // --- SALES VOLUME VIEW ---
+                                const totalSales = group.cod * group.totalOrders;
+                                return (
+                                    <div
+                                        key={group.cod}
+                                        className="rounded-xl p-5 border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white shadow-sm hover:shadow-md transition-all relative overflow-hidden group"
+                                    >
+                                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <LayoutGrid className="w-16 h-16 text-emerald-600" />
+                                        </div>
 
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">COD Amount</div>
-                                        <div className="text-2xl font-black text-slate-800">฿{group.cod}</div>
-                                    </div>
-                                    <div className="px-2 py-1 bg-slate-100 rounded text-xs font-bold text-slate-500">
-                                        {group.totalOrders} Orders
-                                    </div>
-                                </div>
+                                        <div className="relative z-10">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="bg-white/80 px-2 py-1 rounded text-xs font-bold text-slate-500 uppercase tracking-wider backdrop-blur-sm">
+                                                    COD Price
+                                                </div>
+                                                <div className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">
+                                                    {group.totalOrders.toLocaleString()} Orders
+                                                </div>
+                                            </div>
 
-                                <div className="space-y-3 relative z-10">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-slate-500">{group.ruleApplied ? 'Custom Rule' : 'Normal Weight'}</span>
-                                        <span className={`font-bold px-2 py-0.5 rounded ${group.ruleApplied ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-50 text-emerald-600'
-                                            }`}>
-                                            {group.ruleApplied
-                                                ? `${group.minValidWeight}-${group.maxValidWeight} kg`
-                                                : `${group.modeWeight} kg`
-                                            }
-                                        </span>
-                                    </div>
+                                            <div className="text-3xl font-black text-slate-800 mb-4">
+                                                ฿{group.cod}
+                                            </div>
 
-                                    {/* Mini Bar Chart */}
-                                    <div className="flex h-2 rounded-full overflow-hidden bg-slate-100">
-                                        <div
-                                            style={{ width: `${(group.underWeightCount / group.totalOrders) * 100}%` }}
-                                            className="bg-amber-400"
-                                            title={`Under: ${group.underWeightCount}`}
-                                        />
-                                        <div
-                                            style={{ width: `${(group.normalCount / group.totalOrders) * 100}%` }}
-                                            className="bg-emerald-500"
-                                            title={`Normal: ${group.normalCount}`}
-                                        />
-                                        <div
-                                            style={{ width: `${(group.overWeightCount / group.totalOrders) * 100}%` }}
-                                            className="bg-rose-500"
-                                            title={`Over: ${group.overWeightCount}`}
-                                        />
+                                            <div className="mt-4 pt-4 border-t border-emerald-100">
+                                                <div className="text-xs text-emerald-600 font-bold uppercase mb-1">Total Sales Amount</div>
+                                                <div className="text-2xl font-black text-emerald-600">
+                                                    ฿{totalSales.toLocaleString()}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                );
+                            } else {
+                                // --- WEIGHT ANALYSIS VIEW (Original) ---
+                                return (
+                                    <div
+                                        key={group.cod}
+                                        onClick={() => { setSelectedCod(group.cod); setViewMode('detail'); }}
+                                        className={`rounded-xl p-5 border shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden ${group.ruleApplied ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200'
+                                            }`}
+                                    >
+                                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <Scale className="w-16 h-16 text-indigo-600" />
+                                        </div>
 
-                                    <div className="flex justify-between text-xs font-medium pt-1">
-                                        <span className="text-amber-600 flex items-center gap-1">
-                                            <ArrowDown className="w-3 h-3" /> {group.underWeightCount}
-                                        </span>
-                                        <span className="text-emerald-600 flex items-center gap-1">
-                                            <CheckCircle className="w-3 h-3" /> {group.normalCount}
-                                        </span>
-                                        <span className="text-rose-600 flex items-center gap-1">
-                                            <ArrowUp className="w-3 h-3" /> {group.overWeightCount}
-                                        </span>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">COD Amount</div>
+                                                <div className="text-2xl font-black text-slate-800">฿{group.cod}</div>
+                                            </div>
+                                            <div className="px-2 py-1 bg-slate-100 rounded text-xs font-bold text-slate-500">
+                                                {group.totalOrders} Orders
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3 relative z-10">
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-slate-500">{group.ruleApplied ? 'Custom Rule' : 'Normal Weight'}</span>
+                                                <span className={`font-bold px-2 py-0.5 rounded ${group.ruleApplied ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-50 text-emerald-600'
+                                                    }`}>
+                                                    {group.ruleApplied
+                                                        ? `${group.minValidWeight}-${group.maxValidWeight} kg`
+                                                        : `${group.modeWeight} kg`
+                                                    }
+                                                </span>
+                                            </div>
+
+                                            {/* Mini Bar Chart */}
+                                            <div className="flex h-2 rounded-full overflow-hidden bg-slate-100">
+                                                <div
+                                                    style={{ width: `${(group.underWeightCount / group.totalOrders) * 100}%` }}
+                                                    className="bg-amber-400"
+                                                    title={`Under: ${group.underWeightCount}`}
+                                                />
+                                                <div
+                                                    style={{ width: `${(group.normalCount / group.totalOrders) * 100}%` }}
+                                                    className="bg-emerald-500"
+                                                    title={`Normal: ${group.normalCount}`}
+                                                />
+                                                <div
+                                                    style={{ width: `${(group.overWeightCount / group.totalOrders) * 100}%` }}
+                                                    className="bg-rose-500"
+                                                    title={`Over: ${group.overWeightCount}`}
+                                                />
+                                            </div>
+
+                                            <div className="flex justify-between text-xs font-medium pt-1">
+                                                <span className="text-amber-600 flex items-center gap-1">
+                                                    <ArrowDown className="w-3 h-3" /> {group.underWeightCount}
+                                                </span>
+                                                <span className="text-emerald-600 flex items-center gap-1">
+                                                    <CheckCircle className="w-3 h-3" /> {group.normalCount}
+                                                </span>
+                                                <span className="text-rose-600 flex items-center gap-1">
+                                                    <ArrowUp className="w-3 h-3" /> {group.overWeightCount}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                );
+                            }
+                        })}
                     </div>
 
-                    {/* Chart Overview */}
-                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h2 className="text-lg font-bold text-slate-800 mb-6">Weight Deviations by COD Group</h2>
-                        <div className="h-80 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart
-                                    data={data.summary}
-                                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                    <XAxis dataKey="cod" tickFormatter={(val) => `฿${val}`} />
-                                    <YAxis />
-                                    <Tooltip
-                                        cursor={{ fill: '#f8fafc' }}
-                                        content={({ active, payload, label }) => {
-                                            if (active && payload && payload.length) {
-                                                const d = payload[0].payload;
-                                                return (
-                                                    <div className="bg-white p-3 shadow-xl rounded-xl border border-slate-100 text-sm">
-                                                        <p className="font-bold border-b pb-2 mb-2">COD: ฿{d.cod}</p>
-                                                        <div className="space-y-1">
-                                                            <p className="text-emerald-600">Normal: {d.normalCount}</p>
-                                                            <p className="text-amber-500">Under: {d.underWeightCount}</p>
-                                                            <p className="text-rose-500">Over: {d.overWeightCount}</p>
+                    {/* Chart Overview (Hide in Sales Mode or adapt it?) */}
+                    {analysisMode === 'weight' && (
+                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h2 className="text-lg font-bold text-slate-800 mb-6">Weight Deviations by COD Group</h2>
+                            <div className="h-80 w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart
+                                        data={data.summary}
+                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="cod" tickFormatter={(val) => `฿${val}`} />
+                                        <YAxis />
+                                        <Tooltip
+                                            cursor={{ fill: '#f8fafc' }}
+                                            content={({ active, payload, label }) => {
+                                                if (active && payload && payload.length) {
+                                                    const d = payload[0].payload;
+                                                    return (
+                                                        <div className="bg-white p-3 shadow-xl rounded-xl border border-slate-100 text-sm">
+                                                            <p className="font-bold border-b pb-2 mb-2">COD: ฿{d.cod}</p>
+                                                            <div className="space-y-1">
+                                                                <p className="text-emerald-600">Normal: {d.normalCount}</p>
+                                                                <p className="text-amber-500">Under: {d.underWeightCount}</p>
+                                                                <p className="text-rose-500">Over: {d.overWeightCount}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        }}
-                                    />
-                                    <Legend />
-                                    <Bar name="Underweight" dataKey="underWeightCount" stackId="a" fill="#fbbf24" />
-                                    <Bar name="Normal" dataKey="normalCount" stackId="a" fill="#10b981" />
-                                    <Bar name="Overweight" dataKey="overWeightCount" stackId="a" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
+                                                    );
+                                                }
+                                                return null;
+                                            }}
+                                        />
+                                        <Legend />
+                                        <Bar name="Underweight" dataKey="underWeightCount" stackId="a" fill="#fbbf24" />
+                                        <Bar name="Normal" dataKey="normalCount" stackId="a" fill="#10b981" />
+                                        <Bar name="Overweight" dataKey="overWeightCount" stackId="a" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             )}
 

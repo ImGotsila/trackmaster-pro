@@ -2,10 +2,11 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-const dbPath = process.env.DB_PATH || path.resolve(__dirname, '../data/trackmaster.db');
+const dbPath = process.env.DB_PATH || path.resolve('/app/data/trackmaster.db');
 const db = new sqlite3.Database(dbPath);
 
-const SERVER_URL = 'http://localhost:3000';
+const PORT = process.env.PORT || 3001;
+const SERVER_URL = process.env.VITE_API_BASE_URL || `http://127.0.0.1:${PORT}`;
 
 console.log('🔄 Fetching fresh data from Google Sheets via server...');
 

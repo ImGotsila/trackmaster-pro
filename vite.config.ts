@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       proxy: {
         '/api': {
-          target: process.env.VITE_API_URL || 'http://127.0.0.1:3001',
+          target: process.env.VITE_API_URL,
           changeOrigin: true,
           secure: false,
           timeout: 60000,

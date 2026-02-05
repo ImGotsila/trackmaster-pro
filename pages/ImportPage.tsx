@@ -44,8 +44,8 @@ const ImportPage: React.FC = () => {
     // Helper: Parse amount (supports 1-7 digits with comma separators and ฿ symbol)
     const parseAmount = (str: string): number => {
         if (!str) return 0;
-        // Remove ฿, commas, spaces, and parse
-        const cleaned = str.replace(/[฿,\s]/g, '').trim();
+        // Aggressive cleaning: Remove everything that is NOT a digit or a dot
+        const cleaned = str.replace(/[^0-9.]/g, '');
         const value = parseFloat(cleaned);
         // Validate: must be positive number, 1-7 digits (up to 9,999,999)
         if (isNaN(value) || value < 0 || value > 9999999) return 0;
@@ -122,30 +122,204 @@ const ImportPage: React.FC = () => {
         return rows;
     };
 
-    const parseRowSmart = (parts: string[]): Partial<Shipment> | null => {
-        // Strategy 0: Specific Format Detection (11 columns from user sample)
-        // Col 1: Barcode (JN...), Col 2: Pay Tag, Col 8: Zip (PC)
-        if (parts.length >= 10 && (parts[1].startsWith('JN') || parts[1].startsWith('EF') || parts[1].length > 10)) {
-            const tracking = parts[1];
-            // Validate tracking roughly
-            if (/^[A-Z0-9]{10,20}$/.test(tracking)) {
-                let phone = parts[7] || '';
-                if (phone && !phone.startsWith('0') && phone.length === 9) phone = '0' + phone;
-
-                return {
-                    trackingNumber: tracking,
-                    payTag: parts[2],
-                    serviceType: parts[3],
-                    weight: parseFloat(parts[4]) || 0,
-                    codAmount: parseAmount(parts[5]), // Column 5: COD Amount (supports 1-7 digits)
-                    customerName: parts[6] ? parts[6].replace(/^\d+\./, '') : '', // Remove "250." prefix if any
-                    phoneNumber: phone,
-                    zipCode: parts[8], // PC Column
-                    shippingCost: parseAmount(parts[9]), // Column 9: Shipping Cost
-                    status: (parts[10] as any) || 'รับฝาก'
-                };
-            }
+    // Parsing Helpers Local
+    const cleanPhone = (s: string) => (s || '').replace(/[^0-9]/g, '');
+    const stripNonNumeric = (s: string) => (s || '').replace(/[^0-9]/g, '');
+    const extractNameAndSeq = (name: string, fallbackSeq: string) => {
+        let seq = '0';
+        let cleanName = name || '';
+        const match = cleanName.match(/^(\d+)[\s.]/);
+        if (match) {
+            seq = match[1];
+            cleanName = cleanName.replace(/^(\d+)[\s.]/, '').trim();
+        } else if (/^\d+$/.test(fallbackSeq)) {
+            seq = fallbackSeq;
         }
+        return { name: cleanName, seq };
+    };
+
+    const parseRowSmart = (parts: string[]): Partial<Shipment> | null => {
+        // Strategy 0 & 1.6 Removed in favor of Anchor Strategy
+
+        // STRICT FORMAT IDENTIFICATION
+        // Anchor: Service Column (serviceIdx)
+        // Fix: Case insensitive and handle "E -" (with space)
+        const serviceIdx = parts.findIndex(p => {
+            const s = p.toLowerCase();
+            return s.includes('e-') || s.includes('e -') || s.includes('เฉพาะราย') || (s.includes('kg') && (s.includes('ราคา') || s.includes('บาท')));
+        });
+
+        if (serviceIdx === -1) return null; // Can't parse without Service anchor
+
+        // Helper to match tracking
+        const isTracking = (s: string) => s && /^[A-Z0-9]{8,25}$/i.test(s.trim());
+
+        const colMinus1 = parts[serviceIdx - 1];
+        const colMinus2 = parts[serviceIdx - 2];
+
+        // --- Format B: [Tracking] [PayTag] [Service] ---
+        // Example: JN... | SPYA... | E-ไม่เกิน...
+        if (isTracking(colMinus2)) {
+            let tracking = colMinus2;
+            let payTag = colMinus1;
+            let weight = parseFloat(parts[serviceIdx + 1]) || 0;
+            let cod = parseAmount(parts[serviceIdx + 2]);
+            let name = parts[serviceIdx + 3] || '';
+
+            // Phone/Zip Candidates at i+4 and i+5
+            const candidate1 = parts[serviceIdx + 4] || '';
+            const candidate2 = parts[serviceIdx + 5] || '';
+
+            let phone = '';
+            let zip = '';
+
+            const isPhone = (s: string) => /^\d{9,10}$/.test(cleanPhone(s));
+            const isZip = (s: string) => /^\d{5}$/.test(stripNonNumeric(s));
+
+            if (isPhone(candidate1)) {
+                phone = cleanPhone(candidate1);
+                zip = candidate2; // Assume next is zip/other
+            } else if (isPhone(candidate2)) {
+                phone = cleanPhone(candidate2);
+                zip = candidate1; // Assume prev was zip
+            } else {
+                // Fallback: Try to find zip specific
+                if (isZip(candidate1)) zip = candidate1;
+                else if (isZip(candidate2)) zip = candidate2;
+
+                // If no clear phone found, use candidate1 as fallback if it looks somewhat numeric
+                phone = cleanPhone(candidate1);
+            }
+
+            // Clean Zip (ensure 5 digits)
+            if (!isZip(zip)) {
+                // Try to find a 5 digit string in validation
+                if (isZip(candidate1) && candidate1 !== phone) zip = candidate1;
+                else if (isZip(candidate2) && candidate2 !== phone) zip = candidate2;
+                else zip = ''; // Clear if invalid
+            }
+
+            let cost = parseAmount(parts[serviceIdx + 6]);
+
+            const { name: cleanName, seq } = extractNameAndSeq(name, parts[0]);
+
+            return {
+                trackingNumber: tracking,
+                payTag: payTag,
+                serviceType: parts[serviceIdx],
+                weight: weight,
+                codAmount: cod,
+                customerName: cleanName,
+                phoneNumber: phone,
+                zipCode: stripNonNumeric(zip),
+                shippingCost: cost,
+                status: (parts[serviceIdx + 7] as any) || 'รับฝาก',
+                sequenceNumber: seq
+            };
+        }
+
+        // --- Format A: [Tracking] [Service] ---
+        // Example: JN... | E-ไม่เกิน...
+        if (isTracking(colMinus1)) {
+            let tracking = colMinus1;
+            let weight = parseFloat(parts[serviceIdx + 1]) || 0;
+            let cod = parseAmount(parts[serviceIdx + 2]);
+            let name = parts[serviceIdx + 3] || '';
+
+            // Phone/Zip Candidates at i+4 and i+5
+            const candidate1 = parts[serviceIdx + 4] || '';
+            const candidate2 = parts[serviceIdx + 5] || '';
+
+            let phone = '';
+            let zip = '';
+
+            const isPhone = (s: string) => /^\d{9,10}$/.test(cleanPhone(s));
+            const isZip = (s: string) => /^\d{5}$/.test(stripNonNumeric(s));
+
+            if (isPhone(candidate1)) {
+                phone = cleanPhone(candidate1);
+                zip = candidate2;
+            } else if (isPhone(candidate2)) {
+                phone = cleanPhone(candidate2);
+                zip = candidate1;
+            } else {
+                if (isZip(candidate1)) zip = candidate1;
+                else if (isZip(candidate2)) zip = candidate2;
+                phone = cleanPhone(candidate1);
+            }
+
+            if (!isZip(zip)) {
+                if (isZip(candidate1) && candidate1 !== phone) zip = candidate1;
+                else if (isZip(candidate2) && candidate2 !== phone) zip = candidate2;
+                else zip = '';
+            }
+
+            let cost = parseAmount(parts[serviceIdx + 6]);
+            const { name: cleanName, seq } = extractNameAndSeq(name, parts[0]);
+
+            return {
+                trackingNumber: tracking,
+                payTag: '',
+                serviceType: parts[serviceIdx],
+                weight: weight,
+                codAmount: cod,
+                customerName: cleanName,
+                phoneNumber: phone,
+                zipCode: stripNonNumeric(zip),
+                shippingCost: cost,
+                status: (parts[serviceIdx + 7] as any) || 'รับฝาก',
+                sequenceNumber: seq
+            };
+        }
+
+        // --- Format C: [COD] [Service] ---
+        // Example: ... [84000] [E-...] [918xxxx] ...
+        // COD is BEFORE Service. Tracking is at 0 or 1.
+        // Fix: Ensure we don't pick up a Zip Code (5 digits) as COD
+        const isZipLike = (s: string) => /^\d{5}$/.test(stripNonNumeric(s));
+
+        const prevAmt = parseAmount(colMinus1);
+
+        if (prevAmt >= 0 && !isZipLike(colMinus1)) {
+            const tracking = parts.find(p => isTracking(p)) || '';
+            const cod = prevAmt;
+
+            // Phone is AFTER Service (i+1)
+            let phone = cleanPhone(parts[serviceIdx + 1]);
+            let zip = parts[serviceIdx + 2] || '';
+            let cost = parseAmount(parts[serviceIdx + 3]);
+
+            // Validation for Format C phone/zip swap?
+            // Usually Format C is from the "Vrich" specific format which is weird.
+            // Let's safe guard it too.
+            if (!/^\d{5}$/.test(stripNonNumeric(zip)) && /^\d{5}$/.test(stripNonNumeric(phone)) && /^\d{9,10}$/.test(cleanPhone(zip))) {
+                // Swap detected
+                const temp = phone;
+                phone = cleanPhone(zip);
+                zip = temp;
+            }
+
+            // Try Extract Name from Service string
+            let name = 'ไม่ระบุชื่อ';
+            const embeddedName = parts[serviceIdx].match(/Vrich\s+(.+?)\s+\d/);
+            if (embeddedName) name = embeddedName[1].trim();
+
+            return {
+                trackingNumber: tracking,
+                payTag: '',
+                serviceType: parts[serviceIdx],
+                weight: 0,
+                codAmount: cod,
+                customerName: name,
+                phoneNumber: phone,
+                zipCode: stripNonNumeric(zip),
+                shippingCost: cost,
+                status: 'รับฝาก',
+                sequenceNumber: '0'
+            };
+        }
+
+
 
         // Strategy 1: Find columns by Regex
         const tracking = parts.find(p => /^(JN|SP|TH|Kerry|Flash)\d{8,16}[A-Z]*$/i.test(p) || (p.startsWith('JN') && p.endsWith('TH')));
@@ -174,8 +348,19 @@ const ImportPage: React.FC = () => {
         } else {
             // Search all parts
             for (const p of parts) {
-                const match = p.match(/0\d{8,9}/);
-                if (match) { phone = match[0]; break; }
+                // Strict check: Must not be part of the tracking number or mixed with letters
+                // Reject if p contains letters (unless it's a big block like bioColumn which is handled above)
+                if (/[a-zA-Z]/.test(p)) continue;
+
+                const match = p.match(/(^|\D)(0[689]\d{8})($|\D)|(^|\D)([689]\d{8})($|\D)/);
+                if (match) {
+                    const candidate = match[0].replace(/\D/g, '');
+                    // Verify candidate is NOT a substring of tracking number (e.g. JN813221395TH -> 813221395)
+                    if (!shipment.trackingNumber?.includes(candidate)) {
+                        phone = candidate;
+                        break;
+                    }
+                }
             }
         }
         if (phone.length === 9) phone = '0' + phone;
@@ -199,10 +384,10 @@ const ImportPage: React.FC = () => {
             // Find a column that is not tracking, not phone, not code
             const nameCandidate = parts.find(p =>
                 p !== shipment.trackingNumber &&
-                !p.includes(phone) &&
+                !p.includes(phone.substring(1)) && // Be careful not to match phone part
                 p.length > 2 && p.length < 50 &&
-                !/^\d+$/.test(p) &&
-                !/^(COD|TT)/i.test(p)
+                !/^\d+$/.test(p.replace(/[,.]/g, '')) &&
+                !/^(COD|TT|รับฝาก|นำจ่าย)/i.test(p)
             );
             shipment.customerName = nameCandidate || 'ไม่ระบุชื่อ';
         }
@@ -213,8 +398,15 @@ const ImportPage: React.FC = () => {
         // COD / TT (Fallback Strategy)
         // First try to find numeric column with reasonable amount (1-7 digits)
         const amountColumns = parts.filter(p => {
-            const cleaned = p.replace(/,/g, '').trim();
-            return /^\d{1,7}(\.\d{1,2})?$/.test(cleaned);
+            // Robust check: must parse to a number > 0
+            // and should not be a phone number (0xxxxxxxxx)
+            const val = parseAmount(p);
+            if (val <= 0) return false;
+
+            // Reject phones treated as numbers
+            if (/^0\d{8,9}$/.test(p.replace(/[^0-9]/g, ''))) return false;
+
+            return true;
         });
 
         // Look for "COD" tag or "TT" tag
@@ -233,7 +425,9 @@ const ImportPage: React.FC = () => {
             // Fallback: Use first numeric column that looks like an amount
             // Heuristic: Likely to be the largest number (COD is usually larger than weight/quantity)
             const amounts = amountColumns.map(p => parseAmount(p));
-            shipment.codAmount = Math.max(...amounts.filter(a => a > 0));
+            // Filter out potential zipcodes (5 digits exact) unless it's clearly money
+            // COD is usually value of goods + shipping, so likely highest number in row generally.
+            shipment.codAmount = Math.max(...amounts);
         }
 
         // ZipCode
@@ -249,6 +443,85 @@ const ImportPage: React.FC = () => {
         }
 
         return shipment;
+    };
+
+    const parseRowSmartStrict = (parts: string[]): Partial<Shipment> | null => {
+        // STRICT FORMAT IDENTIFICATION using SERVICE ANCHOR
+        // User confirmed 2 formats:
+        // 1. [Tracking] [Service] ...
+        // 2. [Tracking] [PayTag] [Service] ...
+        // Columns AFTER Service are identical.
+
+        // Anchor: Service Column (serviceIdx)
+        const serviceIdx = parts.findIndex(p => {
+            const s = p.toLowerCase();
+            return s.includes('e-') || s.includes('e -') || s.includes('เฉพาะราย') || (s.includes('kg') && (s.includes('ราคา') || s.includes('บาท')));
+        });
+
+        if (serviceIdx === -1) return null; // Can't parse without Service anchor
+
+        // Helper to match tracking
+        const isTracking = (s: string) => s && /^[A-Z0-9]{8,25}$/i.test(s.trim());
+        // Helper to match PayTag (SPYA...)
+        const isPayTag = (s: string) => s && /^SPYA[A-Z0-9]+$/i.test(s.trim());
+
+        // --- DETERMINE FORMAT (Left of Service) ---
+        const colMinus1 = parts[serviceIdx - 1] || '';
+        const colMinus2 = parts[serviceIdx - 2] || '';
+
+        let tracking = '';
+        let payTag = '';
+
+        if (isPayTag(colMinus1)) {
+            // Case: [Tracking] [PayTag] [Service]
+            payTag = colMinus1;
+            tracking = colMinus2;
+        } else {
+            // Case: [Tracking] [Service]
+            tracking = colMinus1;
+            payTag = '';
+        }
+
+        // Final Safety: If "tracking" is empty or invalid, try fuzzy find
+        if (!isTracking(tracking)) {
+            const found = parts.find(p => isTracking(p) && p !== payTag && p !== parts[serviceIdx]);
+            if (found) tracking = found;
+        }
+
+        // --- COMMON COLUMNS (Service + N) ---
+        // Service | Weight | COD | Name | Tel | Zip | Cost
+        //   +0    |   +1   | +2  |  +3  | +4  | +5  | +6
+
+        let weight = parseFloat(parts[serviceIdx + 1]) || 0;
+        let cod = parseAmount(parts[serviceIdx + 2]);
+        let name = parts[serviceIdx + 3] || '';
+        let phone = cleanPhone(parts[serviceIdx + 4]);
+        let zip = stripNonNumeric(parts[serviceIdx + 5]);
+        let cost = parseAmount(parts[serviceIdx + 6]);
+        let status = (parts[serviceIdx + 7] as any) || 'รับฝาก';
+
+        // Check for Phone/Zip swap (Safety Match)
+        if (cleanPhone(zip).length >= 9 && zip.startsWith('0') && stripNonNumeric(phone).length === 5) {
+            const temp = phone;
+            phone = zip;
+            zip = temp;
+        }
+
+        const { name: cleanName, seq } = extractNameAndSeq(name, parts[0]);
+
+        return {
+            trackingNumber: tracking,
+            payTag: payTag,
+            serviceType: parts[serviceIdx],
+            weight: weight,
+            codAmount: cod,
+            customerName: cleanName,
+            phoneNumber: phone,
+            zipCode: stripNonNumeric(zip),
+            shippingCost: cost,
+            status: status,
+            sequenceNumber: seq
+        };
     };
 
     const processRawText = (text: string, importDate: string, courierName: Courier, importTime: string = '00:00'): Shipment[] => {
@@ -274,7 +547,7 @@ const ImportPage: React.FC = () => {
             // Skip headers
             if (parts.some(p => p.includes('Barcode') || p.includes('Tracking'))) return;
 
-            const shipment = parseRowSmart(parts);
+            const shipment = parseRowSmartStrict(parts);
             if (shipment && shipment.trackingNumber) {
                 results.push({
                     ...shipment,
@@ -641,17 +914,60 @@ const ImportPage: React.FC = () => {
                                 </div>
                             )}
 
-                            {/* Items Preview */}
                             <div>
-                                <h3 className="font-bold text-slate-800 mb-3">ตัวอย่างรายการ</h3>
-                                <div className="border rounded-xl divide-y overflow-hidden max-h-[300px] overflow-y-auto custom-scrollbar">
-                                    {previewResult.all.slice(0, 20).map((item, i) => (
-                                        <div key={i} className="px-4 py-3 flex justify-between bg-white hover:bg-slate-50">
-                                            <span className="font-mono font-bold text-indigo-600">{item.trackingNumber}</span>
-                                            <span className="text-sm text-slate-600">{item.customerName}</span>
-                                        </div>
-                                    ))}
-                                    {previewResult.all.length > 20 && <div className="px-4 py-3 text-center text-xs text-slate-400">...อีก {previewResult.all.length - 20} รายการ...</div>}
+                                <h3 className="font-bold text-slate-800 mb-3">ตัวอย่างรายการ (Grouped by Customer)</h3>
+                                <div className="border rounded-xl overflow-hidden max-h-[400px] overflow-y-auto custom-scrollbar">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-slate-50 text-slate-500 font-bold text-xs uppercase sticky top-0 z-10 shadow-sm">
+                                            <tr>
+                                                <th className="px-4 py-3">No.</th>
+                                                <th className="px-4 py-3">Tracking</th>
+                                                <th className="px-4 py-3">Pay Tag</th>
+                                                <th className="px-4 py-3">Service</th>
+                                                <th className="px-4 py-3 text-right">COD</th>
+                                                <th className="px-4 py-3 text-right">Weight</th>
+                                                <th className="px-4 py-3 text-right">Cost</th>
+                                                <th className="px-4 py-3">Name</th>
+                                                <th className="px-4 py-3">Phone</th>
+                                                <th className="px-4 py-3">Zip Code</th>
+                                                <th className="px-4 py-3">Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {groupedPreviewData.slice(0, 50).map((group, i) => (
+                                                <React.Fragment key={i}>
+                                                    {group.items.map((item, j) => (
+                                                        <tr key={`${i}-${j}`} className="group hover:bg-slate-50 transition-colors">
+                                                            <td className="px-4 py-2 text-slate-400 text-xs font-mono">{item.sequenceNumber || '-'}</td>
+                                                            <td className="px-4 py-2 font-mono font-bold text-indigo-600">{item.trackingNumber}</td>
+                                                            <td className="px-4 py-2 text-xs text-orange-700 font-medium">
+                                                                {item.payTag ? <span className="bg-orange-50 px-1.5 py-0.5 rounded">{item.payTag}</span> : '-'}
+                                                            </td>
+                                                            <td className="px-4 py-2 text-xs text-slate-500 max-w-[150px] truncate" title={item.serviceType}>
+                                                                {item.serviceType || '-'}
+                                                            </td>
+                                                            <td className="px-4 py-2 text-right font-medium text-emerald-600">
+                                                                {item.codAmount > 0 ? `฿${item.codAmount.toLocaleString()}` : '-'}
+                                                            </td>
+                                                            <td className="px-4 py-2 text-right text-slate-600">{item.weight} kg</td>
+                                                            <td className="px-4 py-2 text-right text-rose-600">฿{item.shippingCost}</td>
+                                                            <td className="px-4 py-2 font-medium text-slate-700">{item.customerName}</td>
+                                                            <td className="px-4 py-2 font-mono text-slate-500 text-xs">{item.phoneNumber}</td>
+                                                            <td className="px-4 py-2 font-mono text-purple-600 text-xs font-bold">{item.zipCode || '-'}</td>
+                                                            <td className="px-4 py-2 font-mono text-slate-400 text-xs whitespace-nowrap">{item.importDate}</td>
+                                                        </tr>
+                                                    ))}
+                                                </React.Fragment>
+                                            ))}
+                                            {groupedPreviewData.length > 50 && (
+                                                <tr>
+                                                    <td colSpan={8} className="px-4 py-4 text-center text-slate-400 text-xs bg-slate-50 italic">
+                                                        ...และอีก {groupedPreviewData.length - 50} กลุ่มลูกค้า...
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>

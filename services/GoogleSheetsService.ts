@@ -49,12 +49,20 @@ export const GoogleSheetsService = {
         const url = getServiceUrl('save');
 
         try {
+            const payload = shipments.map(s => ({
+                ...s,
+                zip: s.zipCode, // Alias for backend
+                postcode: s.zipCode, // Another potential alias
+                phoneNumber: s.phoneNumber, // Explicit mapping
+                phone: s.phoneNumber // Alias
+            }));
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': isDemoMode() ? 'text/plain;charset=utf-8' : 'application/json',
                 },
-                body: JSON.stringify(shipments),
+                body: JSON.stringify(payload),
             });
 
             const json = await response.json();

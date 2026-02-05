@@ -3,6 +3,7 @@ import { useData } from '../context/DataContext';
 import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { thaiProvinces } from '../data/thaiProvinces';
+import { thaiZipCoords } from '../data/thaiZipCoords';
 import { computeAnalytics, AnalyticsStats } from '../services/AnalyticsService';
 import { Map as MapIcon, Info, TrendingUp, DollarSign, Search, RefreshCw, MapPin, Filter, ArrowUpRight, Target, Maximize2, Minimize2 } from 'lucide-react';
 import Pagination from '../components/Pagination';
@@ -73,6 +74,17 @@ const AnalyticsPage: React.FC = () => {
 
     // Generate unique coordinates for each zip code (Robust Spread v2.3)
     const getUniqueCoordinates = (zipCode: string, baseProvince: string) => {
+        // 1. Check accurate Zip DB
+        const exactMatch = thaiZipCoords[zipCode];
+        if (exactMatch) {
+            return {
+                lat: exactMatch.lat + (Math.random() - 0.5) * 0.005, // Slight jitter for organic look
+                lng: exactMatch.lng + (Math.random() - 0.5) * 0.005,
+                isMatched: true
+            };
+        }
+
+        // 2. Fallback to Province Calculation
         const cleanedProvince = baseProvince?.trim();
         // Match by Thai name or English name from the new thaiProvinces structure
         const provinceInfo = thaiProvinces.find(p =>

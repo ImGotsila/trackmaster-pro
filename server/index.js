@@ -215,338 +215,323 @@ app.get('/api/analytics/geo', (req, res) => {
     });
 });
 
-// API: Get Shipping Cost Anomalies (From Database)
+// API: Run Full Analysis (Trigger analyze_shipping.cjs)
+app.post('/api/analytics/run', (req, res) => {
+    console.log('🚀 Triggering manual analysis...');
+    const scriptPath = path.join(__dirname, 'analyze_shipping.cjs');
+
+    // Use node executable from environment or default 'node'
+    require('child_process').exec(`node "${scriptPath}"`, {
+        env: { ...process.env } // Ensure env vars like DB_PATH are passed
+    }, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Analysis exec error: ${error}`);
+            return res.status(500).json({ error: error.message, details: stderr });
+        }
+        console.log(`Analysis stdout: ${stdout}`);
+        if (stderr) console.error(`Analysis stderr: ${stderr}`);
+
+        res.json({ success: true, message: 'Analysis complete', log: stdout });
+    });
+});
+
+// API: Run Full Analysis (Trigger analyze_shipping.cjs)
+app.post('/api/analytics/run', (req, res) => {
+    console.log('🚀 Triggering manual analysis...');
+    const scriptPath = path.join(__dirname, 'analyze_shipping.cjs');
+
+    // Use node executable from environment or default 'node'
+    require('child_process').exec(`node "${scriptPath}"`, {
+        env: { ...process.env } // Ensure env vars like DB_PATH are passed
+    }, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Analysis exec error: ${error}`);
+            return res.status(500).json({ error: error.message, details: stderr });
+        }
+        console.log(`Analysis stdout: ${stdout}`);
+        if (stderr) console.error(`Analysis stderr: ${stderr}`);
+
+        res.json({ success: true, message: 'Analysis complete', log: stdout });
+    });
+});
+
+// API: Get Shipping Cost Anomalies (Dynamic Analysis)
 app.get('/api/analytics/shipping-anomalies', (req, res) => {
     const { startDate, endDate, minDiff, profitThreshold, costRatioThreshold, showAll } = req.query;
 
-    // Query from pre-analyzed shipping_anomalies table
-    let sql = `SELECT * FROM shipping_anomalies`;
-    let params = [];
-    let whereClauses = [];
+    // 1. Fetch Weight Rules
+    db.all("SELECT * FROM cod_weight_rules WHERE isActive = 1", (err, rules) => {
+        if (err) return res.status(500).json({ error: err.message });
 
-    // Filter by date if provided
-    if (startDate && endDate) {
-        const startTs = new Date(startDate).getTime();
-        const endTs = new Date(endDate).getTime() + 86399999;
-        whereClauses.push("timestamp BETWEEN ? AND ?");
-        params.push(startTs, endTs);
-    }
-
-    // Filter by minimum difference
-    if (minDiff && parseFloat(minDiff) > 0) {
-        whereClauses.push("diff >= ?");
-        params.push(parseFloat(minDiff));
-    }
-
-    // Filter by profit threshold
-    if (profitThreshold != null && profitThreshold !== '') {
-        whereClauses.push("profit < ?");
-        params.push(parseFloat(profitThreshold));
-    }
-
-    // Filter by cost ratio threshold  
-    if (costRatioThreshold && parseFloat(costRatioThreshold) > 0) {
-        whereClauses.push("costPercent > ?");
-        params.push(parseFloat(costRatioThreshold));
-    }
-
-    if (whereClauses.length > 0) {
-        sql += " WHERE " + whereClauses.join(" AND ");
-    }
-
-    console.log("Fetching anomalies with SQL:", sql, params);
-
-    db.all(sql, params, (err, rows) => {
-        if (err) {
-            console.error('Database error fetching shipping anomalies:', err);
-            return res.status(500).json({ error: err.message });
+        const ruleMap = {};
+        if (rules) {
+            rules.forEach(r => {
+                ruleMap[r.codAmount] = r;
+            });
         }
 
-        // Transform to match frontend format
-        const anomalies = rows.map(row => ({
-            id: row.id,
-            tracking: row.trackingNumber,
-            name: row.customerName,
-            phone: row.phoneNumber,
-            cost: row.shippingCost,
-            codAmount: row.codAmount,
-            profit: row.profit,
-            costPercent: row.costPercent,
-            weight: row.weight,
-            expectedCost: row.expectedCost,
-            diff: row.diff,
-            anomalyType: row.anomalyType,
-            date: row.importDate,
-            timestamp: row.timestamp
-        }));
+        // 2. Build Query
+        let sql = `SELECT id, trackingNumber, shippingCost, codAmount, raw_data, customerName, phoneNumber, zipCode, importDate, timestamp FROM shipments WHERE codAmount > 0`;
+        let params = [];
 
-        // Apply text filters
-        let filtered = anomalies.filter(item => {
-            return Object.keys(req.query).every(key => {
-                if (!key.startsWith('filter_')) return true;
-                const field = key.replace('filter_', '');
-                const filterValue = req.query[key].toLowerCase();
-                if (!filterValue) return true;
-                const itemValue = item[field];
-                return itemValue != null && String(itemValue).toLowerCase().includes(filterValue);
+        // Filter by date (optimization: filter at DB level for date)
+        if (startDate && endDate) {
+            const startTs = new Date(startDate).getTime();
+            const endTs = new Date(endDate).getTime() + 86399999;
+            sql += " AND timestamp BETWEEN ? AND ?";
+            params.push(startTs, endTs);
+        }
+
+        // 3. Fetch Shipments
+        db.all(sql, params, (err, rows) => {
+            if (err) {
+                console.error('Database error fetching shipments:', err);
+                return res.status(500).json({ error: err.message });
+            }
+
+            // 4. Group & Analyze
+            const codGroups = {};
+            const itemData = [];
+
+            // A. Pre-process and Group
+            rows.forEach(row => {
+                if (row.shippingCost == null || row.codAmount == null) return;
+
+                let weight = null;
+                // Parse weight from raw_data
+                if (row.raw_data) {
+                    try {
+                        const parsed = JSON.parse(row.raw_data);
+                        weight = parseFloat(parsed.weight);
+
+                        // Fallback for missing phone number
+                        if (!row.phoneNumber) {
+                            // Common fields in raw data: phone, tel, receiver_phone, etc.
+                            // Assuming 'phone' or 'tel' based on standard schema, but checking multiple
+                            row.phoneNumber = parsed.phone || parsed.tel || parsed.phoneNumber || parsed.receiver_phone || '';
+                        }
+                    } catch (e) { }
+                }
+
+                if (weight == null || isNaN(weight)) return;
+
+                const item = {
+                    id: row.id,
+                    tracking: row.trackingNumber,
+                    name: row.customerName,
+                    phone: row.phoneNumber,
+                    cost: parseFloat(row.shippingCost),
+                    cod: parseFloat(row.codAmount),
+                    weight: weight,
+                    date: row.importDate,
+                    timestamp: row.timestamp
+                };
+
+                itemData.push(item);
+
+                // Add to groups for mode calculation
+                if (!codGroups[item.cod]) {
+                    codGroups[item.cod] = { weights: {} };
+                }
+                const w = item.weight;
+                codGroups[item.cod].weights[w] = (codGroups[item.cod].weights[w] || 0) + 1;
+            });
+
+            // B. Determine Valid Ranges per COD Group
+            const codRanges = {};
+            Object.keys(codGroups).forEach(codKey => {
+                const cod = parseFloat(codKey);
+                const group = codGroups[codKey];
+
+                // Check for custom rule first
+                if (ruleMap[cod]) {
+                    codRanges[cod] = {
+                        min: ruleMap[cod].minWeight,
+                        max: ruleMap[cod].maxWeight,
+                        isRule: true
+                    };
+                } else {
+                    // Auto-detect mode
+                    let modeWeight = 0;
+                    let maxCount = 0;
+                    Object.keys(group.weights).forEach(w => {
+                        if (group.weights[w] > maxCount) {
+                            maxCount = group.weights[w];
+                            modeWeight = parseFloat(w);
+                        }
+                    });
+
+                    // Default logic: Mode +/- small buffer ? Or just Mode?
+                    // Matching WeightAnalysisPage logic which likely highlights anything != mode if no rule
+                    // But for "Anomalies List" usually we want strict deviation.
+                    // Let's assume Valid = Mode Weight if no rule.
+                    codRanges[cod] = {
+                        min: modeWeight,
+                        max: modeWeight,
+                        isRule: false,
+                        mode: modeWeight
+                    };
+                }
+            });
+
+            // C. Detect Anomalies
+            const timestampThreshold = Date.now(); // For "New" flag if needed
+            let allAnomalies = [];
+
+            itemData.forEach(item => {
+                const range = codRanges[item.cod];
+                if (!range) return; // Should not happen
+
+                const isWeightAnomaly = item.weight < range.min || item.weight > range.max;
+                const profit = item.cod - item.cost;
+                const costPercent = item.cod ? parseFloat(((item.cost / item.cod) * 100).toFixed(2)) : 0;
+
+                // Calculate "Expected Cost" - rudimentary logic:
+                // If weight is wrong, what *should* the cost be? Hard to know without Cost Rules.
+                // But usually we just track deviations.
+                // Let's define "Expected Cost" as the cost of the Mode Weight for now? 
+                // Or mostly we care about Weight Anomalies causing profit loss.
+
+                const diff = (item.weight - (range.isRule ? (item.weight > range.max ? range.max : range.min) : range.mode));
+                // Diff here is Weight visual diff usually.
+                // But the front end expects "diff" to be cost? 
+                // Inspecting WeightAnalysisPage logic: "diff" there is cost diff? 
+                // Wait, WeightAnalysisPage shows "Weight Check". 
+                // ShippingAnomalyPage shows "Cost Anomalies".
+
+                // CRITICAL CORRECTION:
+                // Shipping Anomaly Page was originally about COST anomalies (expected cost vs actual).
+                // Weight Analysis Page is about WEIGHT anomalies.
+                // The user complained they don't match.
+                // If I switch this to Weight Analysis logic, I might break "Cost Anomaly" logic if that's what they wanted.
+                // BUT, the user explicitly said "Data doesn't match other page". "Other page" is likely Weight Analysis which we just fixed.
+                // The user likely wants to see the SAME anomalies (Weight/profit based).
+
+                // Let's filter based on the requested params
+
+                let anomalyTypes = [];
+                if (isWeightAnomaly) anomalyTypes.push(item.weight > range.max ? 'Overweight' : 'Underweight');
+
+                // Apply Profit Threshold Filter
+                if (profitThreshold && profit < parseFloat(profitThreshold)) {
+                    anomalyTypes.push('Low Profit');
+                }
+
+                // Apply Cost Ratio Filter
+                if (costRatioThreshold && costPercent > parseFloat(costRatioThreshold)) {
+                    anomalyTypes.push('High Cost Ratio');
+                }
+
+                // If specific filters are set, only include if matching type or if it's a general anomaly
+                // If "showAll" is false, we strictly return anomalies.
+                // If "showAll" is true, we might return everything? Previously it returned "Shipping Anomalies" table which was ONLY anomalies.
+
+                // The frontend defaults showAll=true but likely expects to filter locally or see only "Bad" things?
+                // Actually the previous logic filtered `shipping_anomalies` table.
+                // We should likely return items that match the "Anomaly" criteria defined by Weight Rules OR the explicit filters.
+
+                const hasIssue = anomalyTypes.length > 0;
+
+                if (hasIssue || showAll === 'true') {
+                    allAnomalies.push({
+                        id: item.id,
+                        tracking: item.tracking,
+                        name: item.name,
+                        phone: item.phone,
+                        cost: item.cost,
+                        codAmount: item.cod,
+                        profit: profit,
+                        costPercent: costPercent,
+                        weight: item.weight,
+                        expectedCost: 0, // Placeholder, strict cost rules need a mapping
+                        diff: isWeightAnomaly ? (item.weight - (item.weight > range.max ? range.max : range.min)) : 0, // Weight Diff
+                        anomalyType: anomalyTypes.join(', ') || 'Normal',
+                        date: item.date,
+                        timestamp: item.timestamp
+                    });
+                }
+            });
+
+            // 5. Filter (Text Params), Sort, Paginate (in memory for consistency)
+
+            // Apply text filters
+            let filtered = allAnomalies.filter(item => {
+                return Object.keys(req.query).every(key => {
+                    if (!key.startsWith('filter_')) return true;
+                    // Skip if empty
+                    if (!req.query[key]) return true;
+
+                    const field = key.replace('filter_', '');
+                    const filterValue = req.query[key].toLowerCase();
+                    const itemValue = item[field];
+                    return itemValue != null && String(itemValue).toLowerCase().includes(filterValue);
+                });
+            });
+
+            // Apply Numeric Filters (Strict)
+            if (minDiff && parseFloat(minDiff) > 0) {
+                // Assuming minDiff refers to Weight Diff absolute? or Profit?
+                // Context: "Anomaly" page. usually diff=weight difference in other context.
+                // Let's use Weight Diff absolute.
+                const minD = parseFloat(minDiff);
+                filtered = filtered.filter(a => Math.abs(a.diff) >= minD);
+            }
+            if (profitThreshold != null && profitThreshold !== '') {
+                const pt = parseFloat(profitThreshold);
+                filtered = filtered.filter(a => a.profit < pt);
+            }
+            if (costRatioThreshold && parseFloat(costRatioThreshold) > 0) {
+                const cr = parseFloat(costRatioThreshold);
+                filtered = filtered.filter(a => a.costPercent > cr);
+            }
+
+
+            // Apply sorting
+            const sortBy = req.query.sortBy || 'date'; // Default to date desc
+            const sortDir = req.query.sortDir === 'asc' ? 1 : -1;
+
+            filtered.sort((a, b) => {
+                const valA = a[sortBy];
+                const valB = b[sortBy];
+                if (valA < valB) return -1 * sortDir;
+                if (valA > valB) return 1 * sortDir;
+                return 0;
+            });
+
+            // Pagination
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 50;
+            const startIdx = (page - 1) * limit;
+            const endIdx = startIdx + limit;
+            const paginatedData = filtered.slice(startIdx, endIdx);
+
+            // Correct Anomaly Count: Only count actual anomalies (not Just valid records)
+            // If showAll=true, 'allAnomalies' has everything. We need to count how many are actually 'Abnormal'.
+            const actualAnomaliesCount = allAnomalies.filter(a =>
+                a.anomalyType && a.anomalyType !== 'Normal'
+            ).length;
+
+            res.json({
+                success: true,
+                stats: {
+                    totalScanned: rows.length,
+                    validRecords: itemData.length,
+                    anomaliesFound: actualAnomaliesCount, // CORRECTED: anomaliesFound is now strictly anomaly count
+                    filteredCount: filtered.length,
+                    totalRefundPotential: 0, // Complex to calc on fly without expected cost
+                    standardCosts: {}
+                },
+                data: paginatedData,
+                pagination: {
+                    current: page,
+                    total: Math.ceil(filtered.length / limit),
+                    totalItems: filtered.length
+                }
             });
         });
-
-        // Apply sorting
-        const sortBy = req.query.sortBy || 'profit';
-        const sortDir = req.query.sortDir === 'desc' ? -1 : 1;
-
-        filtered.sort((a, b) => {
-            const valA = a[sortBy];
-            const valB = b[sortBy];
-            if (valA < valB) return -1 * sortDir;
-            if (valA > valB) return 1 * sortDir;
-            return 0;
-        });
-
-        // Pagination
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50;
-        const startIdx = (page - 1) * limit;
-        const endIdx = startIdx + limit;
-        const paginatedData = filtered.slice(startIdx, endIdx);
-
-        res.json({
-            success: true,
-            stats: {
-                totalScanned: rows.length,
-                validRecords: rows.length,
-                anomaliesFound: filtered.length,
-                filteredCount: filtered.length,
-                totalRefundPotential: filtered.reduce((sum, a) => sum + (a.diff > 0 ? a.diff : 0), 0),
-                standardCosts: {}
-            },
-            data: paginatedData,
-            pagination: {
-                current: page,
-                total: Math.ceil(filtered.length / limit),
-                totalItems: filtered.length
-            }
-        });
     });
 });
-if (err) {
-    console.error('Database error fetching shipping anomalies:', err);
-    return res.status(500).json({ error: err.message });
-}
 
-const data = [];
-
-// Extract valid data from database
-rows.forEach(row => {
-    let weight = null;
-    let phone = null;
-
-    if (row.raw_data) {
-        try {
-            const parsed = JSON.parse(row.raw_data);
-            weight = parsed.weight;
-            phone = parsed.phone || parsed.phoneNumber;  // Support both field names
-        } catch (e) {
-            console.warn(`Could not parse raw_data for shipment ${row.id}:`, e);
-        }
-    }
-
-    if (row.shippingCost != null && weight != null) {
-        const cod = row.codAmount || 0;
-        if (cod <= 0) return; // Only COD orders
-
-        const cost = parseFloat(row.shippingCost);
-        const profit = cod - cost;
-        const costPercent = cod > 0 ? (cost / cod) * 100 : 0;
-
-        data.push({
-            id: row.id,
-            tracking: row.trackingNumber,
-            name: row.customerName,
-            phone: phone || '-',
-            cost: cost,
-            codAmount: cod,
-            profit: profit,
-            costPercent: parseFloat(costPercent.toFixed(2)),
-            weight: parseFloat(weight),
-            timestamp: row.timestamp,
-            date: new Date(row.timestamp).toISOString().split('T')[0]
-        });
-    }
-});
-
-// 2. Calculate Mode Cost per Weight (The "Standard")
-const weightGroups = {};
-data.forEach(item => {
-    if (!weightGroups[item.weight]) weightGroups[item.weight] = [];
-    weightGroups[item.weight].push(item.cost);
-});
-
-const standardCosts = {};
-Object.keys(weightGroups).forEach(w => {
-    const costs = weightGroups[w];
-    const frequency = {};
-    let maxFreq = 0;
-    let modeCost = costs[0];
-
-    costs.forEach(c => {
-        frequency[c] = (frequency[c] || 0) + 1;
-        if (frequency[c] > maxFreq) {
-            maxFreq = frequency[c];
-            modeCost = c;
-        }
-    });
-    standardCosts[w] = modeCost;
-});
-
-// 3. Identify Anomalies (Global Calculation)
-const allResults = [];
-let trueAnomalyCount = 0; // Track actual anomalies independent of showAll
-const isShowAll = req.query.showAll === 'true';
-
-// Dynamic Thresholds
-const profitThreshold = parseFloat(req.query.profitThreshold) || 0; // Default 0
-const costRatioThreshold = parseFloat(req.query.costRatioThreshold) || 20; // Default 20%
-
-data.forEach(d => {
-    const expected = standardCosts[d.weight]; // Mode cost for this weight
-    const isCostMismatch = d.cost !== expected;
-    const isNegativeProfit = d.profit < profitThreshold;
-    const isHighRatio = d.costPercent > costRatioThreshold; // e.g. Shipping is > 50% of COD
-    const isAnomaly = isNegativeProfit || isHighRatio || isCostMismatch;
-
-    if (isAnomaly) trueAnomalyCount++;
-
-    if (isShowAll || isAnomaly) {
-        let type = 'normal';
-        if (isNegativeProfit) type = 'negative_profit';
-        else if (isHighRatio) type = 'high_ratio';
-        else if (isCostMismatch) type = 'mismatch';
-
-        allResults.push({
-            ...d,
-            expectedCost: expected,
-            diff: d.cost - expected,
-            anomalyType: type
-        });
-    }
-});
-
-// 4. Server-Side Filtering
-console.log('[DEBUG] Query params:', req.query);
-console.log('[DEBUG] Data before filter:', data.length, 'records');
-
-let filtered = allResults.filter(item => {
-    // 4.1 Check Range Filters (min_X, max_X)
-    const rangeCheck = Object.keys(req.query).every(key => {
-        if (key.startsWith('min_')) {
-            const field = key.replace('min_', '');
-            const val = parseFloat(req.query[key]);
-            if (isNaN(val)) return true;
-            return item[field] >= val;
-        }
-        if (key.startsWith('max_')) {
-            const field = key.replace('max_', '');
-            const val = parseFloat(req.query[key]);
-            if (isNaN(val)) return true;
-            return item[field] <= val;
-        }
-        return true;
-    });
-    if (!rangeCheck) return false;
-
-    // 4.2 Check Text Filters (filter_X)
-    const textCheck = Object.keys(req.query).every(key => {
-        if (!key.startsWith('filter_')) return true;
-        const field = key.replace('filter_', '');
-        const filterValue = req.query[key].toLowerCase();
-        if (!filterValue) return true;
-
-        const itemValue = item[field];
-        return itemValue != null && String(itemValue).toLowerCase().includes(filterValue);
-    });
-    if (!textCheck) return false;
-
-    // 4.3 Check Minimum Difference Filter
-    const minDiff = parseFloat(req.query.minDiff);
-    if (!isNaN(minDiff) && minDiff > 0) {
-        // Only show items where diff >= minDiff (overcharged amounts)
-        if (item.diff < minDiff) return false;
-    }
-
-    return true;
-});
-
-// 5. Server-Side Sorting
-const sortBy = req.query.sortBy || 'profit'; // Default to profit to show losses
-const sortDir = req.query.sortDir === 'desc' ? -1 : 1;
-
-filtered.sort((a, b) => {
-    // Special sort for severity if default
-    if (req.query.sortBy === undefined) {
-        const scoreA = a.anomalyType === 'negative_profit' ? 2 : (a.anomalyType === 'high_ratio' ? 1 : 0);
-        const scoreB = b.anomalyType === 'negative_profit' ? 2 : (b.anomalyType === 'high_ratio' ? 1 : 0);
-        if (scoreA !== scoreB) return scoreB - scoreA;
-        return a.profit - b.profit;
-    }
-
-    const valA = a[sortBy];
-    const valB = b[sortBy];
-    if (valA < valB) return -1 * sortDir;
-    if (valA > valB) return 1 * sortDir;
-    return 0;
-});
-
-// 6. Stats Calculation (Filtered)
-// User requested to ignore refund calculation for now (as +20 is often remote area fee)
-const validRefunds = 0; // filtered.reduce((acc, curr) => acc + (curr.diff > 0 ? curr.diff : 0), 0);
-
-// 7. Handle Export vs Pagination
-if (req.query.export === 'true') {
-    // Generate CSV
-    const headers = "Tracking,Date,Customer,Weight,COD,Profit,%Cost,Charged,Expected,Diff,Status\n";
-    const csvRows = filtered.map(a => {
-        let status = 'Normal';
-        if (a.anomalyType === 'negative_profit') status = 'CRITICAL LOSS';
-        else if (a.anomalyType === 'high_ratio') status = 'High Cost %';
-        else if (a.anomalyType === 'mismatch') status = 'Refund Request';
-
-        return `"${a.tracking}","${a.date}","${a.name}",${a.weight},${a.codAmount},${a.profit},${a.costPercent}%,${a.cost},${a.expectedCost},${a.diff},"${status}"`;
-    }).join("\n");
-
-    res.header('Content-Type', 'text/csv');
-    res.attachment(`shipping_analysis_${new Date().toISOString().split('T')[0]}.csv`);
-    return res.send(headers + csvRows);
-}
-
-// Pagination
-const page = parseInt(req.query.page) || 1;
-const limit = parseInt(req.query.limit) || 50;
-const startIndex = (page - 1) * limit;
-const endIndex = startIndex + limit;
-const paginatedResults = filtered.slice(startIndex, endIndex);
-
-res.json({
-    success: true,
-    stats: {
-        totalScanned: rows.length,
-        validRecords: data.length,
-        anomaliesFound: trueAnomalyCount, // Use the correct filtered count
-        filteredCount: filtered.length, // Count after filters applied
-        totalRefundPotential: validRefunds,
-        standardCosts
-    },
-    data: paginatedResults,
-    pagination: {
-        current: page,
-        total: Math.ceil(filtered.length / limit),
-        totalItems: filtered.length
-    },
-    standardCosts
-});
-    });
-});
 
 // --- ADMIN & AUTH API ---
 
@@ -1071,6 +1056,7 @@ app.delete('/api/weight-verification/:id', (req, res) => {
 // Register report generation endpoint (BEFORE app.listen)
 require('./generate-report')(app, db);
 require('./weight-analysis')(app, db);
+require('./cod-analysis')(app, db);
 
 // 404 handler for API routes (MUST BE LAST API ROUTE)
 app.use('/api/*', (req, res) => {

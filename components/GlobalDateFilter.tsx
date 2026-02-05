@@ -17,15 +17,84 @@ const GlobalDateFilter: React.FC<GlobalDateFilterProps> = ({ externalStartDate, 
     const endDate = onDateChange ? externalEndDate : contextData.endDate;
     const setDateRange = onDateChange || contextData.setDateRange;
 
-    // Helper to get today's date in YYYY-MM-DD
-    const today = new Date().toISOString().split('T')[0];
+    const [activePreset, setActivePreset] = React.useState<string | null>(null);
 
-    // Get unique dates from shipments to show available range hints if needed
-    // (Optional: can be used for min/max attributes on inputs)
+    // Helper to calculate date ranges for presets
+    const getPresetRange = (preset: string): { start: string, end: string } => {
+        const end = new Date();
+        const start = new Date();
+
+        switch (preset) {
+            case 'today':
+                // start and end are already today
+                break;
+            case 'yesterday':
+                start.setDate(start.getDate() - 1);
+                end.setDate(end.getDate() - 1);
+                break;
+            case '7d':
+                start.setDate(start.getDate() - 7);
+                break;
+            case '30d':
+                start.setDate(start.getDate() - 30);
+                break;
+            case 'thisMonth':
+                start.setDate(1);
+                break;
+            case '3M':
+                start.setMonth(start.getMonth() - 3);
+                break;
+            case '6M':
+                start.setMonth(start.getMonth() - 6);
+                break;
+            case '1Y':
+                start.setFullYear(start.getFullYear() - 1);
+                break;
+            case '3Y':
+                start.setFullYear(start.getFullYear() - 3);
+                break;
+            case '5Y':
+                start.setFullYear(start.getFullYear() - 5);
+                break;
+            case 'all':
+                start.setFullYear(2020, 0, 1); // Earliest possible date
+                break;
+        }
+
+        return {
+            start: start.toISOString().split('T')[0],
+            end: end.toISOString().split('T')[0]
+        };
+    };
+
+    const handlePresetClick = (preset: string) => {
+        const { start, end } = getPresetRange(preset);
+        setDateRange(start, end);
+        setActivePreset(preset);
+    };
 
     const handleClear = () => {
         setDateRange(null, null);
+        setActivePreset(null);
     };
+
+    // Provide effect to update active preset when dates change externally
+    React.useEffect(() => {
+        if (!startDate || !endDate) {
+            setActivePreset(null);
+            return;
+        }
+
+        const checkPreset = (preset: string) => {
+            const { start, end } = getPresetRange(preset);
+            return start === startDate && end === endDate;
+        };
+
+        const allPresets = ['today', 'yesterday', '7d', '30d', 'thisMonth', 'all', '3M', '6M', '1Y', '3Y', '5Y'];
+        const found = allPresets.find(checkPreset);
+        if (found) setActivePreset(found);
+        else setActivePreset(null);
+    }, [startDate, endDate]);
 
     const isFiltered = startDate || endDate;
 
@@ -66,61 +135,55 @@ const GlobalDateFilter: React.FC<GlobalDateFilterProps> = ({ externalStartDate, 
                 )}
             </div>
 
-            <div className="hidden lg:flex items-center gap-2 ml-auto">
-                <button
-                    onClick={() => {
-                        const d = new Date();
-                        const dateStr = d.toISOString().split('T')[0];
-                        setDateRange(dateStr, dateStr);
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all border ${startDate === today && endDate === today
-                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200'
-                        : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-indigo-600'
-                        }`}
-                >
-                    วันนี้
-                </button>
-                <button
-                    onClick={() => {
-                        const d = new Date();
-                        d.setDate(d.getDate() - 1);
-                        const yersterday = d.toISOString().split('T')[0];
-                        setDateRange(yersterday, yersterday);
-                    }}
-                    className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all font-sans"
-                >
-                    เมื่อวาน
-                </button>
-                <button
-                    onClick={() => {
-                        const d = new Date();
-                        d.setDate(d.getDate() - 7);
-                        setDateRange(d.toISOString().split('T')[0], today);
-                    }}
-                    className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all"
-                >
-                    7 วัน
-                </button>
-                <button
-                    onClick={() => {
-                        const d = new Date();
-                        d.setDate(d.getDate() - 30);
-                        setDateRange(d.toISOString().split('T')[0], today);
-                    }}
-                    className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all"
-                >
-                    30 วัน
-                </button>
-                <button
-                    onClick={() => {
-                        const d = new Date();
-                        d.setDate(1); // First of month
-                        setDateRange(d.toISOString().split('T')[0], today);
-                    }}
-                    className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all"
-                >
-                    เดือนนี้
-                </button>
+            <div className="flex items-center gap-2 ml-auto overflow-x-auto no-scrollbar">
+                {/* Short-term Presets */}
+                <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+                    {[
+                        { label: 'วันนี้', value: 'today' },
+                        { label: 'เมื่อวาน', value: 'yesterday' },
+                        { label: '7 วัน', value: '7d' },
+                        { label: '30 วัน', value: '30d' },
+                        { label: 'เดือนนี้', value: 'thisMonth' },
+                    ].map((preset) => (
+                        <button
+                            key={preset.value}
+                            onClick={() => handlePresetClick(preset.value)}
+                            className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-tight transition-all 
+                                ${activePreset === preset.value
+                                    ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5'
+                                    : 'text-slate-500 hover:text-indigo-600 hover:bg-white/50'
+                                }
+                            `}
+                        >
+                            {preset.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Long-term Presets */}
+                <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+                    {[
+                        { label: 'All', value: 'all' },
+                        { label: '3M', value: '3M' },
+                        { label: '6M', value: '6M' },
+                        { label: '1Y', value: '1Y' },
+                        { label: '3Y', value: '3Y' },
+                        { label: '5Y', value: '5Y' },
+                    ].map((preset) => (
+                        <button
+                            key={preset.value}
+                            onClick={() => handlePresetClick(preset.value)}
+                            className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-tight transition-all 
+                                ${activePreset === preset.value
+                                    ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5'
+                                    : 'text-slate-500 hover:text-indigo-600 hover:bg-white/50'
+                                }
+                            `}
+                        >
+                            {preset.label}
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );

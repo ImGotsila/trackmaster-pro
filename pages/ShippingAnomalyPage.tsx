@@ -36,13 +36,13 @@ const ShippingAnomalyPage: React.FC = () => {
     const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(false);
-    const [minDiff, setMinDiff] = useState(0); // Changed from 20 to 0
+    const [minDiff, setMinDiff] = useState<number | ''>(''); // Default: No filter
     // Dynamic Analysis Settings
-    const [profitThreshold, setProfitThreshold] = useState(0);
-    const [costRatioThreshold, setCostRatioThreshold] = useState(20);
+    const [profitThreshold, setProfitThreshold] = useState<number | ''>(''); // Default: No filter
+    const [costRatioThreshold, setCostRatioThreshold] = useState<number | ''>(''); // Default: No filter
 
     // Local date state removed in favor of global context
-    const [showAll, setShowAll] = useState(true); // Changed from false to true
+    const [showAll, setShowAll] = useState(true);
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
@@ -70,10 +70,10 @@ const ShippingAnomalyPage: React.FC = () => {
         if (endDate) query.append('endDate', endDate);
         if (showAll) query.append('showAll', 'true');
 
-        // Add Analysis Settings
-        query.append('minDiff', minDiff.toString());
-        query.append('profitThreshold', profitThreshold.toString());
-        query.append('costRatioThreshold', costRatioThreshold.toString());
+        // Add Analysis Settings (Only if set)
+        if (minDiff !== '') query.append('minDiff', minDiff.toString());
+        if (profitThreshold !== '') query.append('profitThreshold', profitThreshold.toString());
+        if (costRatioThreshold !== '') query.append('costRatioThreshold', costRatioThreshold.toString());
 
         // Add Pagination
         query.append('page', currentPage.toString());
@@ -141,29 +141,15 @@ const ShippingAnomalyPage: React.FC = () => {
 
     const syncAndRefresh = async () => {
         setLoading(true);
+        // Manual Refresh only - User will run script manually
         try {
-            // Step 1: Fetch latest data from Google Sheets
-            const gsResponse = await fetch('/api/gsheets/get');
-            if (gsResponse.ok) {
-                const gsData = await gsResponse.json();
-                console.log(`Fetched ${gsData.data?.length || 0} records from Google Sheets`);
-
-                // Step 2: Save to database
-                if (gsData.data && gsData.data.length > 0) {
-                    await fetch('/api/gsheets/save', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ shipments: gsData.data })
-                    });
-                    console.log('Data synced to database');
-                }
-            }
+            console.log("Refreshing dashboard data...");
+            await fetchData();
         } catch (e) {
-            console.error('Sync error:', e);
+            console.error('Refresh error:', e);
+        } finally {
+            setLoading(false);
         }
-
-        // Step 3: Refresh the anomaly dashboard
-        await fetchData();
     };
 
     useEffect(() => {
@@ -208,9 +194,9 @@ const ShippingAnomalyPage: React.FC = () => {
         if (startDate) query.append('startDate', startDate);
         if (endDate) query.append('endDate', endDate);
         if (showAll) query.append('showAll', 'true');
-        query.append('minDiff', minDiff.toString());
-        query.append('profitThreshold', profitThreshold.toString());
-        query.append('costRatioThreshold', costRatioThreshold.toString());
+        if (minDiff !== '') query.append('minDiff', minDiff.toString());
+        if (profitThreshold !== '') query.append('profitThreshold', profitThreshold.toString());
+        if (costRatioThreshold !== '') query.append('costRatioThreshold', costRatioThreshold.toString());
         query.append('export', 'true');
 
         // Add Filters to export too
@@ -239,38 +225,40 @@ const ShippingAnomalyPage: React.FC = () => {
         return <span className="ml-1 text-indigo-600">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>;
     };
 
-    const RangeInput = useMemo(() => {
-        return ({ column, placeholder = "" }: { column: keyof Anomaly, placeholder?: string }) => (
-            <div className="flex flex-col gap-1">
-                <input
-                    type="number"
-                    placeholder={`Min ${placeholder}`}
-                    value={rangeFilters[column as string]?.min || ''}
-                    className="w-full min-w-[80px] p-1 border rounded text-[10px] bg-slate-50 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
-                    onChange={e => handleRangeFilterChange(column, 'min', e.target.value)}
-                />
-                <input
-                    type="number"
-                    placeholder={`Max ${placeholder}`}
-                    value={rangeFilters[column as string]?.max || ''}
-                    className="w-full min-w-[80px] p-1 border rounded text-[10px] bg-slate-50 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
-                    onChange={e => handleRangeFilterChange(column, 'max', e.target.value)}
-                />
-            </div>
-        );
-    }, [rangeFilters, handleRangeFilterChange]);
+    // Helper Components defined outside to prevent re-renders losing focus
+    const TableTextInput = ({ value, onChange, placeholder = "Filter..." }: { value: string, onChange: (val: string) => void, placeholder?: string }) => (
+        <input
+            type="text"
+            placeholder={placeholder}
+            value={value || ''}
+            className="w-full min-w-[100px] p-1 border rounded text-[10px] bg-slate-50 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+            onChange={e => onChange(e.target.value)}
+        />
+    );
 
-    const TextInput = useMemo(() => {
-        return ({ column, placeholder = "Filter..." }: { column: keyof Anomaly, placeholder?: string }) => (
+    const TableRangeInput = ({ min, max, onMinChange, onMaxChange, placeholder = "" }: {
+        min: string, max: string,
+        onMinChange: (val: string) => void,
+        onMaxChange: (val: string) => void,
+        placeholder?: string
+    }) => (
+        <div className="flex flex-col gap-1">
             <input
-                type="text"
-                placeholder={placeholder}
-                value={textFilters[column as string] || ''}
-                className="w-full min-w-[100px] p-1 border rounded text-[10px] bg-slate-50 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
-                onChange={e => handleTextFilterChange(column, e.target.value)}
+                type="number"
+                placeholder={`Min ${placeholder}`}
+                value={min || ''}
+                className="w-full min-w-[80px] p-1 border rounded text-[10px] bg-slate-50 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                onChange={e => onMinChange(e.target.value)}
             />
-        );
-    }, [textFilters, handleTextFilterChange]);
+            <input
+                type="number"
+                placeholder={`Max ${placeholder}`}
+                value={max || ''}
+                className="w-full min-w-[80px] p-1 border rounded text-[10px] bg-slate-50 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                onChange={e => onMaxChange(e.target.value)}
+            />
+        </div>
+    );
 
     return (
         <div className="p-6">
@@ -285,7 +273,7 @@ const ShippingAnomalyPage: React.FC = () => {
                         disabled={loading}
                         className="bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400 px-4 py-2 rounded-lg flex items-center gap-2 shadow-md transition-colors text-sm font-medium"
                     >
-                        {loading ? '⟳ Syncing...' : '🔄 Sync from Sheets'}
+                        {loading ? '⟳ Loading...' : '🔄 Refresh Data'}
                     </button>
                     <button
                         onClick={() => navigate('/weight-analysis')}
@@ -349,7 +337,7 @@ const ShippingAnomalyPage: React.FC = () => {
                             <input
                                 type="number"
                                 value={minDiff}
-                                onChange={(e) => setMinDiff(Number(e.target.value))}
+                                onChange={(e) => setMinDiff(e.target.value === '' ? '' : Number(e.target.value))}
                                 className="px-3 py-1.5 border rounded w-24 text-sm"
                             />
                         </div>
@@ -358,7 +346,7 @@ const ShippingAnomalyPage: React.FC = () => {
                             <input
                                 type="number"
                                 value={profitThreshold}
-                                onChange={(e) => setProfitThreshold(Number(e.target.value))}
+                                onChange={(e) => setProfitThreshold(e.target.value === '' ? '' : Number(e.target.value))}
                                 className="px-3 py-1.5 border rounded w-24 text-sm"
                             />
                         </div>
@@ -367,7 +355,7 @@ const ShippingAnomalyPage: React.FC = () => {
                             <input
                                 type="number"
                                 value={costRatioThreshold}
-                                onChange={(e) => setCostRatioThreshold(Number(e.target.value))}
+                                onChange={(e) => setCostRatioThreshold(e.target.value === '' ? '' : Number(e.target.value))}
                                 className="px-3 py-1.5 border rounded w-24 text-sm"
                             />
                         </div>
@@ -428,17 +416,74 @@ const ShippingAnomalyPage: React.FC = () => {
                                     {/* Filter Row */}
                                     <tr className="bg-white border-b shadow-sm">
                                         <th className="p-2"></th>
-                                        <th className="p-2"><TextInput column="tracking" /></th>
-                                        <th className="p-2"><TextInput column="date" /></th>
-                                        <th className="p-2"><TextInput column="name" /></th>
-                                        <th className="p-2"><TextInput column="phone" /></th>
-                                        <th className="p-2"><RangeInput column="weight" /></th>
-                                        <th className="p-2"><RangeInput column="codAmount" /></th>
-                                        <th className="p-2"><RangeInput column="profit" /></th>
-                                        <th className="p-2"><RangeInput column="costPercent" /></th>
-                                        <th className="p-2"><RangeInput column="cost" /></th>
-                                        <th className="p-2"><RangeInput column="expectedCost" /></th>
-                                        <th className="p-2"><RangeInput column="diff" /></th>
+                                        <th className="p-2">
+                                            <TableTextInput value={textFilters.tracking || ''} onChange={val => handleTextFilterChange('tracking', val)} />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableTextInput value={textFilters.date || ''} onChange={val => handleTextFilterChange('date', val)} />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableTextInput value={textFilters.name || ''} onChange={val => handleTextFilterChange('name', val)} />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableTextInput value={textFilters.phone || ''} onChange={val => handleTextFilterChange('phone', val)} />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableRangeInput
+                                                min={rangeFilters.weight?.min || ''}
+                                                max={rangeFilters.weight?.max || ''}
+                                                onMinChange={val => handleRangeFilterChange('weight', 'min', val)}
+                                                onMaxChange={val => handleRangeFilterChange('weight', 'max', val)}
+                                            />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableRangeInput
+                                                min={rangeFilters.codAmount?.min || ''}
+                                                max={rangeFilters.codAmount?.max || ''}
+                                                onMinChange={val => handleRangeFilterChange('codAmount', 'min', val)}
+                                                onMaxChange={val => handleRangeFilterChange('codAmount', 'max', val)}
+                                            />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableRangeInput
+                                                min={rangeFilters.profit?.min || ''}
+                                                max={rangeFilters.profit?.max || ''}
+                                                onMinChange={val => handleRangeFilterChange('profit', 'min', val)}
+                                                onMaxChange={val => handleRangeFilterChange('profit', 'max', val)}
+                                            />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableRangeInput
+                                                min={rangeFilters.costPercent?.min || ''}
+                                                max={rangeFilters.costPercent?.max || ''}
+                                                onMinChange={val => handleRangeFilterChange('costPercent', 'min', val)}
+                                                onMaxChange={val => handleRangeFilterChange('costPercent', 'max', val)}
+                                            />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableRangeInput
+                                                min={rangeFilters.cost?.min || ''}
+                                                max={rangeFilters.cost?.max || ''}
+                                                onMinChange={val => handleRangeFilterChange('cost', 'min', val)}
+                                                onMaxChange={val => handleRangeFilterChange('cost', 'max', val)}
+                                            />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableRangeInput
+                                                min={rangeFilters.expectedCost?.min || ''}
+                                                max={rangeFilters.expectedCost?.max || ''}
+                                                onMinChange={val => handleRangeFilterChange('expectedCost', 'min', val)}
+                                                onMaxChange={val => handleRangeFilterChange('expectedCost', 'max', val)}
+                                            />
+                                        </th>
+                                        <th className="p-2">
+                                            <TableRangeInput
+                                                min={rangeFilters.diff?.min || ''}
+                                                max={rangeFilters.diff?.max || ''}
+                                                onMinChange={val => handleRangeFilterChange('diff', 'min', val)}
+                                                onMaxChange={val => handleRangeFilterChange('diff', 'max', val)}
+                                            />
+                                        </th>
                                         <th className="p-2"></th>
                                     </tr>
                                 </thead>

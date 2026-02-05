@@ -1,5 +1,5 @@
 $User = "ImGotsila"
-$HostIP = "192.168.1.148"
+$HostIP = "192.168.1.141"
 $RemotePath = "/volume1/trackmaster-pro-v2/trackmaster-pro"
 $SudoPass = "Y18363@dd"
 
@@ -11,7 +11,7 @@ Write-Host ""
 # 1. Create Archive
 Write-Host "[1/4] Creating backup archive (deploy_package.tar.gz)..."
 try {
-    tar --exclude node_modules --exclude server/node_modules --exclude .git --exclude dist --exclude deploy_package.tar.gz --exclude project.tar.gz -czf deploy_package.tar.gz .
+    tar --exclude node_modules --exclude server/node_modules --exclude .git --exclude dist --exclude deploy_package.tar.gz --exclude project.tar.gz --exclude .env.local --exclude .DS_Store --exclude data/trackmaster.db --exclude data/uploads --exclude data/analytics.json -czf deploy_package.tar.gz .
     if ($LASTEXITCODE -ne 0) { throw "Tar failed" }
     Write-Host "Archive created successfully."
 }
@@ -59,7 +59,10 @@ Write-Host "input password for Step 4 (deploy):"
 # We use the absolute path /usr/local/bin/docker-compose because it's not in the sudo secure_path on Synology
 # We also FORCE remove the old container just in case it was created without compose (orphaned)
 # NOTE: We must also use the absolute path for 'docker' itself: /usr/local/bin/docker
-ssh ${User}@${HostIP} "cd ${RemotePath} && tar -xzf project.tar.gz && echo '${SudoPass}' | sudo -S /usr/local/bin/docker rm -f trackmaster-pro || true && echo '${SudoPass}' | sudo -S /usr/local/bin/docker build --no-cache -t trackmaster-pro . && echo '${SudoPass}' | sudo -S /usr/local/bin/docker run -d --name trackmaster-pro -p 3000:3000 --restart unless-stopped -v ${RemotePath}/data:/app/data trackmaster-pro"
+# Step 4: Deploy (Combined Stop, Remove, Build, Run to ask password only once)
+# Uses ";" for cleanup steps so they don't abort if failing (e.g. no container)
+# Uses "&&" for critical build/run steps
+ssh ${User}@${HostIP} "echo '${SudoPass}' | sudo -S /usr/local/bin/docker stop trackmaster-pro || true ; echo '${SudoPass}' | sudo -S /usr/local/bin/docker rm -f trackmaster-pro || true ; cd ${RemotePath} && mkdir -p build_temp && tar -xmzf project.tar.gz -C build_temp && cp -Rf build_temp/* . && rm -rf build_temp && rm -f .env.local && echo '${SudoPass}' | sudo -S /usr/local/bin/docker build --no-cache -t trackmaster-pro . && echo '${SudoPass}' | sudo -S /usr/local/bin/docker run -d --name trackmaster-pro -p 3000:3000 -e DB_PATH=/app/data/trackmaster.db --restart unless-stopped -v ${RemotePath}/data:/app/data trackmaster-pro"
 if ($LASTEXITCODE -ne 0) { 
     Write-Error "Failed to deploy. Check logs above."
     exit 1 
